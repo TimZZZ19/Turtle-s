@@ -8,6 +8,12 @@
   justify-content: space-around;
   height: 3.6rem;
   background-color: #b98f71;
+  transition: opacity 1s transform 10s;
+  transition: transform 1s, opacity 1s;
+}
+.menu-navbar-hidden {
+  opacity: 0;
+  transform: translateY(40rem);
 }
 
 .menu-category {
@@ -30,6 +36,11 @@
 .menu-group {
   margin-bottom: 4.6rem;
   border-bottom: 0.2rem solid #ccc;
+  transition: transform 1s, opacity 1s;
+}
+.menu-group-hidden {
+  opacity: 0;
+  transform: translateY(5rem);
 }
 
 .menu-header {
