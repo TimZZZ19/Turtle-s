@@ -1,0 +1,7 @@
+const btnNavEl = document.querySelector(".mobile-nav-btn");
+const headerEL = document.querySelector("header");
+const reviewSection = document.querySelector(".section-testimonials");
+
+btnNavEl.addEventListener("click", (e) => {
+  headerEL.classList.toggle("nav-open");
+});

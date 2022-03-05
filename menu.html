@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Turtle's</title>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule=""
+      src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.js"
+    ></script>
+
+    <!-- custom css file link -->
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/queries.css" />
+
+    <link rel="stylesheet" href="css/menu.css" />
+    <link rel="stylesheet" href="css/menu_queries.css" />
+  </head>
+  <body>
+    <header class="header sticky">
+      <a href="index.html" class="header-logo"> Turtle's Bar & Grill </a>
+
+      <nav class="main-nav">
+        <ul class="main-nav-list">
+          <li>
+            <a class="main-nav-link" href="index.html">Home</a>
+          </li>
+          <li><a class="main-nav-link" href="menu.html">Menu</a></li>
+          <li>
+            <a class="main-nav-link" href="gallery.html">Gallery</a>
+          </li>
+        </ul>
+      </nav>
+
+      <button class="mobile-nav-btn">
+        <ion-icon class="mobile-nav-icon" name="menu-outline"></ion-icon>
+        <ion-icon class="mobile-nav-icon" name="close-outline"></ion-icon>
+      </button>
+    </header>
+
+    <main>
+      <div class="menu-navbar">
+        <a class="menu-category" id="app" href="#appetizers">Appetizers</a>
+        <a class="menu-category" href="#salad">Entrée salad</a>
+        <a class="menu-category" href="#sandwiches">Sandwiches</a>
+        <a class="menu-category" href="#pasta">Pasta</a>
+        <a class="menu-category" href="#pizza">Pizza</a>
+      </div>
+      <div class="container menu">
+        <div class="menu-group" id="appetizers">
+          <h2 class="menu-group-name">APPETIZERS</h2>
+          <p class="menu-group-description"></p>
+          <div class="menu-content">
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Wings</span>
+                    <p class="food-description">
+                      Choice of Buffalo, garlic, parmesan, BBQ, or lemon pepper
+                      served with ranch dressing and celery
+                    </p>
+                  </div>
+                  <span class="food-price">8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price signature-dish">
+                  <div class="food-info">
+                    <span class="food-name">Buffalo Chicken Eggrolls</span>
+                    <p class="food-description">
+                      House-made eggrolls filled with grilled Buffalo chicken
+                    </p>
+                  </div>
+                  <span class="food-price">3 for 7.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Turtle's Garlic Parm Fries</span>
+                    <p class="food-description">
+                      House-cut fries tossed in roasted garlic and parmesan
+                      cheese
+                    </p>
+                  </div>
+                  <span class="food-price">S 2.95, &nbsp;&nbsp;L 4.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name"
+                      >Traditional or Grilled Chicken Tenders</span
+                    >
+                    <p class="food-description">
+                      House-made breaded or grilled chicken tenders served with
+                      your choice of sauce: Buffalo, BBQ or ranch
+                    </p>
+                  </div>
+
+                  <span class="food-price">8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Turtle's Meat Bowl</span>
+                    <p class="food-description">
+                      2 meatballs, 2 sauces and 2 neck bones served with garlic
+                      bread
+                    </p>
+                  </div>
+                  <span class="food-price">10.50</span>
+                </div>
+              </li>
+            </ul>
+
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Hamburger Slider</span>
+                  </div>
+                  <span class="food-price">3 for 9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Pulled Pork Slider</span>
+                  </div>
+                  <span class="food-price">3 for 8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Buffalo Chicken Slider</span>
+                    <p class="food-description">With blue cheese</p>
+                  </div>
+                  <span class="food-price">3 for 8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Fried Calamari</span>
+                    <p class="food-description">
+                      Served with marinara sauce and lemon
+                    </p>
+                    <p class="food-description">With Buffalo sauce</p>
+                    <p class="food-description extra-dollar">
+                      <span>With hot giardiniera</span>
+                      <span>1.00</span>
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">House-Cut Fries</span>
+                    <p class="food-description">
+                      Turtle's house-cut fries tossed in a salt and pepper
+                      mixture
+                    </p>
+                  </div>
+                  <span class="food-price">1.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Mozzarella Sticks</span>
+                  </div>
+                  <span class="food-price">7.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Side Salad</span>
+                  </div>
+                  <span class="food-price">3.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Side Caesar Salad</span>
+                  </div>
+                  <span class="food-price">4.50</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="menu-group" id="salad">
+          <h2 class="menu-group-name">ENTRÉE SALAD</h2>
+          <p class="menu-group-description">
+            Choice of dressing: ranch, Italian or balsamic
+          </p>
+          <div class="menu-content">
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Italian Salad</span>
+                    <p class="food-description">
+                      Mixed greens, tomatoes, garbanzo beans, cucumbers, roasted
+                      red peppers and mozzarella cheese
+                    </p>
+                    <p class="food-description extra-dollar">
+                      <span>Add chicken</span>
+                      <span>4.50</span>
+                    </p>
+                  </div>
+                  <span class="food-price">7.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Caesar Salad</span>
+                    <p class="food-description">
+                      Romaine lettuce, Parmesan cheese, house-made croutons
+                      tossed in a creamy Caesar dressing
+                    </p>
+                    <p class="food-description extra-dollar">
+                      <span>Add chicken</span>
+                      <span>4.50</span>
+                    </p>
+                  </div>
+                  <span class="food-price">7.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Grilled Chicken Salad</span>
+                    <p class="food-description">
+                      Mixed greens, grilled chicken, candied walnuts, dried
+                      cranberries, blue cheese and red onion
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price signature-dish">
+                  <div class="food-info">
+                    <span class="food-name">Italian Meatball Salad</span>
+                    <p class="food-description">
+                      2 house-made meatballs on mixed greens, tomatoes, red
+                      onion, roasted red peppers and mozzarella cheese
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Cobb Salad</span>
+                    <p class="food-description">
+                      Romaine lettuce, grilled chicken, bacon, blue cheese,
+                      avocado, egg, tomatoes and cucumbers
+                    </p>
+                  </div>
+                  <span class="food-price">11.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Steak Salad</span>
+                    <p class="food-description">
+                      Romaine lettuce, grilled steak, cucumbers, tomattoes, red
+                      onions, blue cheese and avocado
+                    </p>
+                  </div>
+                  <span class="food-price">12.95</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="menu-group" id="sandwiches">
+          <h2 class="menu-group-name">SANDWICHES</h2>
+          <p class="menu-group-description">
+            All sandwiches served with house-cut fries or side salad substitute
+            garlic parmesan fries for 0.75 or Caesar salad for 1.50
+          </p>
+          <div class="menu-content">
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">House-made Hamburger</span>
+                    <p class="food-description">
+                      One-pound house-made hamburger served with pretzel bun
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Italian Meatball</span>
+                    <p class="food-description">
+                      House-made Italian meatballs served with marinara sauce
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Italian Sausage</span>
+                    <p class="food-description">
+                      Spicy Italian sausage served with Au Jus or marinara
+                    </p>
+                  </div>
+                  <span class="food-price">9.50</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Italian Combo</span>
+                    <p class="food-description">
+                      Grilled Italian sausage and beef served with Au Jus or
+                      marinara
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Eggplant Parmesan</span>
+                    <p class="food-description">
+                      House-made eggplant topped with mozzarella cheese and
+                      marinara
+                    </p>
+                  </div>
+                  <span class="food-price">8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">BBQ Pulled Pork</span>
+                    <p class="food-description">
+                      Slow braised pork shoulder tossed in BBQ sauce and served
+                      on brioche bread
+                    </p>
+                  </div>
+                  <span class="food-price">8.95</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price signature-dish">
+                  <div class="food-info">
+                    <span class="food-name">Italian Burger</span>
+                    <p class="food-description">
+                      Turtle's house-made burger topped with procsiutto,
+                      provolone and marinara sauce served on garlic bread
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Italian Beef</span>
+                    <p class="food-description">
+                      Italian beef served with Au Jus or marinara
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Italian Grilled Chicken</span>
+                    <p class="food-description">
+                      Grilled chicken topped with Italian style sweet pepper,
+                      served on garlic bread
+                    </p>
+                  </div>
+                  <span class="food-price">8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Grilled Steak Sandwich</span>
+                    <p class="food-description">
+                      Grilled steak topped with lettuce, tomato and onion,
+                      served on garlic bread
+                    </p>
+                  </div>
+                  <span class="food-price">12.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price signature-dish">
+                  <div class="food-info">
+                    <span class="food-name"> Chicken Parmesan </span>
+                    <p class="food-description">
+                      Pan seared breaded chicken topped with mozzarella cheese
+                      and marinara sauce
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="extra-content">
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Choice of Cheeses:</span>
+
+                    <p class="food-description extra-dollar">
+                      <span>Blue Cheese</span>
+                      <span>1.00</span>
+                    </p>
+                    <p class="food-description extra-dollar">
+                      <span>Provolone, Mozzarella, Cheddar</span>
+                      <span>0.75</span>
+                    </p>
+                  </div>
+                  <span class="food-price">0.75 / 1.00</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name"
+                      >Add Sweet Peppers or Giardiniera</span
+                    >
+                  </div>
+                  <span class="food-price">0.75</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Add Bacon</span>
+                  </div>
+                  <span class="food-price">1.00</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Add Garlic Bread</span>
+                  </div>
+                  <span class="food-price">1.00</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="extra-content sandwiches-extra signature-dish">
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Sausage and Peppers</span>
+
+                    <p class="food-description">
+                      Sauteed sausage, peppers, onions and potatoes in a white
+                      wine and garlic sauce
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Pork Chop Vesuvio</span>
+                    <p class="food-description">Served with potatoes</p>
+                  </div>
+                  <span class="food-price">12.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">BBQ Ribs</span>
+                    <p class="food-description">
+                      House-cut fries and cole slaw
+                    </p>
+                  </div>
+                  <span class="food-price"
+                    >Half Slab 11.95, &nbsp;&nbsp;<br />Full Slab 16.95</span
+                  >
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="menu-group" id="pasta">
+          <h2 class="menu-group-name">PASTA</h2>
+          <p class="menu-group-description">
+            Choose your pasta and sauce: spaghetti, linguine, penne or bow tie.
+            Add meatballs, neck bones, sausage or chicken for 4.50
+          </p>
+          <div class="menu-content">
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Marinara Sauce</span>
+                    <p class="food-description">House-made tomato sauce</p>
+                  </div>
+                  <span class="food-price">8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Ali Olio</span>
+                    <p class="food-description">
+                      Sauteed garlic in a white wine sauce
+                    </p>
+                  </div>
+                  <span class="food-price">8.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Ravioli</span>
+                    <p class="food-description">House-made marinara sauce</p>
+                  </div>
+                  <span class="food-price">10.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Tortellini</span>
+                    <p class="food-description">House-made marinara sauce</p>
+                  </div>
+                  <span class="food-price">10.95</span>
+                </div>
+              </li>
+            </ul>
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Arrabbiata Sauce</span>
+                    <p class="food-description">
+                      Spicy tomato sauce with sauteed procsiutto and crushed red
+                      pepper
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Bolognese</span>
+                    <p class="food-description">House-made meat sauce</p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Clam Sauce</span>
+                    <p class="food-description">
+                      Chopped clams in garlic white wine sauce
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price signature-dish">
+                  <div class="food-info">
+                    <span class="food-name">Vodka Tomato Cream Sauce</span>
+                    <p class="food-description">
+                      Creamy tomato sauce finished with vodka and parmesan
+                      cheese
+                    </p>
+                  </div>
+                  <span class="food-price">9.95</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="menu-group" id="pizza">
+          <h2 class="menu-group-name">PIZZA</h2>
+          <p class="menu-group-description">
+            Choice of toppings: sausage, pepperoni, Italian beef, bacon, BBQ
+            chicken, mushrooms, peppers, onions and Buffalo chicken
+          </p>
+          <div class="menu-content">
+            <ul class="menu-list">
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">Personal Cheese</span>
+                    <p class="food-description extra-dollar">
+                      <span>Additional toppings: </span>
+                      <span>0.75</span>
+                    </p>
+                  </div>
+                  <span class="food-price">6.00</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">14-Inch Cheese</span>
+                    <p class="food-description extra-dollar">
+                      <span>Additional toppings: </span>
+                      <span>1.00</span>
+                    </p>
+                  </div>
+                  <span class="food-price">11.00</span>
+                </div>
+              </li>
+              <li class="menu-item">
+                <div class="name-and-price">
+                  <div class="food-info">
+                    <span class="food-name">16-Inch Cheese</span>
+                    <p class="food-description extra-dollar">
+                      <span>Additional toppings: </span>
+                      <span>1.25</span>
+                    </p>
+                  </div>
+                  <span class="food-price">13.25</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="section-footer">
+      <div class="footer container grid grid--3-cols">
+        <div class="logo-col">
+          <a href="#" class="footer-logo"> Turtle's Bar & Grill </a>
+
+          <p class="copyright">
+            Copyright &copy; 2022 by Turtle's Bar & Grill, Inc. All rights
+            reserved.
+          </p>
+        </div>
+        <div class="hours-col">
+          <ul class="footer-opening-hours">
+            <li class="footer-col-heading">Opening hours</li>
+            <li>Monday: 11:00 AM - 2:00 PM</li>
+            <li>Tuesday: 11:00 AM - 2:00 AM</li>
+            <li>Wednesday: 11:00 AM - 2:00 PM</li>
+            <li>Thursday: 11:00 AM - 2:00 PM</li>
+            <li>Friday: 11:00 AM - 2:00 AM</li>
+            <li>Saturday: 11:00 AM - 3:00 PM</li>
+            <li>Sunday: 11:00 AM - 2:00 PM</li>
+          </ul>
+        </div>
+        <div class="contact-col">
+          <ul class="footer-contact">
+            <li class="footer-col-heading">Contact us</li>
+            <li>
+              <a
+                class="footer-link"
+                href="https://www.facebook.com/Turtles-Bar-Grill-145578408799521/"
+                target="_blank"
+                ><ion-icon class="social-icon" name="logo-facebook"></ion-icon
+              ></a>
+            </li>
+            <li><span class="footer-phone">(312) 225-7333</span></li>
+            <li>
+              <a
+                class="footer-location"
+                href="https://www.google.com/maps/place/Turtle's+Bar+%26+Grill/@41.8346994,-87.6352552,17z/data=!3m2!4b1!5s0x880e2c135da61949:0xbe0c1802dfc9b1b9!4m5!3m4!1s0x880e2c135e0986a9:0xa9c40d8d918fe05a!8m2!3d41.8346745!4d-87.6330105?hl=en"
+                >238 W 33rd St, Chicago, IL 60616</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+    <script src="js/script.js"></script>
+    <script src="js/menu_script.js"></script>
+  </body>
+</html>

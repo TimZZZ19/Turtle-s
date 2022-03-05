@@ -1,0 +1,64 @@
+@media (max-width: 1000px) {
+  .menu-content {
+    flex-direction: column;
+    width: 90rem;
+    margin: 0 auto;
+  }
+
+  .name-and-price {
+    max-width: 70rem;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 800px) {
+  .menu-group-description {
+    font-weight: 360;
+  }
+
+  .menu-content {
+    max-width: 60rem;
+  }
+
+  .name-and-price {
+    max-width: 60rem;
+  }
+
+  .food-description {
+    font-size: 2rem;
+  }
+  .food-price {
+    font-size: 2rem;
+  }
+
+  .extra-content {
+    max-width: 60rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .menu-group-description {
+    max-width: 40rem;
+  }
+
+  .menu-content {
+    max-width: 40rem;
+  }
+
+  .name-and-price {
+    max-width: 40rem;
+  }
+
+  .food-description {
+    max-width: 23rem;
+    font-size: 1.6rem;
+  }
+
+  .food-price {
+    font-size: 1.6rem;
+  }
+
+  .extra-content {
+    max-width: 32rem;
+  }
+}

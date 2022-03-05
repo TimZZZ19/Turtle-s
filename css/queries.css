@@ -1,0 +1,182 @@
+@media (max-width: 1600px) {
+  .header {
+    padding: 0 5.8rem;
+  }
+}
+
+@media (max-width: 1400px) {
+  html {
+    font-size: 9px;
+  }
+
+  .hero-img {
+    width: 95%;
+  }
+
+  .hero-text-box {
+    padding-left: 5rem;
+  }
+
+  .testimonials {
+    gap: 3.6rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  html {
+    font-size: 8px;
+  }
+
+  .testimonials-gallery-img {
+    width: 13rem;
+    height: 13rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .testimonials-heading-secondary {
+    font-size: 3.5rem;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    justify-content: center;
+  }
+
+  .hero-text-box {
+    text-align: center;
+    padding-left: 0rem;
+  }
+
+  .hero-location {
+    justify-content: center;
+  }
+
+  .hero-img-box {
+    text-align: center;
+  }
+
+  .hero-img {
+    width: 65%;
+  }
+
+  .footer {
+    gap: 6.6rem;
+  }
+}
+
+@media (max-width: 800px) {
+  html {
+    font-size: 6.6px;
+  }
+
+  .header-logo:link {
+    font-size: 3.2rem;
+  }
+
+  .main-nav-link:link,
+  .main-nav-link:visited {
+    font-size: 2rem;
+  }
+
+  .testimonials-heading-secondary {
+    font-size: 3.1rem;
+  }
+
+  .testimonials-gallery-box {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer {
+    gap: 3.6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-logo:link,
+  .header-logo:visited {
+    font-size: 3.2rem;
+  }
+
+  .heading-primary {
+    font-size: 3.2rem;
+  }
+
+  .main-nav {
+    background-color: rgba(255, 255, 255, 0.96);
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: all 0.2s ease-out;
+    transform: translateX(100%);
+  }
+
+  .nav-open .main-nav {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .main-nav-list {
+    flex-direction: column;
+    gap: 4.8rem;
+  }
+
+  .mobile-nav-btn {
+    display: block;
+    z-index: 1;
+  }
+
+  .nav-open .mobile-nav-icon[name="menu-outline"] {
+    display: none;
+  }
+
+  .nav-open .mobile-nav-icon[name="close-outline"] {
+    display: block;
+    color: rgb(138, 138, 138);
+  }
+
+  .main-nav-link:link,
+  .main-nav-link:visited {
+    font-size: 2.6rem;
+    color: rgb(138, 138, 138);
+  }
+
+  .main-nav-link:hover,
+  .main-nav-link:active {
+    color: #000;
+  }
+
+  .testimonials {
+    grid-template-columns: 1fr;
+  }
+
+  testimonials-heading-secondary {
+    font-size: 3.2rem;
+  }
+
+  .testimonials-gallery-box {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .footer-opening-hours {
+    display: none;
+  }
+
+  .footer {
+    display: flex;
+  }
+}

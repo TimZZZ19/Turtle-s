@@ -1,0 +1,41 @@
+@media (max-width: 1000px) {
+  .gallery-container {
+    max-width: 84rem;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* assume from 768px and down is tablet screen, 
+   so drop the left and right buttons */
+@media (max-width: 768px) {
+  .lightbox {
+    flex-direction: column;
+  }
+
+  #lightbox__left {
+    display: none;
+  }
+
+  #lightbox__right {
+    display: none;
+  }
+
+  #lightbox__close {
+    display: block;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  .gallery-container {
+    max-width: 64rem;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .gallery-container {
+    max-width: 42rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
