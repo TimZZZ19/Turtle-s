@@ -413,6 +413,11 @@ body {
   margin-top: 1.2rem;
   color: #333;
   text-decoration: none;
+  transition: all 0.5s;
+}
+
+.footer-link:hover {
+  color: #4267b2;
 }
 
 .social-icon {
