@@ -7,19 +7,19 @@
   align-items: center;
   justify-content: space-around;
   height: 3.6rem;
-  background-color: #b98f71;
+  background-color: #c9ebb9;
 }
 
 .menu-category {
   font-size: 1.8rem;
-  color: white;
+  color: rgb(110, 110, 110);
   cursor: pointer;
   transition: all 0.3s;
   text-decoration: none;
 }
 
 .menu-category:hover {
-  color: #ccc;
+  color: black;
 }
 
 .menu {
@@ -78,7 +78,7 @@
 
 .signature-dish {
   color: white;
-  background-color: #8b4513;
+  background-color: #4cbb17;
   border-radius: 2rem;
   padding: 1.6rem 2.4rem;
 }
