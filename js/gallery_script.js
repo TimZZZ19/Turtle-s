@@ -128,6 +128,8 @@ const moveTowardsRight = () => {
 galleryContainer.addEventListener("click", (e) => {
   currentImageIndex = imageArray.indexOf(e.target.id);
 
+  if (e.target.matches(".gallery-container")) return;
+
   popUpImage(currentImageIndex);
 
   if (leftHidden) unhideButton("left");
