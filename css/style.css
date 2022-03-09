@@ -21,14 +21,12 @@
 02 COLORS
   
   - Primary: #8B4513 
-             #4CBB17
 
 
   - Tints: #b98f71
-           #c9ebb9
+
 
   - Shades: #61300d
-            #2e700e
 
 
   - Accents:
@@ -116,14 +114,14 @@ body {
 .btn--full:link,
 .btn--full:visited {
   letter-spacing: 0.8px;
-  background-color: #4cbb17;
+  background-color: #8b4513;
   color: #fff;
   margin-bottom: 6.4rem;
 }
 
 .btn--full:hover,
 .btn--full:active {
-  background-color: #2e700e;
+  background-color: #61300d;
 }
 
 /* ******************************************** */
@@ -132,7 +130,7 @@ body {
 .header {
   height: 9.6rem;
   padding: 0 9rem;
-  background-color: #4cbb17;
+  background-color: #8b4513;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -202,7 +200,7 @@ body {
 /* SECTION-HERO */
 /* ******************************************** */
 .section-hero {
-  background-color: #c9ebb9;
+  background-color: #b98f71;
   padding: 9.6rem 0;
   margin-top: 9.6rem;
 }
@@ -245,12 +243,11 @@ body {
 }
 
 .link-btn {
-  color: rgb(110, 110, 110);
+  color: #333;
   text-underline-offset: 3.5px;
   font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: 0.6px;
-  transition: all 0.5s;
 }
 
 .link-btn:hover {
@@ -290,7 +287,7 @@ body {
 
 .testimonials-subheading {
   text-transform: uppercase;
-  color: #4cbb17;
+  color: #8b4513;
   font-size: 2rem;
   margin-bottom: 2.4rem;
   display: block;
@@ -351,7 +348,7 @@ body {
 /* ******************************************** */
 
 .section-footer {
-  background-color: #c9ebb9;
+  background-color: #b98f71;
   padding: 3.6rem 0;
 }
 
@@ -413,11 +410,6 @@ body {
   margin-top: 1.2rem;
   color: #333;
   text-decoration: none;
-  transition: all 0.5s;
-}
-
-.footer-link:hover {
-  color: #4267b2;
 }
 
 .social-icon {

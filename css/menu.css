@@ -7,19 +7,25 @@
   align-items: center;
   justify-content: space-around;
   height: 3.6rem;
-  background-color: #c9ebb9;
+  background-color: #b98f71;
+  transition: opacity 1s transform 10s;
+  transition: transform 1s, opacity 1s;
+}
+.menu-navbar-hidden {
+  opacity: 0;
+  transform: translateY(40rem);
 }
 
 .menu-category {
   font-size: 1.8rem;
-  color: rgb(110, 110, 110);
+  color: white;
   cursor: pointer;
   transition: all 0.3s;
   text-decoration: none;
 }
 
 .menu-category:hover {
-  color: black;
+  color: #ccc;
 }
 
 .menu {
@@ -30,6 +36,11 @@
 .menu-group {
   margin-bottom: 4.6rem;
   border-bottom: 0.2rem solid #ccc;
+  transition: transform 1s, opacity 1s;
+}
+.menu-group-hidden {
+  opacity: 0;
+  transform: translateY(5rem);
 }
 
 .menu-header {
@@ -78,7 +89,7 @@
 
 .signature-dish {
   color: white;
-  background-color: #4cbb17;
+  background-color: #8b4513;
   border-radius: 2rem;
   padding: 1.6rem 2.4rem;
 }
