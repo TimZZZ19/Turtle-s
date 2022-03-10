@@ -28,6 +28,12 @@
   color: #ccc;
 }
 
+.menu-category-active {
+  /* padding-bottom: 0.5rem; */
+  border-bottom: 0.1rem solid white;
+  /* color: black; */
+}
+
 .menu {
   margin-top: 13.2rem;
   padding: 9.6rem 0;
