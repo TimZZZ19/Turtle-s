@@ -34,6 +34,11 @@
   .extra-content {
     max-width: 60rem;
   }
+
+  .menu-group-hidden {
+    opacity: 1;
+    transform: translate(0rem);
+  }
 }
 
 @media (max-width: 600px) {
