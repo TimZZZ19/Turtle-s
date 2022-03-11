@@ -56,6 +56,11 @@ const galleryPageNumber = document.querySelector(".gallery_page_number");
 //************************** *//
 
 const popUpImage = (imageIndex) => {
+  const freezeScrolling = () => {
+    htmlTag[0].style.height = "100%";
+    htmlTag[0].style.overflowY = "hidden";
+  };
+
   galleryPageNumber.textContent = `${imageIndex + 1}/${imageArray.length}`;
 
   const selectedImageName = imageArray[imageIndex];
@@ -65,17 +70,12 @@ const popUpImage = (imageIndex) => {
   freezeScrolling();
 };
 
-const freezeScrolling = () => {
-  htmlTag[0].style.height = "100%";
-  htmlTag[0].style.overflowY = "hidden";
-};
-
-const unfreezeScrolling = () => {
-  htmlTag[0].style.height = null;
-  htmlTag[0].style.overflowY = null;
-};
-
 const closeLightbox = () => {
+  const unfreezeScrolling = () => {
+    htmlTag[0].style.height = null;
+    htmlTag[0].style.overflowY = null;
+  };
+
   lightBox.style.display = "none";
   content.innerHTML = "";
   unfreezeScrolling();
@@ -128,7 +128,7 @@ const moveTowardsRight = () => {
 //************************** *//
 // EVENT LISTENERS
 //************************** *//
-// Pop up the clicked image - start
+// Pop up the clicked image -
 galleryContainer.addEventListener("click", (e) => {
   currentImageIndex = imageArray.indexOf(e.target.id);
 
@@ -144,9 +144,8 @@ galleryContainer.addEventListener("click", (e) => {
 
   if (currentImageIndex === imageArray.length - 1) hideButton("right");
 });
-// Pop up the clicked image - end
 
-// Change image using buttons - start
+// Change image using buttons
 leftButton.addEventListener("click", (e) => {
   moveTowardsLeft();
 });
@@ -154,9 +153,8 @@ leftButton.addEventListener("click", (e) => {
 rightButton.addEventListener("click", (e) => {
   moveTowardsRight();
 });
-// Change image using buttons - end
 
-// Close lightbox - start
+// Close lightbox
 lightBox.addEventListener("mousedown", (e) => {
   if (e.target.matches("#lightbox")) {
     closeLightbox();
@@ -166,10 +164,9 @@ lightBox.addEventListener("mousedown", (e) => {
 lightBoxCloseButton.addEventListener("click", (e) => {
   closeLightbox();
 });
-// Close lightbox - end
 
 //************************** *//
-// SWIPTE GESTURE - start
+// SWIPTE GESTURE
 //************************** *//
 
 let touchStartX = 0;
@@ -188,6 +185,3 @@ contentContainer.addEventListener("touchend", (e) => {
   touchEndX = e.changedTouches[0].screenX;
   handleGesture();
 });
-//************************** *//
-// SWIPTE GESTURE - end
-//************************** *//

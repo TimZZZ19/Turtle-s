@@ -102,6 +102,16 @@
     font-size: 3.2rem;
   }
 
+  .main-nav-list {
+    flex-direction: column;
+    gap: 4.8rem;
+  }
+
+  .mobile-nav-btn {
+    display: block;
+    z-index: 1;
+  }
+
   .main-nav {
     background-color: rgba(255, 255, 255, 0.96);
 
@@ -128,16 +138,6 @@
     pointer-events: auto;
     visibility: visible;
     transform: translateX(0);
-  }
-
-  .main-nav-list {
-    flex-direction: column;
-    gap: 4.8rem;
-  }
-
-  .mobile-nav-btn {
-    display: block;
-    z-index: 1;
   }
 
   .nav-open .mobile-nav-icon[name="menu-outline"] {
