@@ -22,15 +22,16 @@
 
   #lightbox__close {
     display: block;
-    align-self: flex-start;
+    position: fixed;
+    top: 3rem;
+    left: 3%;
+    transform: translateY(-15%);
   }
 
   .gallery_page_number {
-    position: fixed;
-    top: 10rem;
+    top: 3rem;
     right: 50%;
-    font-size: 2.6rem;
-    color: white;
+    transform: translateX(50%);
   }
 }
 
@@ -38,6 +39,14 @@
   .gallery-container {
     max-width: 64rem;
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  #lightbox__close {
+    top: 10rem;
+  }
+
+  .gallery_page_number {
+    top: 10rem;
   }
 }
 
