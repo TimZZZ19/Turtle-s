@@ -19,12 +19,12 @@ menuNavbar.addEventListener("click", (e) => {
   const sectionRect = menuGroupSection.getBoundingClientRect();
   window.scrollTo({
     left: sectionRect.left + window.scrollX,
-    top: sectionRect.top + window.scrollY - 150,
+    top: sectionRect.top + window.scrollY - 200,
     behavior: "smooth",
   });
 });
 
-// Show active menu group using Intersection Observer API
+// Scroll progress indicator using Intersection Observer API
 const menuGroups = document.querySelectorAll(".menu-group");
 const options = {
   root: null,
@@ -57,11 +57,12 @@ const revealGroup = function (entries, observer) {
   entry.target.classList.remove("menu-group-hidden");
   observer.unobserve(entry.target);
 };
-const groupObserver = new IntersectionObserver(revealGroup, {
+const revealRroupObserver = new IntersectionObserver(revealGroup, {
   root: null,
-  threshold: 0.15,
+  rootMargin: "0px 0px -10% 0px",
+  threshold: 0,
 });
 allGroups.forEach(function (group) {
-  groupObserver.observe(group);
+  revealRroupObserver.observe(group);
   group.classList.add("menu-group-hidden");
 });
