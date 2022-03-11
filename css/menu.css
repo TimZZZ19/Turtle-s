@@ -11,10 +11,6 @@
   transition: opacity 1s transform 10s;
   transition: transform 1s, opacity 1s;
 }
-.menu-navbar-hidden {
-  opacity: 0;
-  transform: translateY(40rem);
-}
 
 .menu-category {
   font-size: 1.8rem;

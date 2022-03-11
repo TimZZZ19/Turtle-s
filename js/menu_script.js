@@ -32,7 +32,7 @@ const options = {
   threshold: 0,
 };
 
-const groupObserver = new IntersectionObserver((entries, groupObserver) => {
+const indicatorGroupObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     console.log(entry);
 
@@ -47,5 +47,21 @@ const groupObserver = new IntersectionObserver((entries, groupObserver) => {
 }, options);
 
 menuGroups.forEach((menuGroup) => {
-  groupObserver.observe(menuGroup);
+  indicatorGroupObserver.observe(menuGroup);
+});
+
+// Reveal menu groups
+const allGroups = document.querySelectorAll(".menu-group");
+const revealGroup = function (entries, observer) {
+  const [entry] = entries;
+  entry.target.classList.remove("menu-group-hidden");
+  observer.unobserve(entry.target);
+};
+const groupObserver = new IntersectionObserver(revealGroup, {
+  root: null,
+  threshold: 0.15,
+});
+allGroups.forEach(function (group) {
+  groupObserver.observe(group);
+  group.classList.add("menu-group-hidden");
 });
