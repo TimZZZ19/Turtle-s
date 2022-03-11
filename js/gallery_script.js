@@ -49,11 +49,15 @@ const lightBox = document.querySelector("#lightbox");
 const lightBoxCloseButton = document.querySelector("#lightbox__close");
 const content = document.querySelector(".lightbox__content");
 
+const galleryPageNumber = document.querySelector(".gallery_page_number");
+
 //************************** *//
 // FUNCTIONS
 //************************** *//
 
 const popUpImage = (imageIndex) => {
+  galleryPageNumber.textContent = `${imageIndex + 1}/${imageArray.length}`;
+
   const selectedImageName = imageArray[imageIndex];
   const selectedImageElement = document.createElement("img");
   selectedImageElement.src = `/img/gallery-imgs/${selectedImageName}.jpg`;

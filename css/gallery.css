@@ -71,3 +71,11 @@
 #lightbox__close {
   display: none;
 }
+
+.gallery_page_number {
+  position: fixed;
+  top: 12rem;
+  right: 12rem;
+  font-size: 2.6rem;
+  color: white;
+}

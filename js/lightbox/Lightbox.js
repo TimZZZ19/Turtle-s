@@ -14,6 +14,7 @@ export default class Lightbox {
           <div class="lightbox__buttons" id="lightbox__right">
             <ion-icon name="chevron-forward-circle-outline"></ion-icon>
           </div>
+          <p class="gallery_page_number">16/32</p>
         </div>
       `
     );
