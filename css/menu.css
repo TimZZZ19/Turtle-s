@@ -10,6 +10,7 @@
   background-color: #b98f71;
   transition: opacity 1s transform 10s;
   transition: transform 1s, opacity 1s;
+  z-index: 1;
 }
 
 .menu-category {
@@ -80,7 +81,7 @@
 }
 
 .menu-item {
-  margin: 4.2rem 0;
+  margin: 6.2rem 0;
 }
 
 .name-and-price {
@@ -89,24 +90,44 @@
   justify-content: space-between;
 }
 
+.order-button {
+  background-color: white;
+  border-radius: 36px;
+  padding: 0.6rem 1.6rem;
+  border-width: 0;
+  box-shadow: 0rem 0.3rem 0.8rem #ccc;
+  transform: translateY(0.5rem);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.order-button:hover {
+  transform: translateY(0);
+  box-shadow: 0rem 0.3rem 2.8rem #ccc;
+}
+
 .food-name {
-  font-size: 2.1rem;
+  font-size: 1.8rem;
   font-style: italic;
-  font-weight: 700;
-  display: inline-block;
-  margin-bottom: 1.2rem;
+  font-weight: 600;
+  color: #555;
+  font-family: "Nunito", sans-serif;
 }
 
 .food-price {
   display: inline-block;
   padding-top: 2px;
   font-size: 1.6rem;
+  transform: translateY(1.5rem);
 }
 
 .food-description {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   width: 40rem;
   line-height: 1.5;
+  display: block;
+  margin-top: 1.8rem;
+  padding-left: 1.6rem;
 }
 
 .extra-dollar {
