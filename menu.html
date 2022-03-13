@@ -20,6 +20,7 @@
 
     <link rel="stylesheet" href="css/menu.css" />
     <link rel="stylesheet" href="css/menu_queries.css" />
+    <link rel="stylesheet" href="css/menu_orderbox.css" />
   </head>
   <body>
     <header class="header sticky">
@@ -87,6 +88,7 @@
                   <span class="food-price">8.95</span>
                 </div>
               </li>
+
               <li class="menu-item">
                 <div class="name-and-price">
                   <div class="food-info">
@@ -188,7 +190,10 @@
                     <p class="food-description">
                       Served with marinara sauce and lemon
                     </p>
-                    <p class="food-description">With Buffalo sauce</p>
+                    <p class="food-description extra-dollar">
+                      <span>With Buffalo sauce</span>
+                      <span>0.75</span>
+                    </p>
                     <p class="food-description extra-dollar">
                       <span>With hot giardiniera</span>
                       <span>1.00</span>
@@ -680,7 +685,6 @@
           </div>
         </div>
       </div>
-      <div class="cover"></div>
     </main>
 
     <footer class="section-footer">
@@ -730,5 +734,6 @@
     </footer>
     <script src="js/script.js"></script>
     <script src="js/menu_script.js"></script>
+    <script type="module" src="js/menu_handleOrder.js"></script>
   </body>
 </html>

@@ -32,7 +32,6 @@
   top: 0;
   left: 0;
 
-  box-sizing: border-box;
   width: 100%;
   height: 100%;
   padding: 15px;
@@ -52,7 +51,6 @@
 
 .lightbox__content img {
   width: 100%;
-  box-sizing: border-box;
   border-radius: 5px;
   border: 5px solid #fff;
   position: relative;

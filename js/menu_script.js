@@ -34,8 +34,6 @@ const options = {
 
 const indicatorGroupObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
-    console.log(entry);
-
     if (!entry.isIntersecting) return;
     const id = entry.target.getAttribute("id");
     const query = `#menu-category-${id}`;
