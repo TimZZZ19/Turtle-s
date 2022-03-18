@@ -81,10 +81,19 @@
 }
 
 .menu-item {
+  margin: 3.2rem 0;
+  height: 12rem;
+}
+
+#salad .menu-item {
   margin: 6.2rem 0;
 }
 
-.name-and-price {
+#pizza .menu-item {
+  margin: 1.2rem 0;
+}
+
+.food__information {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
