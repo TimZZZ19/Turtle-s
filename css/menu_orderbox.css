@@ -31,6 +31,7 @@
   position: absolute;
   top: 0;
   right: 0;
+  border-radius: 0 1.3rem 0 0;
   background-color: #ccc;
   opacity: 0.6;
 }
@@ -103,10 +104,19 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  color: #555;
 }
 
 .order__qty__btn:hover {
   color: black;
+}
+
+.btn__inactive {
+  cursor: auto;
+}
+
+.btn__inactive:hover {
+  color: #555;
 }
 
 .Add__to__cart {

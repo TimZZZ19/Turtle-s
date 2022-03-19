@@ -15,8 +15,16 @@ const htmlTag = document.querySelector("html");
 const formContainer = document.querySelector(".formbox");
 const menuArea = document.querySelector(".menu");
 
+// record every food and its quantity
+const allFoodNames = document.getElementsByClassName("food-name");
+const qtyToBeAdded = {};
+for (const name of allFoodNames) {
+  const key = name.textContent.split(" ").join("");
+  qtyToBeAdded[key] = 1;
+}
+
 // Form related variables and elements
-let currentFoodName, currentFoodDescription, currentQty, currentFoodPrice;
+let currentFoodName, currentFoodDescription, currentFoodPrice;
 const displayedQuantity = document.querySelector(".order__actual__qty");
 const displayedPrice = document.querySelector(".order__price");
 
@@ -40,7 +48,6 @@ const closeBox = () => {
   // first, set common variables back to undefined
   currentFoodName = undefined;
   currentFoodDescription = undefined;
-  currentQty = undefined;
   currentFoodPrice = undefined;
 
   const unfreeBackground = () => (htmlTag.style.overflowY = null);
@@ -71,12 +78,11 @@ const renderForm = (e) => {
     );
 
     // set menu item varialbes
-    currentFoodName = foodNameElement.textContent;
+    currentFoodName = foodNameElement.textContent.split(" ").join("");
     currentFoodDescription = foodDescriptionElement
       ? foodDescriptionElement.textContent
       : null; // some foods don't have description
 
-    currentQty = 1;
     currentFoodPrice = foodPriceElement.textContent;
   };
 
@@ -85,9 +91,9 @@ const renderForm = (e) => {
     const foodImgElement = document.querySelector(".order__image");
     const addImageToForm = (parent, foodName) => {
       const currentFoodImg = document.createElement("img");
-      const nameWithoutSpace = foodName.split(" ").join("");
-      currentFoodImg.src = `/img/order-imgs/${nameWithoutSpace}.jpg`;
-      currentFoodImg.alt = nameWithoutSpace;
+
+      currentFoodImg.src = `/img/order-imgs/${foodName}.jpg`;
+      currentFoodImg.alt = foodName;
       if (parent.firstChild) {
         parent.removeChild(parent.firstChild);
       }
@@ -117,8 +123,17 @@ const renderForm = (e) => {
       orderInfoContainer.style.height = "8rem";
     }
 
+    console.log(qtyToBeAdded[currentFoodName]);
     // quantity
-    displayedQuantity.textContent = currentQty;
+    if (
+      qtyToBeAdded[currentFoodName] === 1 &&
+      !orderRemoveButton.classList.contains("btn__inactive")
+    ) {
+      // if left btn doesn't have .btn__inactive, add it
+      orderRemoveButton.classList.add("btn__inactive");
+    }
+
+    displayedQuantity.textContent = qtyToBeAdded[currentFoodName];
 
     // price
     displayedPrice.textContent = `$ ${currentFoodPrice}`;
@@ -158,13 +173,25 @@ menuArea.addEventListener("click", (e) => {
 });
 
 orderAddButton.addEventListener("click", (e) => {
-  currentQty++;
-  updateQtyPrice(currentQty);
+  qtyToBeAdded[currentFoodName]++;
+  updateQtyPrice(qtyToBeAdded[currentFoodName]);
+
+  // if left btn has .btn__inactive, remove it
+  if (orderRemoveButton.classList.contains("btn__inactive")) {
+    orderRemoveButton.classList.remove("btn__inactive");
+  }
 });
 
 orderRemoveButton.addEventListener("click", (e) => {
-  if (currentQty <= 1) return;
+  if (qtyToBeAdded[currentFoodName] < 2) {
+    return;
+  }
 
-  currentQty--;
-  updateQtyPrice(currentQty);
+  qtyToBeAdded[currentFoodName]--;
+  updateQtyPrice(qtyToBeAdded[currentFoodName]);
+
+  // when qty gets decreased to 1, add btn__inactive
+  if (qtyToBeAdded[currentFoodName] === 1) {
+    orderRemoveButton.classList.add("btn__inactive");
+  }
 });
