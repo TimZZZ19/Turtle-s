@@ -31,6 +31,8 @@
   position: absolute;
   top: 0;
   right: 0;
+  background-color: #ccc;
+  opacity: 0.6;
 }
 
 .formbox__close_icon {
@@ -46,13 +48,14 @@
 
 /*Form area */
 .order__image {
-  background-color: brown;
   width: 100%;
-  height: 28rem;
+  max-height: 32rem;
   border-radius: 1.3rem 1.3rem 0 0;
 }
 
 .order__image img {
+  width: 100%;
+  border-radius: 1.3rem 1.3rem 0 0;
 }
 
 .order__info {
