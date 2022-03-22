@@ -1,7 +1,7 @@
 export default class OrderFormbox {
   static activate() {
     // const contentBox = document.getElementsByClassName("formbox__content");
-    const contentBox = document.querySelector(".formbox__content");
+    const contentBox = document.querySelector(".formbox");
 
     const form = `
         <div class="formbox__close_button">
@@ -14,7 +14,6 @@ export default class OrderFormbox {
             <span class="order__name"></span>
             <p class="order__description"></p>
           </div>
-          <div class="order__extra__info"></div>
           <div class="order__form__control">
             <div class="order__total" >
               <span class="order__quantity">
@@ -31,5 +30,13 @@ export default class OrderFormbox {
       `;
 
     contentBox.innerHTML = form;
+  }
+
+  static displayBasicForm() {
+    document.querySelector(".order__form").style.display = null;
+  }
+
+  static closeBasicForm() {
+    document.querySelector(".order__form").style.display = "none";
   }
 }

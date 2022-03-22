@@ -1,4 +1,4 @@
-import Lightbox from "./lightbox/Lightbox.js";
+import Lightbox from "./components/gallery_lightbox/Lightbox.js";
 
 Lightbox.activate();
 
