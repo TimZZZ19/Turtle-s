@@ -40,13 +40,9 @@ export default class SizeOptions {
                     </div>`;
 
     formControl.insertAdjacentHTML("beforebegin", element);
-
-    console.log(formControl);
   }
 
   static displayOptions(mediumPrice) {
-    var array = [1, 2, 3];
-
     document.querySelector(".order__size__options").style.display = null;
     if (!mediumPrice) {
       const mediumOption = document.querySelector("#medium").parentNode;

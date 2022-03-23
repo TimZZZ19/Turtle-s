@@ -4,7 +4,7 @@
 
 import OrderFormbox from "./components/menu_order_UI/OrderFormbox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
-import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
+import SizeOptions from "./components/menu_order_UI/sizeOptions/SizeOptions.js";
 
 OrderFormbox.activate();
 OrderBasicForm.activate();
@@ -35,7 +35,6 @@ for (const set of setsOfOptions) {
       .join("");
   sizeChoiceRecord[key] = "small";
 }
-console.log(sizeChoiceRecord);
 
 // Form related variables and elements.
 // currentFoodNameNoSpace is used as key or img src,
