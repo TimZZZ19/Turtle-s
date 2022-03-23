@@ -82,7 +82,7 @@
 
 .menu-item {
   margin: 3.2rem 0;
-  height: 12rem;
+  max-height: 25rem;
 }
 
 #salad .menu-item {
@@ -90,7 +90,7 @@
 }
 
 #pizza .menu-item {
-  margin: 1.2rem 0;
+  margin: 4.2rem 0;
 }
 
 .food__information {
