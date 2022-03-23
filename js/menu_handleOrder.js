@@ -17,19 +17,34 @@ const htmlTag = document.querySelector("html");
 const formContainer = document.querySelector(".formbox__container");
 const menuArea = document.querySelector(".menu");
 
-// record every food and its quantity
+// record everyfood's quantity
 const allFoodNames = document.getElementsByClassName("food-name");
-const qtyToBeAdded = {};
+const quantities = {};
 for (const name of allFoodNames) {
   const key = name.textContent.split(" ").join("");
-  qtyToBeAdded[key] = 1;
+  quantities[key] = 1;
 }
 
+// record choice of size
+const setsOfOptions = document.querySelectorAll(".size__options");
+const sizeChoiceRecord = {};
+for (const set of setsOfOptions) {
+  const key =
+    set.previousElementSibling.firstElementChild.firstElementChild.textContent
+      .split(" ")
+      .join("");
+  sizeChoiceRecord[key] = "small";
+}
+console.log(sizeChoiceRecord);
+
 // Form related variables and elements.
-// currentFoodName is used as key or img src,
-// orderName is what's rendered as the title of a form
-let currentFoodName, orderName, currentFoodDescription, currentFoodPrice;
-let smallPrice, mediumPrice, largePrice; // in case there are different sizes
+// currentFoodNameNoSpace is used as key or img src,
+// currentFoodNameOriginal is what's rendered as the title of a form
+let currentFoodNameNoSpace,
+  currentFoodNameOriginal,
+  currentFoodDescription,
+  currentFoodPrice;
+let currentSmallPrice, currentMediumPrice, currentLargePrice; // in case there are different sizes
 
 const displayedQuantity = document.querySelector(".order__actual__qty");
 const displayedPrice = document.querySelector(".order__price");
@@ -54,14 +69,14 @@ const displayBox = () => {
 
 const closeBox = () => {
   // first, set common variables to null
-  currentFoodName = null;
-  orderName = null;
+  currentFoodNameNoSpace = null;
+  currentFoodNameOriginal = null;
   currentFoodDescription = null;
   currentFoodPrice = null;
 
-  smallPrice = null;
-  mediumPrice = null;
-  largePrice = null;
+  currentSmallPrice = null;
+  currentMediumPrice = null;
+  currentLargePrice = null;
 
   const unfreeBackground = () => (htmlTag.style.overflowY = null);
   const currentSelectedItem = document.querySelector(".item__being__selected");
@@ -81,13 +96,13 @@ const renderForm = (e) => {
 
   const setDifferentPrices = () => {
     if (currentFoodPrice.includes("S")) {
-      smallPrice = currentFoodPrice.split(",")[0].slice(-5);
+      currentSmallPrice = currentFoodPrice.split(",")[0].slice(-5);
     }
     if (currentFoodPrice.includes("M")) {
-      mediumPrice = currentFoodPrice.split(",")[1].slice(-5);
+      currentMediumPrice = currentFoodPrice.split(",")[1].slice(-5);
     }
     if (currentFoodPrice.includes("L")) {
-      largePrice = currentFoodPrice.includes("M")
+      currentLargePrice = currentFoodPrice.includes("M")
         ? currentFoodPrice.split(",")[2].slice(-5)
         : currentFoodPrice.split(",")[1].slice(-5);
     }
@@ -106,15 +121,23 @@ const renderForm = (e) => {
     );
 
     // set menu item varialbes
-    orderName = foodNameElement.textContent;
-    currentFoodName = orderName.split(" ").join("");
+    currentFoodNameOriginal = foodNameElement.textContent;
+    currentFoodNameNoSpace = currentFoodNameOriginal.split(" ").join("");
     currentFoodDescription = foodDescriptionElement
       ? foodDescriptionElement.textContent
       : null; // some foods don't have description
 
     currentFoodPrice = foodPriceElement.textContent;
-    setDifferentPrices();
-    currentFoodPrice = smallPrice ? smallPrice : currentFoodPrice;
+    setDifferentPrices(); // if there are different prices
+
+    if (sizeChoiceRecord[currentFoodNameNoSpace] === "small")
+      currentFoodPrice = currentSmallPrice;
+
+    if (sizeChoiceRecord[currentFoodNameNoSpace] === "medium")
+      currentFoodPrice = currentMediumPrice;
+
+    if (sizeChoiceRecord[currentFoodNameNoSpace] === "large")
+      currentFoodPrice = currentLargePrice;
   };
 
   const renderFoodInfoOnForm = () => {
@@ -131,7 +154,7 @@ const renderForm = (e) => {
       parent.appendChild(currentFoodImg);
     };
 
-    const orderNameElement = document.querySelector(".order__name");
+    const currentFoodNameElement = document.querySelector(".order__name");
     const orderDescriptionElement = document.querySelector(
       ".order__description"
     );
@@ -140,10 +163,10 @@ const renderForm = (e) => {
     // adding information to the form
 
     // image
-    addImageToForm(foodImgElement, currentFoodName);
+    addImageToForm(foodImgElement, currentFoodNameNoSpace);
 
     // name
-    orderNameElement.textContent = orderName;
+    currentFoodNameElement.textContent = currentFoodNameOriginal;
 
     // description, some foods don't have description
     if (currentFoodDescription) {
@@ -156,20 +179,22 @@ const renderForm = (e) => {
 
     // quantity
     if (
-      qtyToBeAdded[currentFoodName] === 1 &&
+      quantities[currentFoodNameNoSpace] === 1 &&
       !orderRemoveButton.classList.contains("btn__inactive")
     ) {
       // if left btn doesn't have .btn__inactive, add it
       orderRemoveButton.classList.add("btn__inactive");
     }
 
-    displayedQuantity.textContent = qtyToBeAdded[currentFoodName];
+    displayedQuantity.textContent = quantities[currentFoodNameNoSpace];
 
     // price
-    displayedPrice.textContent = `$ ${currentFoodPrice}`;
+    displayedPrice.textContent = `$ ${(
+      currentFoodPrice * quantities[currentFoodNameNoSpace]
+    ).toFixed(2)}`;
 
     // if there are different size options available, display them
-    if (smallPrice) SizeOptions.displayOptions(mediumPrice);
+    if (currentSmallPrice) SizeOptions.displayOptions(currentMediumPrice);
   };
 
   // get info for the currently selected item
@@ -206,8 +231,8 @@ menuArea.addEventListener("click", (e) => {
 });
 
 orderAddButton.addEventListener("click", (e) => {
-  qtyToBeAdded[currentFoodName]++;
-  updateQtyPrice(qtyToBeAdded[currentFoodName]);
+  quantities[currentFoodNameNoSpace]++;
+  updateQtyPrice(quantities[currentFoodNameNoSpace]);
 
   // if left btn has .btn__inactive, remove it
   if (orderRemoveButton.classList.contains("btn__inactive")) {
@@ -216,15 +241,15 @@ orderAddButton.addEventListener("click", (e) => {
 });
 
 orderRemoveButton.addEventListener("click", (e) => {
-  if (qtyToBeAdded[currentFoodName] < 2) {
+  if (quantities[currentFoodNameNoSpace] < 2) {
     return;
   }
 
-  qtyToBeAdded[currentFoodName]--;
-  updateQtyPrice(qtyToBeAdded[currentFoodName]);
+  quantities[currentFoodNameNoSpace]--;
+  updateQtyPrice(quantities[currentFoodNameNoSpace]);
 
   // when qty gets decreased to 1, add btn__inactive
-  if (qtyToBeAdded[currentFoodName] === 1) {
+  if (quantities[currentFoodNameNoSpace] === 1) {
     orderRemoveButton.classList.add("btn__inactive");
   }
 });
@@ -232,24 +257,27 @@ orderRemoveButton.addEventListener("click", (e) => {
 optionsContainer.addEventListener("click", (e) => {
   if (e.target.matches(".options__container")) return;
 
-  const updateSizeOptionPrice = () => {
+  const updateDisplayedPrice = () => {
     displayedPrice.textContent = `$ ${(
-      currentFoodPrice * qtyToBeAdded[currentFoodName]
+      currentFoodPrice * quantities[currentFoodNameNoSpace]
     ).toFixed(2)}`;
   };
 
-  if (e.target.value === "small" && currentFoodPrice !== smallPrice) {
-    currentFoodPrice = smallPrice;
-    updateSizeOptionPrice();
+  if (e.target.value === "small" && currentFoodPrice !== currentSmallPrice) {
+    currentFoodPrice = currentSmallPrice;
+    sizeChoiceRecord[currentFoodNameNoSpace] = "small";
+    updateDisplayedPrice();
   }
 
-  if (e.target.value === "medium" && currentFoodPrice !== mediumPrice) {
-    currentFoodPrice = mediumPrice;
-    updateSizeOptionPrice();
+  if (e.target.value === "medium" && currentFoodPrice !== currentMediumPrice) {
+    currentFoodPrice = currentMediumPrice;
+    sizeChoiceRecord[currentFoodNameNoSpace] = "medium";
+    updateDisplayedPrice();
   }
 
-  if (e.target.value === "large" && currentFoodPrice !== largePrice) {
-    currentFoodPrice = largePrice;
-    updateSizeOptionPrice();
+  if (e.target.value === "large" && currentFoodPrice !== currentLargePrice) {
+    currentFoodPrice = currentLargePrice;
+    sizeChoiceRecord[currentFoodNameNoSpace] = "large";
+    updateDisplayedPrice();
   }
 });
