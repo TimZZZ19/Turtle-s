@@ -27,6 +27,11 @@
   .food-description {
     font-size: 2rem;
   }
+
+  .menu-item {
+    height: 18rem;
+  }
+
   .food-price {
     font-size: 2rem;
   }
