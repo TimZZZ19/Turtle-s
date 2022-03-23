@@ -4,7 +4,7 @@
 
 import OrderFormbox from "./components/menu_order_UI/OrderFormbox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
-import SizeOptions from "./components/menu_order_UI/SizeOptions.js";
+import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
 
 OrderFormbox.activate();
 OrderBasicForm.activate();
