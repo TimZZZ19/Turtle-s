@@ -4,7 +4,7 @@ export default class SizeOptions {
 
     const element = `<div class="order__size__options" style="display: none;">
                         <p>Choose your size : </p>
-                        <div class="options__container">
+                        <div class="size_options__container">
                           <div>
                             <input 
                               type="radio" 

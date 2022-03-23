@@ -88,7 +88,7 @@
   margin: 2rem 0 0 2rem;
 }
 
-.options__container {
+.size_options__container {
   display: flex;
   justify-content: space-around;
   border-bottom: 0.2rem solid #ccc;
