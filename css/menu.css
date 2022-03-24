@@ -139,12 +139,7 @@
   padding-left: 1.6rem;
 }
 
-.extra-dollar {
+.sub-item {
   display: flex;
   justify-content: space-between;
-}
-
-.extra-content {
-  width: 80rem;
-  margin: 0 auto;
 }
