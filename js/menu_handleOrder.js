@@ -1,24 +1,18 @@
-//************************** *//
-// Order form
-//************************** *//
-
 import OrderFormbox from "./components/menu_order_UI/OrderFormbox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
 import SizeOptions from "./components/menu_order_UI/sizeOptions/SizeOptions.js";
 
+// activate form and form components
 OrderFormbox.activate();
 OrderBasicForm.activate();
 SizeOptions.activate();
-// ***********************
-// SELECTED ELEMENTS
-// ***********************
 
-const htmlTag = document.querySelector("html"); // for freezing and unfreezing background
-const formContainer = document.querySelector(".formbox__container"); // for closing box
-const menuArea = document.querySelector(".menu"); // for opening box
+// ************************************************************
+// GLOBAL VARIABLES      GLOBAL VARIABLES     GLOBAL VARIABLES
+// ************************************************************
 
 // record everyfood's quantity
-const allFoodNames = document.getElementsByClassName("food-name");
+const allFoodNames = document.querySelectorAll(".food-name");
 const quantities = {};
 for (const name of allFoodNames) {
   const key = name.textContent.split(" ").join("");
@@ -36,9 +30,6 @@ for (const set of setsOfOptions) {
   sizeChoiceRecord[key] = "small";
 }
 
-// substitues
-const substitues = {};
-
 // Form related variables and elements.
 // currentFoodNameNoSpace is used as key or img src,
 // currentFoodNameOriginal is what's rendered as the title of a form
@@ -46,25 +37,25 @@ let currentFoodNameNoSpace,
   currentFoodNameOriginal,
   currentFoodDescription,
   currentFoodPrice;
-let currentSmallPrice, currentMediumPrice, currentLargePrice; // in case there are different sizes
 
-const displayedQuantity = document.querySelector(".order__actual__qty");
+// in case there are different sizes
+let currentSmallPrice, currentMediumPrice, currentLargePrice;
+
+// ***********************************************************
+// FUNCTIONS    FUNCTIONS   FUNCTIONS   FUNCTIONS   FUNCTIONS
+// ***********************************************************
+
+// freezing and unfreezing background
+const htmlTag = document.querySelector("html");
+const freeBackground = () => (htmlTag.style.overflowY = "hidden");
+const unfreeBackground = () => (htmlTag.style.overflowY = null);
+
+// for displaying price and quantity
 const displayedPrice = document.querySelector(".order__price");
+const displayedQuantity = document.querySelector(".order__actual__qty");
 
-// Buttons to hanlde the order
-const orderRemoveButton = document.querySelector("#order__qty__btn_left");
-const orderAddButton = document.querySelector("#order__qty__btn_right");
-const addToCart = document.querySelector(".Add__to__cart");
-
-const sizeOptionsContainer = document.querySelector(".size_options__container");
-
-// ***********************
-// FUNCTIONS
-// ***********************
-
+// functions
 const displayBox = () => {
-  const freeBackground = () => (htmlTag.style.overflowY = "hidden");
-
   freeBackground();
   OrderFormbox.displayOrderFormbox();
 };
@@ -79,8 +70,6 @@ const closeBox = () => {
   currentSmallPrice = null;
   currentMediumPrice = null;
   currentLargePrice = null;
-
-  const unfreeBackground = () => (htmlTag.style.overflowY = null);
 
   // second, the currently selected item is no more being selected
   const currentSelectedItem = document.querySelector(".item__being__selected");
@@ -193,6 +182,8 @@ const renderForm = (e) => {
   };
 
   const renderQuantity = () => {
+    console.log(orderRemoveButton);
+
     // quantity
     if (
       quantities[currentFoodNameNoSpace] === 1 &&
@@ -221,10 +212,20 @@ const updateQtyPrice = (qty) => {
   displayedPrice.textContent = newPrice;
 };
 
-// ***********************
-// EVENT LISTENERS
-// ***********************
+// *********************************************************
+// EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
+// *********************************************************
 
+// for closing and opening box
+const formContainer = document.querySelector(".formbox__container");
+const menuArea = document.querySelector(".menu");
+
+// Buttons to hanlde the order
+const orderRemoveButton = document.querySelector("#order__qty__btn_left");
+const orderAddButton = document.querySelector("#order__qty__btn_right");
+const sizeOptionsContainer = document.querySelector(".size_options__container");
+
+// event listeners
 formContainer.addEventListener("click", (e) => {
   if (
     e.target.matches(".formbox__container") ||
