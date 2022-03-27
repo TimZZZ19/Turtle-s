@@ -2,12 +2,14 @@ import OrderBox from "./components/menu_order_UI/OrderBox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
 import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
 import SubstituteOptions from "./components/menu_order_UI/options/substituteOptions.js";
+import AddExtra from "./components/menu_order_UI/options/AddExtra.js";
 
 // activate form and form components
 OrderBox.activate();
 OrderBasicForm.activate();
 SizeOptions.activate();
 SubstituteOptions.activate();
+AddExtra.activate();
 
 // ************************************************************
 // Collecting data
@@ -15,7 +17,7 @@ SubstituteOptions.activate();
 
 // Create kvps for every food item, these kvps will be used to store
 // user data and be constantly updated and accessed.
-const items = {};
+const items = [];
 const menuItems = document.querySelectorAll(".menu-item");
 menuItems.forEach((item) => {
   // get current item's key and create an object for it
@@ -61,18 +63,42 @@ menuItems.forEach((item) => {
       items[key].price = priceContent;
     }
   };
-  const addSubstitutes = () => {
-    const substituteElements = item.querySelectorAll(".substitute");
-    if (substituteElements.length !== 0) {
-      items[key].substitutes = [];
-      substituteElements.forEach((substitute) => {
-        const substituteObject = {
-          name: substitute.children[0].textContent.slice(5),
-          price: substitute.children[1].textContent,
-          isChecked: false,
-        };
-        items[key].substitutes.push(substituteObject);
-      });
+
+  // stuff can be substitute, extra
+  const addStuff = (stuff) => {
+    const stuffElementsInSubItem = item.querySelectorAll(
+      `.${stuff}__in__sub_item`
+    );
+    const stuffInGroupDescription = item
+      .closest(".menu-group")
+      .querySelectorAll(`.${stuff}__in__group_description`);
+
+    if (
+      stuffElementsInSubItem.length === 0 &&
+      stuffInGroupDescription.length === 0
+    )
+      return;
+
+    const propertyName = `${stuff}s`;
+    items[key][propertyName] = [];
+
+    fillInStuff(stuffElementsInSubItem);
+    fillInStuff(stuffInGroupDescription);
+
+    function fillInStuff(stuffElements) {
+      if (stuffElements.length !== 0) {
+        stuffElements.forEach((element) => {
+          const stuffNameElement = element.querySelector(`.${stuff}__name`);
+          const stuffPriceElement = element.querySelector(`.${stuff}__price`);
+
+          const stuffObject = {
+            name: stuffNameElement.textContent,
+            price: stuffPriceElement.textContent,
+            isChecked: false,
+          };
+          items[key][propertyName].push(stuffObject);
+        });
+      }
     }
   };
 
@@ -81,8 +107,11 @@ menuItems.forEach((item) => {
   addDescription();
   addQuantity();
   addPrice();
-  addSubstitutes();
+  addStuff("substitute");
+  addStuff("extra");
 });
+
+console.log(items);
 
 // ***********************************************************
 // Utitlity functions
@@ -110,6 +139,7 @@ const renderPrice = (currentItem) => {
   const currentSize = currentItem.size;
   const currentSizePrices = currentItem.sizePrices;
   const currentSubstitutes = currentItem.substitutes;
+  const currentExtras = currentItem.extras;
 
   const currentQuantity = currentItem.quantity;
   let currentPrice = currentItem.price;
@@ -130,6 +160,15 @@ const renderPrice = (currentItem) => {
     });
   }
 
+  // if the current item has extras, add extras prices to its price
+  if (currentExtras) {
+    currentExtras.forEach((extra) => {
+      if (extra.isChecked) {
+        currentPrice = +currentPrice + +extra.price;
+      }
+    });
+  }
+
   const priceToBeRendered = currentPrice * currentQuantity;
   OrderBasicForm.renderPrice(priceToBeRendered);
 };
@@ -138,13 +177,22 @@ const renderSizeOptions = (currentItem) => {
   const currentSize = currentItem.size;
   if (currentSize) {
     const mediumPrice = currentItem.sizePrices.medium;
-    SizeOptions.displayOptions(currentSize, mediumPrice);
+    SizeOptions.displaySizeOptions(currentSize, mediumPrice);
   }
 };
 
-const renderSubstituteOptions = (substitutes) => {
-  if (substitutes) {
-    SubstituteOptions.displayOptions(substitutes);
+// stuff can be substitutes, extras
+const renderStuff = (propertyName, stuff) => {
+  if (propertyName === "substitutes") {
+    if (stuff) {
+      SubstituteOptions.displaySubstituteOptions(stuff);
+    }
+  }
+
+  if (propertyName === "extras") {
+    if (stuff) {
+      AddExtra.displayExtraOptions(stuff);
+    }
   }
 };
 
@@ -168,7 +216,11 @@ const renderForm = (e) => {
 
   renderSizeOptions(currentItem);
 
-  renderSubstituteOptions(currentItem.substitutes);
+  // render substitutes
+  renderStuff("substitutes", currentItem.substitutes);
+
+  // render extra
+  renderStuff("extras", currentItem.extras);
 };
 
 const openBox = (e) => {
@@ -189,7 +241,8 @@ const closeBox = () => {
   OrderBox.closeOrderBox();
   OrderBasicForm.closeBasicForm();
   SizeOptions.closeOptions();
-  SubstituteOptions.closeOptions();
+  SubstituteOptions.closeSubstitueOptions();
+  AddExtra.closeExtraOptions();
 
   unfreezeBackground();
 };
@@ -210,6 +263,23 @@ const updateQuantity = (e, action) => {
   renderPrice(currentItem);
 };
 
+const updateStuff = (e, stuff) => {
+  if (!e.target.matches(`.${stuff}__input__checkbox`)) return;
+
+  const currentItem = getCurrentItem(e);
+  const propertyName = `${stuff}s`;
+  const currentStuffs = currentItem[propertyName];
+
+  currentStuffs.forEach((stf) => {
+    if (stf.name.split(" ").join("") == e.target.id) {
+      stf.isChecked = e.target.checked;
+    }
+  });
+
+  renderStuff(propertyName, currentItem[propertyName]);
+  renderPrice(currentItem);
+};
+
 // *********************************************************
 // EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
 // *********************************************************
@@ -224,6 +294,9 @@ const orderRemoveButton = document.querySelector("#order__qty__btn_left");
 const sizeOptionsContainer = document.querySelector(".size_options__container");
 const substituteOptionsContainer = document.querySelector(
   ".order__substitutes__container"
+);
+const extraOptionsContainer = document.querySelector(
+  ".order__extras__container"
 );
 const addToCart = document.querySelector(".Add__to__cart");
 
@@ -269,19 +342,12 @@ sizeOptionsContainer.addEventListener("click", (e) => {
 
 // choose substitute
 substituteOptionsContainer.addEventListener("click", (e) => {
-  if (!e.target.matches(".substitute__input__checkbox")) return;
+  updateStuff(e, "substitute");
+});
 
-  const currentItem = getCurrentItem(e);
-  const currentSubstitutes = currentItem.substitutes;
-
-  currentSubstitutes.forEach((substitute) => {
-    if (substitute.name.split(" ").join("") == e.target.id) {
-      substitute.isChecked = e.target.checked;
-    }
-  });
-
-  renderSubstituteOptions(currentItem.substitutes);
-  renderPrice(currentItem);
+// choose extra
+extraOptionsContainer.addEventListener("click", (e) => {
+  updateStuff(e, "extra");
 });
 
 // add to cart

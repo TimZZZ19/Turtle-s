@@ -39,7 +39,7 @@ export default class SizeOptions {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static displayOptions(currentSize, mediumPrice) {
+  static displaySizeOptions(currentSize, mediumPrice) {
     document.querySelector(".order__size__options").style.display = null;
     const mediumOption = document.querySelector("#medium");
 

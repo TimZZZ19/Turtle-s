@@ -3,9 +3,9 @@ export default class SubstituteOptions {
     const formControl = document.querySelector(".order__form__control");
 
     const element = `
-                    <div class="order__substitutes__container" style="display: none;">
+                    <div class="order__item__container order__substitutes__container" style="display: none;">
                       <p>Substitute options : </p>
-                      <div class="order__substitute__options">
+                      <div class="order__item__options order__substitute__options">
                       </div>
                     </div>
                     `;
@@ -13,7 +13,7 @@ export default class SubstituteOptions {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static displayOptions(substitutes) {
+  static displaySubstituteOptions(substitutes) {
     const substitutesContainer = document.querySelector(
       ".order__substitutes__container"
     );
@@ -38,8 +38,8 @@ export default class SubstituteOptions {
 
   static getSubstituteItem(name, price, isChecked) {
     const nameNoSpace = name.split(" ").join("");
-    return `<div class="substitute__item" >
-              <span class="substitute__input" >
+    return `<div class="order__item substitute" >
+              <span class="order__input substitute__input" >
                 <input 
                   type="checkbox" 
                   class='substitute__input__checkbox'
@@ -56,7 +56,7 @@ export default class SubstituteOptions {
           `;
   }
 
-  static closeOptions() {
+  static closeSubstitueOptions() {
     const substitutesContainer = document.querySelector(
       ".order__substitutes__container"
     );

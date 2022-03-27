@@ -108,35 +108,38 @@
 }
 
 /* SUBSTITUTE OPTIONS */
-.order__substitutes__container p {
+.order__item__container p {
   font-size: 2rem;
   margin: 2rem 0 0 2rem;
 }
 
-.order__substitute__options {
+.order__item__options {
   border-bottom: 0.2rem solid #ccc;
   padding: 2.5rem;
   font-size: 1.8rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  max-height: 11rem;
+  overflow-y: scroll;
 }
 
-.substitute__item {
+.order__item {
   display: flex;
   justify-content: space-between;
 }
 
-.substitute__input {
+.order__input {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.substitute__input input {
+.order__input input {
   cursor: pointer;
 }
 
+/* ORDER CONTROL */
 .order__total {
   font-size: 1.8rem;
   display: flex;
