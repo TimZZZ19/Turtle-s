@@ -1,215 +1,213 @@
-import OrderFormbox from "./components/menu_order_UI/OrderFormbox.js";
+import OrderBox from "./components/menu_order_UI/OrderBox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
-import SizeOptions from "./components/menu_order_UI/sizeOptions/SizeOptions.js";
+import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
+import SubstituteOptions from "./components/menu_order_UI/options/substituteOptions.js";
 
 // activate form and form components
-OrderFormbox.activate();
+OrderBox.activate();
 OrderBasicForm.activate();
 SizeOptions.activate();
+SubstituteOptions.activate();
 
 // ************************************************************
-// GLOBAL VARIABLES      GLOBAL VARIABLES     GLOBAL VARIABLES
+// Collecting data
 // ************************************************************
 
-// record everyfood's quantity
-const allFoodNames = document.querySelectorAll(".food-name");
-const quantities = {};
-for (const name of allFoodNames) {
-  const key = name.textContent.split(" ").join("");
-  quantities[key] = 1;
-}
+// Create kvps for every food item, these kvps will be used to store
+// user data and be constantly updated and accessed.
+const items = {};
+const menuItems = document.querySelectorAll(".menu-item");
+menuItems.forEach((item) => {
+  // get current item's key and create an object for it
+  const key = item.key;
+  items[key] = {};
 
-// record choice of size
-const setsOfOptions = document.querySelectorAll(".size__options");
-const sizeChoiceRecord = {};
-for (const set of setsOfOptions) {
-  const key =
-    set.previousElementSibling.firstElementChild.firstElementChild.textContent
-      .split(" ")
-      .join("");
-  sizeChoiceRecord[key] = "small";
-}
+  // methods to add properties to each item
+  const addFoodName = () => {
+    items[key].foodName = item.querySelector(".food-name").textContent;
+  };
+  const addDescription = () => {
+    const foodDescriptionElement = item.querySelector(".food-description");
+    items[key].description = foodDescriptionElement
+      ? foodDescriptionElement.textContent
+      : null;
+  };
+  const addQuantity = () => {
+    items[key].quantity = 0;
+  };
+  const addPrice = () => {
+    const priceElement = item.querySelector(".food-price");
+    const priceContent = priceElement.textContent;
+    if (priceElement.classList.contains("size__options")) {
+      const smallPrice = priceContent.split(",")[0].slice(-5);
+      const mediumPrice = priceContent.includes("M")
+        ? priceContent.split(",")[1].slice(-5)
+        : null;
+      const largePrice = priceContent.includes("M")
+        ? priceContent.split(",")[2].slice(-5)
+        : priceContent.split(",")[1].slice(-5);
 
-// Form related variables and elements.
-// currentFoodNameNoSpace is used as key or img src,
-// currentFoodNameOriginal is what's rendered as the title of a form
-let currentFoodNameNoSpace,
-  currentFoodNameOriginal,
-  currentFoodDescription,
-  currentFoodPrice;
+      // set small as default
+      items[key].price = smallPrice;
+      items[key].size = "small";
 
-// in case there are different sizes
-let currentSmallPrice, currentMediumPrice, currentLargePrice;
+      // since different sizes are available, set different prices
+      items[key].sizePrices = {
+        small: smallPrice,
+        medium: mediumPrice,
+        large: largePrice,
+      };
+    } else {
+      items[key].price = priceContent;
+    }
+  };
+  const addSubstitutes = () => {
+    const substituteElements = item.querySelectorAll(".substitute");
+    if (substituteElements.length !== 0) {
+      items[key].substitutes = [];
+      substituteElements.forEach((substitute) => {
+        const substituteObject = {
+          name: substitute.children[0].textContent.slice(5),
+          price: substitute.children[1].textContent,
+          isChecked: false,
+        };
+        items[key].substitutes.push(substituteObject);
+      });
+    }
+  };
+
+  // call above methods to add data
+  addFoodName();
+  addDescription();
+  addQuantity();
+  addPrice();
+  addSubstitutes();
+});
 
 // ***********************************************************
-// FUNCTIONS    FUNCTIONS   FUNCTIONS   FUNCTIONS   FUNCTIONS
+// Utitlity functions
 // ***********************************************************
 
-// freezing and unfreezing background
-const htmlTag = document.querySelector("html");
-const freeBackground = () => (htmlTag.style.overflowY = "hidden");
-const unfreeBackground = () => (htmlTag.style.overflowY = null);
-
-// for displaying price and quantity
-const displayedPrice = document.querySelector(".order__price");
-const displayedQuantity = document.querySelector(".order__actual__qty");
-
-// functions
-const displayBox = () => {
-  freeBackground();
-  OrderFormbox.displayOrderFormbox();
+// functions for rendering form components
+const renderImage = (foodName) => {
+  const currentFoodNameNoSpace = foodName.split(" ").join("");
+  OrderBasicForm.renderImage(currentFoodNameNoSpace);
 };
 
-const closeBox = () => {
-  // first, set common variables to null
-  currentFoodNameNoSpace = null;
-  currentFoodNameOriginal = null;
-  currentFoodDescription = null;
-  currentFoodPrice = null;
+const renderName = (foodName) => {
+  OrderBasicForm.renderName(foodName);
+};
 
-  currentSmallPrice = null;
-  currentMediumPrice = null;
-  currentLargePrice = null;
+const renderDescription = (description) => {
+  OrderBasicForm.renderDescription(description);
+};
 
-  // second, the currently selected item is no more being selected
-  const currentSelectedItem = document.querySelector(".item__being__selected");
-  currentSelectedItem.classList.remove("item__being__selected");
+const renderQuantity = (quantity) => {
+  OrderBasicForm.renderQuantity(quantity);
+};
 
-  // third, close the form and all the form components
-  OrderFormbox.closeOrderFormbox();
-  OrderBasicForm.closeBasicForm();
-  SizeOptions.closeOptions();
+const renderPrice = (currentItem) => {
+  const currentSize = currentItem.size;
+  const currentSizePrices = currentItem.sizePrices;
+  const currentSubstitutes = currentItem.substitutes;
 
-  // lastly, unfreeze the background
-  unfreeBackground();
+  const currentQuantity = currentItem.quantity;
+  let currentPrice = currentItem.price;
+
+  // if different sizes are present for this item,
+  // then set the current price to whatever the current size-price is
+  if (currentSize && currentSizePrices) {
+    const currentSizePrice = currentSizePrices[currentSize];
+    currentPrice = currentSizePrice;
+  }
+
+  // if the current item has substitutes, add substitutes prices to its price
+  if (currentSubstitutes) {
+    currentSubstitutes.forEach((substitute) => {
+      if (substitute.isChecked) {
+        currentPrice = +currentPrice + +substitute.price;
+      }
+    });
+  }
+
+  const priceToBeRendered = currentPrice * currentQuantity;
+  OrderBasicForm.renderPrice(priceToBeRendered);
+};
+
+const renderSizeOptions = (currentItem) => {
+  const currentSize = currentItem.size;
+  if (currentSize) {
+    const mediumPrice = currentItem.sizePrices.medium;
+    SizeOptions.displayOptions(currentSize, mediumPrice);
+  }
+};
+
+const renderSubstituteOptions = (substitutes) => {
+  if (substitutes) {
+    SubstituteOptions.displayOptions(substitutes);
+  }
 };
 
 const renderForm = (e) => {
-  OrderBasicForm.displayBasicForm(); // display the form
+  const currentKey = e.target.closest(".menu-item").key;
+  const currentItem = items[currentKey];
+  // assign the form the current key
+  // so the form can be identified and the current item can be accessed
+  // from the event listeners below
+  OrderBasicForm.displayBasicForm(currentKey);
 
-  const foodInformationElement = e.target.closest(".food__information");
-  foodInformationElement.classList.add("item__being__selected"); // mark the clicked item as selected
+  renderImage(currentItem.foodName);
 
-  const renderName = () => {
-    const foodNameElement = document.querySelector(
-      ".item__being__selected .food-name"
-    );
-    currentFoodNameOriginal = foodNameElement.textContent;
-    currentFoodNameNoSpace = currentFoodNameOriginal.split(" ").join("");
+  renderName(currentItem.foodName);
 
-    const currentFoodNameElement = document.querySelector(".order__name");
-    currentFoodNameElement.textContent = currentFoodNameOriginal;
-  };
+  renderDescription(currentItem.description);
 
-  const renderImage = () => {
-    // rendering information to the form
-    const foodImgElement = document.querySelector(".order__image");
+  renderQuantity(currentItem.quantity);
 
-    // image
-    const addImageToForm = (parent, foodName) => {
-      const currentFoodImg = document.createElement("img");
+  renderPrice(currentItem);
 
-      currentFoodImg.src = `/img/order-imgs/${foodName}.jpg`;
-      currentFoodImg.alt = foodName;
-      if (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-      }
-      parent.appendChild(currentFoodImg);
-    };
-    addImageToForm(foodImgElement, currentFoodNameNoSpace);
-  };
+  renderSizeOptions(currentItem);
 
-  const renderDescription = () => {
-    const foodDescriptionElement = document.querySelector(
-      ".item__being__selected .food-description"
-    );
-    const orderInfoContainer = document.querySelector(".order__info");
-
-    currentFoodDescription = foodDescriptionElement
-      ? foodDescriptionElement.textContent
-      : null; // some foods don't have description
-    const orderDescriptionElement = document.querySelector(
-      ".order__description"
-    );
-    if (currentFoodDescription) {
-      orderDescriptionElement.textContent = currentFoodDescription;
-      orderInfoContainer.style.height = "13rem";
-    } else {
-      orderDescriptionElement.textContent = "";
-      orderInfoContainer.style.height = "8rem";
-    }
-  };
-
-  const setDifferentPrices = () => {
-    if (currentFoodPrice.includes("S")) {
-      currentSmallPrice = currentFoodPrice.split(",")[0].slice(-5);
-    }
-    if (currentFoodPrice.includes("M")) {
-      currentMediumPrice = currentFoodPrice.split(",")[1].slice(-5);
-    }
-    if (currentFoodPrice.includes("L")) {
-      currentLargePrice = currentFoodPrice.includes("M")
-        ? currentFoodPrice.split(",")[2].slice(-5)
-        : currentFoodPrice.split(",")[1].slice(-5);
-    }
-
-    if (sizeChoiceRecord[currentFoodNameNoSpace] === "small")
-      currentFoodPrice = currentSmallPrice;
-
-    if (sizeChoiceRecord[currentFoodNameNoSpace] === "medium")
-      currentFoodPrice = currentMediumPrice;
-
-    if (sizeChoiceRecord[currentFoodNameNoSpace] === "large")
-      currentFoodPrice = currentLargePrice;
-  };
-
-  const renderPrice = () => {
-    const foodPriceElement = document.querySelector(
-      ".item__being__selected .food-price"
-    );
-
-    currentFoodPrice = foodPriceElement.textContent;
-
-    setDifferentPrices(); // if there are different prices
-    // selecting elements on the form
-    // price
-    displayedPrice.textContent = `$ ${(
-      currentFoodPrice * quantities[currentFoodNameNoSpace]
-    ).toFixed(2)}`;
-
-    // if there are different size options available, display them
-    if (currentSmallPrice) SizeOptions.displayOptions(currentMediumPrice);
-  };
-
-  const renderQuantity = () => {
-    console.log(orderRemoveButton);
-
-    // quantity
-    if (
-      quantities[currentFoodNameNoSpace] === 1 &&
-      !orderRemoveButton.classList.contains("btn__inactive")
-    ) {
-      // if left btn doesn't have .btn__inactive, add it
-      orderRemoveButton.classList.add("btn__inactive");
-    }
-    displayedQuantity.textContent = quantities[currentFoodNameNoSpace];
-  };
-
-  renderName();
-
-  renderImage();
-
-  renderDescription();
-
-  renderPrice();
-
-  renderQuantity();
+  renderSubstituteOptions(currentItem.substitutes);
 };
 
-const updateQtyPrice = (qty) => {
-  displayedQuantity.textContent = qty;
-  const newPrice = `$ ${(currentFoodPrice * qty).toFixed(2)} `;
-  displayedPrice.textContent = newPrice;
+const openBox = (e) => {
+  const freezeBackground = () => {
+    document.querySelector("html").style.overflowY = "hidden";
+  };
+
+  freezeBackground();
+  OrderBox.OpenOrderBox();
+  renderForm(e);
+};
+
+const closeBox = () => {
+  const unfreezeBackground = () => {
+    document.querySelector("html").style.overflowY = null;
+  };
+
+  OrderBox.closeOrderBox();
+  OrderBasicForm.closeBasicForm();
+  SizeOptions.closeOptions();
+  SubstituteOptions.closeOptions();
+
+  unfreezeBackground();
+};
+
+const getCurrentItem = (e) => {
+  const currentKey = e.target.closest(".order__form").key;
+  const currentItem = items[currentKey];
+  return currentItem;
+};
+
+const updateQuantity = (e, action) => {
+  const currentItem = getCurrentItem(e);
+
+  if (action === "add") currentItem.quantity++;
+  if (action === "remove" && currentItem.quantity > 0) currentItem.quantity--;
+
+  renderQuantity(currentItem.quantity);
+  renderPrice(currentItem);
 };
 
 // *********************************************************
@@ -217,79 +215,77 @@ const updateQtyPrice = (qty) => {
 // *********************************************************
 
 // for closing and opening box
-const formContainer = document.querySelector(".formbox__container");
 const menuArea = document.querySelector(".menu");
+const formContainer = document.querySelector(".formbox__container");
 
-// Buttons to hanlde the order
-const orderRemoveButton = document.querySelector("#order__qty__btn_left");
+// buttons to hanlde the order
 const orderAddButton = document.querySelector("#order__qty__btn_right");
+const orderRemoveButton = document.querySelector("#order__qty__btn_left");
 const sizeOptionsContainer = document.querySelector(".size_options__container");
+const substituteOptionsContainer = document.querySelector(
+  ".order__substitutes__container"
+);
+const addToCart = document.querySelector(".Add__to__cart");
 
-// event listeners
+// open orderbox
+menuArea.addEventListener("click", (e) => {
+  if (!e.target.matches(".order-button") && !e.target.matches(".food-name"))
+    return;
+
+  openBox(e);
+});
+
+// close orderbox
 formContainer.addEventListener("click", (e) => {
   if (
-    e.target.matches(".formbox__container") ||
-    e.target.matches(".formbox__close_icon")
-  ) {
-    closeBox();
-  }
-});
-
-menuArea.addEventListener("click", (e) => {
-  if (e.target.matches(".order-button") || e.target.matches(".food-name")) {
-    displayBox();
-    renderForm(e);
-  }
-});
-
-orderAddButton.addEventListener("click", (e) => {
-  quantities[currentFoodNameNoSpace]++;
-  updateQtyPrice(quantities[currentFoodNameNoSpace]);
-
-  // if left btn has .btn__inactive, remove it
-  if (orderRemoveButton.classList.contains("btn__inactive")) {
-    orderRemoveButton.classList.remove("btn__inactive");
-  }
-});
-
-orderRemoveButton.addEventListener("click", (e) => {
-  if (quantities[currentFoodNameNoSpace] < 2) {
+    !e.target.matches(".formbox__container") &&
+    !e.target.matches(".formbox__close_icon")
+  )
     return;
-  }
 
-  quantities[currentFoodNameNoSpace]--;
-  updateQtyPrice(quantities[currentFoodNameNoSpace]);
-
-  // when qty gets decreased to 1, add btn__inactive
-  if (quantities[currentFoodNameNoSpace] === 1) {
-    orderRemoveButton.classList.add("btn__inactive");
-  }
+  closeBox();
 });
 
+// add quantity
+orderAddButton.addEventListener("click", (e) => {
+  updateQuantity(e, "add");
+});
+
+// remove quantity
+orderRemoveButton.addEventListener("click", (e) => {
+  updateQuantity(e, "remove");
+});
+
+// choose size
 sizeOptionsContainer.addEventListener("click", (e) => {
-  if (e.target.matches(".size_options__container")) return;
+  if (!e.target.matches(".size__option__input")) return;
 
-  const updateDisplayedPrice = () => {
-    displayedPrice.textContent = `$ ${(
-      currentFoodPrice * quantities[currentFoodNameNoSpace]
-    ).toFixed(2)}`;
-  };
+  const currentItem = getCurrentItem(e);
+  currentItem.size = e.target.id;
 
-  if (e.target.value === "small" && currentFoodPrice !== currentSmallPrice) {
-    currentFoodPrice = currentSmallPrice;
-    sizeChoiceRecord[currentFoodNameNoSpace] = "small";
-    updateDisplayedPrice();
-  }
+  renderSizeOptions(currentItem);
+  renderPrice(currentItem);
+});
 
-  if (e.target.value === "medium" && currentFoodPrice !== currentMediumPrice) {
-    currentFoodPrice = currentMediumPrice;
-    sizeChoiceRecord[currentFoodNameNoSpace] = "medium";
-    updateDisplayedPrice();
-  }
+// choose substitute
+substituteOptionsContainer.addEventListener("click", (e) => {
+  if (!e.target.matches(".substitute__input__checkbox")) return;
 
-  if (e.target.value === "large" && currentFoodPrice !== currentLargePrice) {
-    currentFoodPrice = currentLargePrice;
-    sizeChoiceRecord[currentFoodNameNoSpace] = "large";
-    updateDisplayedPrice();
-  }
+  const currentItem = getCurrentItem(e);
+  const currentSubstitutes = currentItem.substitutes;
+
+  currentSubstitutes.forEach((substitute) => {
+    if (substitute.name.split(" ").join("") == e.target.id) {
+      substitute.isChecked = e.target.checked;
+    }
+  });
+
+  renderSubstituteOptions(currentItem.substitutes);
+  renderPrice(currentItem);
+});
+
+// add to cart
+addToCart.addEventListener("click", (e) => {
+  if (e.target.classList.contains("Add__to__cart_inactive")) return;
+  console.log("Add data to cart");
 });

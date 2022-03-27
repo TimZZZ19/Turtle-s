@@ -32,11 +32,66 @@ export default class OrderFormbox {
     contentBox.innerHTML = form;
   }
 
-  static displayBasicForm() {
-    document.querySelector(".order__form").style.display = null;
+  static displayBasicForm(key) {
+    const form = document.querySelector(".order__form");
+    form.style.display = null;
+    form.key = key; // store the current food's key here,
+    // so we can have access to the global data object in evenlisteners.
   }
 
   static closeBasicForm() {
-    document.querySelector(".order__form").style.display = "none";
+    const form = document.querySelector(".order__form");
+    form.style.display = "none";
+    form.key = null;
+  }
+
+  static renderImage(foodNameNoSpace) {
+    const currentFoodImg = document.createElement("img");
+    currentFoodImg.src = `/img/order-imgs/${foodNameNoSpace}.jpg`;
+    currentFoodImg.alt = foodNameNoSpace;
+
+    const foodImgElement = document.querySelector(".order__image");
+    if (foodImgElement.firstChild) {
+      foodImgElement.removeChild(foodImgElement.firstChild);
+    }
+    foodImgElement.appendChild(currentFoodImg);
+  }
+
+  static renderName(foodName) {
+    const currentFoodNameElement = document.querySelector(".order__name");
+    currentFoodNameElement.textContent = foodName;
+  }
+
+  static renderDescription(foodDescription) {
+    document.querySelector(".order__description").textContent = foodDescription
+      ? foodDescription
+      : "";
+  }
+
+  static renderQuantity(quantity) {
+    const orderRemoveButton = document.querySelector("#order__qty__btn_left");
+    const displayedQuantity = document.querySelector(".order__actual__qty");
+    const addToCart = document.querySelector(".Add__to__cart");
+
+    if (quantity <= 0) {
+      if (!orderRemoveButton.classList.contains("qty__btn_inactive"))
+        orderRemoveButton.classList.add("qty__btn_inactive");
+      if (!addToCart.classList.contains("Add__to__cart_inactive"))
+        addToCart.classList.add("Add__to__cart_inactive");
+    }
+
+    if (quantity > 0) {
+      if (orderRemoveButton.classList.contains("qty__btn_inactive"))
+        orderRemoveButton.classList.remove("qty__btn_inactive");
+      if (addToCart.classList.contains("Add__to__cart_inactive"))
+        addToCart.classList.remove("Add__to__cart_inactive");
+    }
+
+    displayedQuantity.textContent = quantity;
+  }
+
+  static renderPrice(price) {
+    const displayedPrice = document.querySelector(".order__price");
+    displayedPrice.textContent = `$ ${Number(price).toFixed(2)}`;
   }
 }

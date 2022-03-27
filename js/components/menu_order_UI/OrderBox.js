@@ -12,11 +12,11 @@ export default class OrderFormbox {
     );
   }
 
-  static displayOrderFormbox() {
+  static OpenOrderBox() {
     document.querySelector(".formbox__container").style.display = null;
   }
 
-  static closeOrderFormbox() {
+  static closeOrderBox() {
     document.querySelector(".formbox__container").style.display = "none";
   }
 }

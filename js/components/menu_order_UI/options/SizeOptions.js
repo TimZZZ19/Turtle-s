@@ -7,33 +7,30 @@ export default class SizeOptions {
                         <div class="size_options__container">
                           <div>
                             <input 
+                              class="size__option__input"
                               type="radio" 
                               id="small" 
                               name="size" 
-                              value="small" 
-                              checked
                             >
-                            <label for="small"> Small </label>
+                            <label> Small </label>
                           </div>
                           <div>
                             <input 
+                              class="size__option__input"
                               type="radio" 
                               id="medium" 
                               name="size" 
-                              value="medium" 
-                              
                             >
-                            <label for="medium"> Medium </label>
+                            <label> Medium </label>
                           </div>
                           <div>
                             <input 
+                              class="size__option__input"
                               type="radio" 
                               id="large" 
                               name="size" 
-                              value="large" 
-                              
                             >
-                            <label for="large"> Large </label>
+                            <label> Large </label>
                           </div>
 
                         </div>
@@ -42,11 +39,24 @@ export default class SizeOptions {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static displayOptions(mediumPrice) {
+  static displayOptions(currentSize, mediumPrice) {
     document.querySelector(".order__size__options").style.display = null;
+    const mediumOption = document.querySelector("#medium");
+
     if (!mediumPrice) {
-      const mediumOption = document.querySelector("#medium").parentNode;
-      mediumOption.style.display = "none";
+      mediumOption.parentNode.style.display = "none";
+    }
+
+    if (currentSize === "small") {
+      document.querySelector("#small").checked = true;
+    }
+
+    if (mediumPrice && currentSize === "medium") {
+      mediumOption.checked = true;
+    }
+
+    if (currentSize === "large") {
+      document.querySelector("#large").checked = true;
     }
   }
 

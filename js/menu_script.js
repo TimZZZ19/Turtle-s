@@ -1,3 +1,4 @@
+// Menu navbar indicator
 const menuNavbar = document.querySelector(".menu-navbar");
 let activeCategory = menuNavbar.firstElementChild;
 activeCategory.classList.add("menu-category-active");
@@ -48,7 +49,7 @@ menuGroups.forEach((menuGroup) => {
   indicatorGroupObserver.observe(menuGroup);
 });
 
-// Reveal menu groups
+// Reveal menu groups as scrolling
 const allGroups = document.querySelectorAll(".menu-group");
 const revealGroup = function (entries, observer) {
   const [entry] = entries;
@@ -63,4 +64,16 @@ const revealRroupObserver = new IntersectionObserver(revealGroup, {
 allGroups.forEach(function (group) {
   revealRroupObserver.observe(group);
   group.classList.add("menu-group-hidden");
+});
+
+// Assign unique id to each menu item
+const menuItems = document.querySelectorAll(".menu-item");
+const idSet = [];
+const getRandomNumber = () => Math.floor(1000 + Math.random() * 9000);
+menuItems.forEach((item) => {
+  let uniqueId = getRandomNumber();
+  while (idSet.includes(uniqueId)) uniqueId = getRandomNumber();
+
+  idSet.push(uniqueId);
+  item.key = uniqueId;
 });
