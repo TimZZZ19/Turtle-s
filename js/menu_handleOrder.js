@@ -1,18 +1,19 @@
 import OrderBox from "./components/menu_order_UI/OrderBox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
 import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
-import SubstituteOptions from "./components/menu_order_UI/options/substituteOptions.js";
-import AddExtra from "./components/menu_order_UI/options/AddExtra.js";
+import StuffOptions from "./components/menu_order_UI/options/StuffOptions.js";
 
 // activate form and form components
 OrderBox.activate();
 OrderBasicForm.activate();
 SizeOptions.activate();
-SubstituteOptions.activate();
-AddExtra.activate();
+
+// stuff can be substitute, extra
+StuffOptions.activate("substitute");
+StuffOptions.activate("extra");
 
 // ************************************************************
-// Collecting data
+// SCRAPING DATA FROM HTML
 // ************************************************************
 
 // Create kvps for every food item, these kvps will be used to store
@@ -64,7 +65,7 @@ menuItems.forEach((item) => {
     }
   };
 
-  // stuff can be substitute, extra
+  // stuff can be substitutes, extras
   const addStuff = (stuff) => {
     const stuffElementsInSubItem = item.querySelectorAll(
       `.${stuff}__in__sub_item`
@@ -102,7 +103,7 @@ menuItems.forEach((item) => {
     }
   };
 
-  // call above methods to add data
+  // call above methods to scrape data
   addFoodName();
   addDescription();
   addQuantity();
@@ -111,10 +112,8 @@ menuItems.forEach((item) => {
   addStuff("extra");
 });
 
-console.log(items);
-
 // ***********************************************************
-// Utitlity functions
+// UTILITY FUNCTIONS
 // ***********************************************************
 
 // functions for rendering form components
@@ -182,17 +181,9 @@ const renderSizeOptions = (currentItem) => {
 };
 
 // stuff can be substitutes, extras
-const renderStuff = (propertyName, stuff) => {
-  if (propertyName === "substitutes") {
-    if (stuff) {
-      SubstituteOptions.displaySubstituteOptions(stuff);
-    }
-  }
-
-  if (propertyName === "extras") {
-    if (stuff) {
-      AddExtra.displayExtraOptions(stuff);
-    }
+const renderStuff = (stuffType, stuff) => {
+  if (stuff) {
+    StuffOptions.displayOptions(stuffType, stuff);
   }
 };
 
@@ -217,10 +208,10 @@ const renderForm = (e) => {
   renderSizeOptions(currentItem);
 
   // render substitutes
-  renderStuff("substitutes", currentItem.substitutes);
+  renderStuff("substitute", currentItem.substitutes);
 
   // render extra
-  renderStuff("extras", currentItem.extras);
+  renderStuff("extra", currentItem.extras);
 };
 
 const openBox = (e) => {
@@ -241,8 +232,8 @@ const closeBox = () => {
   OrderBox.closeOrderBox();
   OrderBasicForm.closeBasicForm();
   SizeOptions.closeOptions();
-  SubstituteOptions.closeSubstitueOptions();
-  AddExtra.closeExtraOptions();
+  StuffOptions.closeOptions("substitute");
+  StuffOptions.closeOptions("extra");
 
   unfreezeBackground();
 };
@@ -276,7 +267,7 @@ const updateStuff = (e, stuff) => {
     }
   });
 
-  renderStuff(propertyName, currentItem[propertyName]);
+  renderStuff(stuff, currentItem[propertyName]);
   renderPrice(currentItem);
 };
 
