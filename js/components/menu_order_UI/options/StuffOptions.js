@@ -19,7 +19,7 @@ export default class StuffOptions {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static displayOptions(stuffType, stuff) {
+  static renderStuff(stuffType, stuff) {
     const container = document.querySelector(
       `.order__${stuffType}s__container`
     );
@@ -43,6 +43,14 @@ export default class StuffOptions {
   static getItem(name, price, isChecked, stuffType) {
     const nameNoSpace = name.split(" ").join("");
 
+    const capitlizeFirst = (str) => {
+      // checks for null, undefined and empty string
+      if (!str) return;
+      return str.match("^[a-z]")
+        ? str.charAt(0).toUpperCase() + str.substring(1)
+        : str;
+    };
+
     return `<div class="order__item ${stuffType}" >
               <span class="order__input ${stuffType}__input" >
                 <input 
@@ -52,7 +60,7 @@ export default class StuffOptions {
                   name=${nameNoSpace} 
                   ${isChecked && "checked"}
                 >
-                <label> ${name}  </label>
+                <label> ${capitlizeFirst(name)}  </label>
               </span>
               <span class="${stuffType}__price">
                 + $&nbsp;${price}

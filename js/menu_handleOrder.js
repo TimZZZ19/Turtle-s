@@ -38,28 +38,41 @@ menuItems.forEach((item) => {
   const addQuantity = () => {
     items[key].quantity = 0;
   };
+  const addSize = () => {
+    const priceElement = item.querySelector(".food-price");
+    const priceContent = priceElement.textContent;
+
+    if (!priceElement.classList.contains("size__options")) return;
+
+    const smallPrice = priceContent.split(",")[0].slice(-5);
+    const mediumPrice = priceContent.includes("M")
+      ? priceContent.split(",")[1].slice(-5)
+      : null;
+    const largePrice = priceContent.includes("M")
+      ? priceContent.split(",")[2].slice(-5)
+      : priceContent.split(",")[1].slice(-5);
+
+    // set sizeInfo property
+    items[key].sizeInfo = {};
+    // add chozenSize and set small as default
+    items[key].sizeInfo.chozenSize = "small";
+
+    // add sizePricePairs
+    items[key].sizeInfo.sizePricePairs = {
+      small: smallPrice,
+      medium: mediumPrice,
+      large: largePrice,
+    };
+  };
   const addPrice = () => {
     const priceElement = item.querySelector(".food-price");
     const priceContent = priceElement.textContent;
-    if (priceElement.classList.contains("size__options")) {
-      const smallPrice = priceContent.split(",")[0].slice(-5);
-      const mediumPrice = priceContent.includes("M")
-        ? priceContent.split(",")[1].slice(-5)
-        : null;
-      const largePrice = priceContent.includes("M")
-        ? priceContent.split(",")[2].slice(-5)
-        : priceContent.split(",")[1].slice(-5);
+    const sizeInfo = items[key].sizeInfo;
 
-      // set small as default
-      items[key].price = smallPrice;
-      items[key].size = "small";
-
-      // since different sizes are available, set different prices
-      items[key].sizePrices = {
-        small: smallPrice,
-        medium: mediumPrice,
-        large: largePrice,
-      };
+    if (sizeInfo) {
+      const sizeKey = sizeInfo.chozenSize;
+      const kvp = sizeInfo.sizePricePairs;
+      items[key].price = kvp[sizeKey];
     } else {
       items[key].price = priceContent;
     }
@@ -107,46 +120,64 @@ menuItems.forEach((item) => {
   addFoodName();
   addDescription();
   addQuantity();
+  addSize();
   addPrice();
   addStuff("substitute");
   addStuff("extra");
 });
+
+console.log(items);
 
 // ***********************************************************
 // UTILITY FUNCTIONS
 // ***********************************************************
 
 // functions for rendering form components
-const renderImage = (foodName) => {
-  const currentFoodNameNoSpace = foodName.split(" ").join("");
-  OrderBasicForm.renderImage(currentFoodNameNoSpace);
+const processImage = (foodName) => {
+  const foodNameNoSpace = foodName.split(" ").join("");
+
+  const currentFoodImg = document.createElement("img");
+  currentFoodImg.src = `/img/order-imgs/${foodNameNoSpace}.jpg`;
+  currentFoodImg.alt = foodNameNoSpace;
+
+  OrderBasicForm.renderImage(currentFoodImg);
 };
 
-const renderName = (foodName) => {
+const processName = (foodName) => {
   OrderBasicForm.renderName(foodName);
 };
 
-const renderDescription = (description) => {
+const processDescription = (description) => {
   OrderBasicForm.renderDescription(description);
 };
 
-const renderQuantity = (quantity) => {
+const processQuantity = (quantity) => {
   OrderBasicForm.renderQuantity(quantity);
 };
 
-const renderPrice = (currentItem) => {
-  const currentSize = currentItem.size;
-  const currentSizePrices = currentItem.sizePrices;
+const processSize = (sizeInfo) => {
+  if (!sizeInfo) return;
+
+  const currentSize = sizeInfo.chozenSize;
+  const mediumPrice = sizeInfo.sizePricePairs["meidum"];
+  SizeOptions.renderSize(currentSize, mediumPrice);
+};
+
+const processPrice = (currentItem) => {
+  const currentQuantity = currentItem.quantity;
+
+  const sizeInfo = currentItem.sizeInfo;
+
   const currentSubstitutes = currentItem.substitutes;
   const currentExtras = currentItem.extras;
 
-  const currentQuantity = currentItem.quantity;
   let currentPrice = currentItem.price;
 
   // if different sizes are present for this item,
   // then set the current price to whatever the current size-price is
-  if (currentSize && currentSizePrices) {
-    const currentSizePrice = currentSizePrices[currentSize];
+  if (sizeInfo) {
+    const currentSize = sizeInfo.chozenSize;
+    const currentSizePrice = sizeInfo.sizePricePairs[currentSize];
     currentPrice = currentSizePrice;
   }
 
@@ -172,22 +203,14 @@ const renderPrice = (currentItem) => {
   OrderBasicForm.renderPrice(priceToBeRendered);
 };
 
-const renderSizeOptions = (currentItem) => {
-  const currentSize = currentItem.size;
-  if (currentSize) {
-    const mediumPrice = currentItem.sizePrices.medium;
-    SizeOptions.displaySizeOptions(currentSize, mediumPrice);
-  }
-};
-
 // stuff can be substitutes, extras
-const renderStuff = (stuffType, stuff) => {
+const processStuff = (stuffType, stuff) => {
   if (stuff) {
-    StuffOptions.displayOptions(stuffType, stuff);
+    StuffOptions.renderStuff(stuffType, stuff);
   }
 };
 
-const renderForm = (e) => {
+const displayComponents = (e) => {
   const currentKey = e.target.closest(".menu-item").key;
   const currentItem = items[currentKey];
   // assign the form the current key
@@ -195,23 +218,23 @@ const renderForm = (e) => {
   // from the event listeners below
   OrderBasicForm.displayBasicForm(currentKey);
 
-  renderImage(currentItem.foodName);
+  processImage(currentItem.foodName);
 
-  renderName(currentItem.foodName);
+  processName(currentItem.foodName);
 
-  renderDescription(currentItem.description);
+  processDescription(currentItem.description);
 
-  renderQuantity(currentItem.quantity);
+  processQuantity(currentItem.quantity);
 
-  renderPrice(currentItem);
+  processSize(currentItem.sizeInfo);
 
-  renderSizeOptions(currentItem);
+  processPrice(currentItem);
 
   // render substitutes
-  renderStuff("substitute", currentItem.substitutes);
+  processStuff("substitute", currentItem.substitutes);
 
   // render extra
-  renderStuff("extra", currentItem.extras);
+  processStuff("extra", currentItem.extras);
 };
 
 const openBox = (e) => {
@@ -221,7 +244,7 @@ const openBox = (e) => {
 
   freezeBackground();
   OrderBox.OpenOrderBox();
-  renderForm(e);
+  displayComponents(e);
 };
 
 const closeBox = () => {
@@ -250,8 +273,8 @@ const updateQuantity = (e, action) => {
   if (action === "add") currentItem.quantity++;
   if (action === "remove" && currentItem.quantity > 0) currentItem.quantity--;
 
-  renderQuantity(currentItem.quantity);
-  renderPrice(currentItem);
+  processQuantity(currentItem.quantity);
+  processPrice(currentItem);
 };
 
 const updateStuff = (e, stuff) => {
@@ -267,13 +290,15 @@ const updateStuff = (e, stuff) => {
     }
   });
 
-  renderStuff(stuff, currentItem[propertyName]);
-  renderPrice(currentItem);
+  processStuff(stuff, currentItem[propertyName]);
+  processPrice(currentItem);
 };
 
 // *********************************************************
 // EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
 // *********************************************************
+// The level of event listeners is responsible for taking user's
+// input data and updating the items object accordingly
 
 // for closing and opening box
 const menuArea = document.querySelector(".menu");
@@ -325,10 +350,10 @@ sizeOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(".size__option__input")) return;
 
   const currentItem = getCurrentItem(e);
-  currentItem.size = e.target.id;
+  currentItem.sizeInfo.chozenSize = e.target.id;
 
-  renderSizeOptions(currentItem);
-  renderPrice(currentItem);
+  processSize(currentItem.sizeInfo);
+  processPrice(currentItem);
 });
 
 // choose substitute

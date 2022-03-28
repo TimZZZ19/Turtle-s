@@ -45,16 +45,12 @@ export default class OrderFormbox {
     form.key = null;
   }
 
-  static renderImage(foodNameNoSpace) {
-    const currentFoodImg = document.createElement("img");
-    currentFoodImg.src = `/img/order-imgs/${foodNameNoSpace}.jpg`;
-    currentFoodImg.alt = foodNameNoSpace;
-
+  static renderImage(imgElement) {
     const foodImgElement = document.querySelector(".order__image");
     if (foodImgElement.firstChild) {
       foodImgElement.removeChild(foodImgElement.firstChild);
     }
-    foodImgElement.appendChild(currentFoodImg);
+    foodImgElement.appendChild(imgElement);
   }
 
   static renderName(foodName) {
