@@ -23,20 +23,21 @@ export default class StuffOptions {
     const container = document.querySelector(
       `.order__${stuffType}s__container`
     );
+    container.style.display = null;
+
     const options = document.querySelector(`.order__${stuffType}__options`);
 
-    container.style.display = null;
     while (options.firstChild) options.removeChild(options.firstChild);
 
     stuff.forEach((item) => {
-      const object = this.getItem(
+      const itemToBeRendered = this.getItem(
         item.name,
         item.price,
         item.isChecked,
         stuffType
       );
 
-      options.insertAdjacentHTML("beforeend", object);
+      options.insertAdjacentHTML("beforeend", itemToBeRendered);
     });
   }
 
@@ -73,10 +74,10 @@ export default class StuffOptions {
     const container = document.querySelector(
       `.order__${stuffType}s__container`
     );
-    const options = document.querySelector(`.order__${stuffType}__options`);
 
     container.style.display = "none";
 
+    const options = document.querySelector(`.order__${stuffType}__options`);
     while (options.firstChild) options.removeChild(options.firstChild);
   }
 }

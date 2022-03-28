@@ -1,6 +1,7 @@
 import OrderBox from "./components/menu_order_UI/OrderBox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
 import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
+import Dressings from "./components/menu_order_UI/options/Dressings.js";
 import StuffOptions from "./components/menu_order_UI/options/StuffOptions.js";
 
 // activate form and form components
@@ -9,6 +10,7 @@ OrderBasicForm.activate();
 SizeOptions.activate();
 
 // stuff can be substitute, extra
+Dressings.activate();
 StuffOptions.activate("substitute");
 StuffOptions.activate("extra");
 
@@ -77,6 +79,21 @@ menuItems.forEach((item) => {
       items[key].price = priceContent;
     }
   };
+  const addDressings = () => {
+    const dressingElements = item
+      .closest(".menu-group")
+      .querySelectorAll(".dressing");
+
+    if (dressingElements.length === 0) return;
+
+    items[key]["dressingInfo"] = {};
+    items[key]["dressingInfo"].chozenDressing = null;
+    items[key]["dressingInfo"].dressingOptions = [];
+
+    dressingElements.forEach((element) => {
+      items[key]["dressingInfo"].dressingOptions.push(element.textContent);
+    });
+  };
 
   // stuff can be substitutes, extras
   const addStuff = (stuff) => {
@@ -122,15 +139,22 @@ menuItems.forEach((item) => {
   addQuantity();
   addSize();
   addPrice();
+  addDressings();
   addStuff("substitute");
   addStuff("extra");
 });
 
-console.log(items);
-
 // ***********************************************************
 // UTILITY FUNCTIONS
 // ***********************************************************
+//capitalize the first letter
+const capitlizeFirst = (str) => {
+  // checks for null, undefined and empty string
+  if (!str) return;
+  return str.match("^[a-z]")
+    ? str.charAt(0).toUpperCase() + str.substring(1)
+    : str;
+};
 
 // functions for rendering form components
 const processImage = (foodName) => {
@@ -203,11 +227,27 @@ const processPrice = (currentItem) => {
   OrderBasicForm.renderPrice(priceToBeRendered);
 };
 
+const processDressings = (dressingInfo) => {
+  if (!dressingInfo) return;
+
+  const capitalizedDressingChoice = capitlizeFirst(dressingInfo.chozenDressing);
+  const capitalizedDressingOptions = [];
+
+  dressingInfo.dressingOptions.map((dressing) =>
+    capitalizedDressingOptions.push(capitlizeFirst(dressing))
+  );
+
+  Dressings.renderDressings(
+    capitalizedDressingChoice,
+    capitalizedDressingOptions
+  );
+};
+
 // stuff can be substitutes, extras
 const processStuff = (stuffType, stuff) => {
-  if (stuff) {
-    StuffOptions.renderStuff(stuffType, stuff);
-  }
+  if (!stuff) return;
+
+  StuffOptions.renderStuff(stuffType, stuff);
 };
 
 const displayComponents = (e) => {
@@ -230,10 +270,13 @@ const displayComponents = (e) => {
 
   processPrice(currentItem);
 
-  // render substitutes
+  // process dressings
+  processDressings(currentItem.dressingInfo);
+
+  // process substitutes
   processStuff("substitute", currentItem.substitutes);
 
-  // render extra
+  // process extra
   processStuff("extra", currentItem.extras);
 };
 
@@ -255,6 +298,7 @@ const closeBox = () => {
   OrderBox.closeOrderBox();
   OrderBasicForm.closeBasicForm();
   SizeOptions.closeOptions();
+  Dressings.closeOptions();
   StuffOptions.closeOptions("substitute");
   StuffOptions.closeOptions("extra");
 
@@ -314,6 +358,7 @@ const substituteOptionsContainer = document.querySelector(
 const extraOptionsContainer = document.querySelector(
   ".order__extras__container"
 );
+const dressingSelectionElement = document.querySelector(".dressing__options");
 const addToCart = document.querySelector(".Add__to__cart");
 
 // open orderbox
@@ -364,6 +409,15 @@ substituteOptionsContainer.addEventListener("click", (e) => {
 // choose extra
 extraOptionsContainer.addEventListener("click", (e) => {
   updateStuff(e, "extra");
+});
+
+// pick dressing
+dressingSelectionElement.addEventListener("click", (e) => {
+  const currentItem = getCurrentItem(e);
+  if (e.target.value === currentItem.dressingInfo.chozenDressing) return;
+
+  currentItem.dressingInfo.chozenDressing = e.target.value;
+  processDressings(currentItem.dressingInfo);
 });
 
 // add to cart
