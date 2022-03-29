@@ -1,17 +1,17 @@
-export default class StuffOptions {
-  static activate(stuff) {
+export default class SubItems {
+  static activate(subitem) {
     const formControl = document.querySelector(".order__form__control");
 
     let title = "No Title (by default)";
 
-    if (stuff === "substitute") title = "Choose your substitutes";
+    if (subitem === "substitute") title = "Choose your substitutes";
 
-    if (stuff === "extra") title = "Add extra";
+    if (subitem === "extra") title = "Add extra";
 
     const element = `
-                    <div class="order__item__container order__${stuff}s__container" style="display: none;">
+                    <div class="order__item__container order__${subitem}s__container" style="display: none;">
                       <p>${title} : </p>
-                      <div class="order__item__options order__${stuff}__options">
+                      <div class="order__item__options order__${subitem}__options">
                       </div>
                     </div>
                     `;
@@ -19,29 +19,29 @@ export default class StuffOptions {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static renderStuff(stuffType, stuff) {
+  static renderSubItems(subItemType, subItems) {
     const container = document.querySelector(
-      `.order__${stuffType}s__container`
+      `.order__${subItemType}s__container`
     );
     container.style.display = null;
 
-    const options = document.querySelector(`.order__${stuffType}__options`);
+    const options = document.querySelector(`.order__${subItemType}__options`);
 
     while (options.firstChild) options.removeChild(options.firstChild);
 
-    stuff.forEach((item) => {
+    subItems.forEach((item) => {
       const itemToBeRendered = this.getItem(
         item.name,
         item.price,
         item.isChecked,
-        stuffType
+        subItemType
       );
 
       options.insertAdjacentHTML("beforeend", itemToBeRendered);
     });
   }
 
-  static getItem(name, price, isChecked, stuffType) {
+  static getItem(name, price, isChecked, subItemType) {
     const nameNoSpace = name.split(" ").join("");
 
     const capitlizeFirst = (str) => {
@@ -52,32 +52,32 @@ export default class StuffOptions {
         : str;
     };
 
-    return `<div class="order__item ${stuffType}" >
-              <span class="order__input ${stuffType}__input" >
+    return `<div class="order__item ${subItemType}" >
+              <span class="order__input ${subItemType}__input" >
                 <input 
                   type="checkbox" 
-                  class='${stuffType}__input__checkbox'
+                  class='${subItemType}__input__checkbox'
                   id=${nameNoSpace} 
                   name=${nameNoSpace} 
                   ${isChecked && "checked"}
                 >
                 <label> ${capitlizeFirst(name)}  </label>
               </span>
-              <span class="${stuffType}__price">
+              <span class="${subItemType}__price">
                 + $&nbsp;${price}
               </span> 
             </div>
           `;
   }
 
-  static closeOptions(stuffType) {
+  static closeOptions(subItemType) {
     const container = document.querySelector(
-      `.order__${stuffType}s__container`
+      `.order__${subItemType}s__container`
     );
 
     container.style.display = "none";
 
-    const options = document.querySelector(`.order__${stuffType}__options`);
+    const options = document.querySelector(`.order__${subItemType}__options`);
     while (options.firstChild) options.removeChild(options.firstChild);
   }
 }

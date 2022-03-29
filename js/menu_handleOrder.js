@@ -2,17 +2,18 @@ import OrderBox from "./components/menu_order_UI/OrderBox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
 import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
 import Dressings from "./components/menu_order_UI/options/Dressings.js";
-import StuffOptions from "./components/menu_order_UI/options/StuffOptions.js";
+import SubItems from "./components/menu_order_UI/options/SubItems.js";
 
 // activate form and form components
 OrderBox.activate();
 OrderBasicForm.activate();
 SizeOptions.activate();
 
-// stuff can be substitute, extra
 Dressings.activate();
-StuffOptions.activate("substitute");
-StuffOptions.activate("extra");
+
+// Subitem can be substitute, extra
+SubItems.activate("substitute");
+SubItems.activate("extra");
 
 // ************************************************************
 // SCRAPING DATA FROM HTML
@@ -95,39 +96,36 @@ menuItems.forEach((item) => {
     });
   };
 
-  // stuff can be substitutes, extras
-  const addStuff = (stuff) => {
-    const stuffElementsInSubItem = item.querySelectorAll(
-      `.${stuff}__in__sub_item`
-    );
-    const stuffInGroupDescription = item
+  // Subitems can be substitutes, extras
+  const addSubItems = (subItem) => {
+    const subItemElements = item.querySelectorAll(`.${subItem}__in__sub_item`);
+    const subItemGroupDescription = item
       .closest(".menu-group")
-      .querySelectorAll(`.${stuff}__in__group_description`);
+      .querySelectorAll(`.${subItem}__in__group_description`);
 
-    if (
-      stuffElementsInSubItem.length === 0 &&
-      stuffInGroupDescription.length === 0
-    )
+    if (subItemElements.length === 0 && subItemGroupDescription.length === 0)
       return;
 
-    const propertyName = `${stuff}s`;
+    const propertyName = `${subItem}s`;
     items[key][propertyName] = [];
 
-    fillInStuff(stuffElementsInSubItem);
-    fillInStuff(stuffInGroupDescription);
+    fillInSubItems(subItemElements);
+    fillInSubItems(subItemGroupDescription);
 
-    function fillInStuff(stuffElements) {
-      if (stuffElements.length !== 0) {
-        stuffElements.forEach((element) => {
-          const stuffNameElement = element.querySelector(`.${stuff}__name`);
-          const stuffPriceElement = element.querySelector(`.${stuff}__price`);
+    function fillInSubItems(subItemElements) {
+      if (subItemElements.length !== 0) {
+        subItemElements.forEach((element) => {
+          const subItemNameElement = element.querySelector(`.${subItem}__name`);
+          const subItemPriceElement = element.querySelector(
+            `.${subItem}__price`
+          );
 
-          const stuffObject = {
-            name: stuffNameElement.textContent,
-            price: stuffPriceElement.textContent,
+          const subItemObject = {
+            name: subItemNameElement.textContent,
+            price: subItemPriceElement.textContent,
             isChecked: false,
           };
-          items[key][propertyName].push(stuffObject);
+          items[key][propertyName].push(subItemObject);
         });
       }
     }
@@ -144,8 +142,8 @@ menuItems.forEach((item) => {
   addSize();
   addPrice();
   addDressings();
-  addStuff("substitute");
-  addStuff("extra");
+  addSubItems("substitute");
+  addSubItems("extra");
   addOrderBtn();
 });
 
@@ -250,11 +248,11 @@ const processDressings = (dressingInfo) => {
   );
 };
 
-// stuff can be substitutes, extras
-const processStuff = (stuffType, stuff) => {
-  if (!stuff) return;
+// SubItems can be substitutes, extras
+const processSubItems = (subItemType, subItems) => {
+  if (!subItems) return;
 
-  StuffOptions.renderStuff(stuffType, stuff);
+  SubItems.renderSubItems(subItemType, subItems);
 };
 
 const displayComponents = (e) => {
@@ -281,10 +279,10 @@ const displayComponents = (e) => {
   processDressings(currentItem.dressingInfo);
 
   // process substitutes
-  processStuff("substitute", currentItem.substitutes);
+  processSubItems("substitute", currentItem.substitutes);
 
   // process extra
-  processStuff("extra", currentItem.extras);
+  processSubItems("extra", currentItem.extras);
 };
 
 const openBox = (e) => {
@@ -306,8 +304,8 @@ const closeBox = () => {
   OrderBasicForm.closeBasicForm();
   SizeOptions.closeOptions();
   Dressings.closeOptions();
-  StuffOptions.closeOptions("substitute");
-  StuffOptions.closeOptions("extra");
+  SubItems.closeOptions("substitute");
+  SubItems.closeOptions("extra");
 
   unfreezeBackground();
 };
@@ -328,20 +326,20 @@ const updateQuantity = (e, action) => {
   processPrice(currentItem);
 };
 
-const updateStuff = (e, stuff) => {
-  if (!e.target.matches(`.${stuff}__input__checkbox`)) return;
+const updateSubItems = (e, subItemType) => {
+  if (!e.target.matches(`.${subItemType}__input__checkbox`)) return;
 
   const currentItem = getCurrentItem(e);
-  const propertyName = `${stuff}s`;
-  const currentStuffs = currentItem[propertyName];
+  const propertyName = `${subItemType}s`;
+  const currentSubItems = currentItem[propertyName];
 
-  currentStuffs.forEach((stf) => {
+  currentSubItems.forEach((stf) => {
     if (stf.name.split(" ").join("") == e.target.id) {
       stf.isChecked = e.target.checked;
     }
   });
 
-  processStuff(stuff, currentItem[propertyName]);
+  processSubItems(subItemType, currentItem[propertyName]);
   processPrice(currentItem);
 };
 
@@ -410,12 +408,12 @@ sizeOptionsContainer.addEventListener("click", (e) => {
 
 // choose substitute
 substituteOptionsContainer.addEventListener("click", (e) => {
-  updateStuff(e, "substitute");
+  updateSubItems(e, "substitute");
 });
 
 // choose extra
 extraOptionsContainer.addEventListener("click", (e) => {
-  updateStuff(e, "extra");
+  updateSubItems(e, "extra");
 });
 
 // pick dressing
