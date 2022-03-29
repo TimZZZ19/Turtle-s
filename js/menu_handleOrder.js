@@ -133,6 +133,10 @@ menuItems.forEach((item) => {
     }
   };
 
+  const addOrderBtn = () => {
+    items[key].orderBtn = item.querySelector(".order-button");
+  };
+
   // call above methods to scrape data
   addFoodName();
   addDescription();
@@ -142,6 +146,7 @@ menuItems.forEach((item) => {
   addDressings();
   addStuff("substitute");
   addStuff("extra");
+  addOrderBtn();
 });
 
 // ***********************************************************
@@ -175,8 +180,10 @@ const processDescription = (description) => {
   OrderBasicForm.renderDescription(description);
 };
 
-const processQuantity = (quantity) => {
-  OrderBasicForm.renderQuantity(quantity);
+const processQuantity = (currentItem) => {
+  const quantity = currentItem.quantity;
+  const orderBtn = currentItem.orderBtn;
+  OrderBasicForm.renderQuantity(quantity, orderBtn);
 };
 
 const processSize = (sizeInfo) => {
@@ -264,7 +271,7 @@ const displayComponents = (e) => {
 
   processDescription(currentItem.description);
 
-  processQuantity(currentItem.quantity);
+  processQuantity(currentItem);
 
   processSize(currentItem.sizeInfo);
 
@@ -317,7 +324,7 @@ const updateQuantity = (e, action) => {
   if (action === "add") currentItem.quantity++;
   if (action === "remove" && currentItem.quantity > 0) currentItem.quantity--;
 
-  processQuantity(currentItem.quantity);
+  processQuantity(currentItem);
   processPrice(currentItem);
 };
 

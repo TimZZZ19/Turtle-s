@@ -18,13 +18,15 @@
   background-color: white;
 
   width: 38rem;
-  max-height: 100rem;
+  max-height: 70rem;
   border-radius: 1.3rem;
 
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  overflow-y: auto;
 }
 
 .formbox__close_button {
