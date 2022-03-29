@@ -109,8 +109,8 @@
   cursor: pointer;
 }
 
-/* DRESSING OPTIONS */
-.dressings__container {
+/* CONSTITUTE OPTIONS */
+.constitutes__container {
   padding: 2.5rem;
   display: flex;
   justify-content: space-between;
@@ -118,11 +118,11 @@
   align-items: center;
 }
 
-.dressings__container label {
+.constitutes__container label {
   font-size: 2rem;
 }
 
-.dressing__options {
+.constitute__options {
   cursor: pointer;
   font-size: 1.8rem;
   border: 0.2rem solid #ccc;
@@ -130,11 +130,11 @@
   /* text-align: center; */
 }
 
-.dressing__item {
+.constitute__item {
   cursor: pointer;
 }
 
-/* STUFF OPTIONS */
+/* SUBITEM OPTIONS */
 .order__item__container p {
   font-size: 2rem;
   margin: 2rem 0 0 2.5rem;

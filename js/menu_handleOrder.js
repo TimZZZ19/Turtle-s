@@ -1,7 +1,7 @@
 import OrderBox from "./components/menu_order_UI/OrderBox.js";
 import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
 import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
-import Dressings from "./components/menu_order_UI/options/Dressings.js";
+import Constitutes from "./components/menu_order_UI/options/Constitutes.js";
 import SubItems from "./components/menu_order_UI/options/SubItems.js";
 
 // activate form and form components
@@ -9,7 +9,8 @@ OrderBox.activate();
 OrderBasicForm.activate();
 SizeOptions.activate();
 
-Dressings.activate();
+Constitutes.activate("dressing");
+Constitutes.activate("pasta");
 
 // Subitem can be substitute, extra
 SubItems.activate("substitute");
@@ -80,20 +81,32 @@ menuItems.forEach((item) => {
       items[key].price = priceContent;
     }
   };
-  const addDressings = () => {
-    const dressingElements = item
+  const addConstitutes = (constituteType) => {
+    const constituteElements = item
       .closest(".menu-group")
-      .querySelectorAll(".dressing");
+      .querySelectorAll(`.${constituteType}`);
 
-    if (dressingElements.length === 0) return;
+    if (constituteElements.length === 0) return;
 
-    items[key]["dressingInfo"] = {};
-    items[key]["dressingInfo"].chozenDressing = null;
-    items[key]["dressingInfo"].dressingOptions = [];
+    const propertyName = `${constituteType}Info`;
+    const chozenConsitute = `chozen${capitlizeFirst(constituteType)}`;
+    const constituteOptions = `${constituteType}Options`;
 
-    dressingElements.forEach((element) => {
-      items[key]["dressingInfo"].dressingOptions.push(element.textContent);
+    items[key][propertyName] = {};
+    items[key][propertyName][chozenConsitute] = null;
+    items[key][propertyName][constituteOptions] = [];
+
+    constituteElements.forEach((element) => {
+      items[key][propertyName][constituteOptions].push(element.textContent);
     });
+
+    function capitlizeFirst(str) {
+      // checks for null, undefined and empty string
+      if (!str) return;
+      return str.match("^[a-z]")
+        ? str.charAt(0).toUpperCase() + str.substring(1)
+        : str;
+    }
   };
 
   // Subitems can be substitutes, extras
@@ -141,11 +154,19 @@ menuItems.forEach((item) => {
   addQuantity();
   addSize();
   addPrice();
-  addDressings();
+  addConstitutes("dressing");
+  addConstitutes("pasta");
+
   addSubItems("substitute");
   addSubItems("extra");
   addOrderBtn();
 });
+
+// items.forEach((item) => {
+//   if (item.pastaInfo) {
+//     console.log(item);
+//   }
+// });
 
 // ***********************************************************
 // UTILITY FUNCTIONS
@@ -232,19 +253,25 @@ const processPrice = (currentItem) => {
   OrderBasicForm.renderPrice(priceToBeRendered);
 };
 
-const processDressings = (dressingInfo) => {
-  if (!dressingInfo) return;
+const processConstitutes = (constituteType, constituteInfo) => {
+  if (!constituteInfo) return;
 
-  const capitalizedDressingChoice = capitlizeFirst(dressingInfo.chozenDressing);
-  const capitalizedDressingOptions = [];
+  const chozenConsitute = `chozen${capitlizeFirst(constituteType)}`;
+  const constituteOptions = `${constituteType}Options`;
 
-  dressingInfo.dressingOptions.map((dressing) =>
-    capitalizedDressingOptions.push(capitlizeFirst(dressing))
+  const capitalizedConsituteChoice = capitlizeFirst(
+    constituteInfo[chozenConsitute]
+  );
+  const capitalizedConstitutes = [];
+
+  constituteInfo[constituteOptions].map((constitute) =>
+    capitalizedConstitutes.push(capitlizeFirst(constitute))
   );
 
-  Dressings.renderDressings(
-    capitalizedDressingChoice,
-    capitalizedDressingOptions
+  Constitutes.renderConstitutes(
+    constituteType,
+    capitalizedConsituteChoice,
+    capitalizedConstitutes
   );
 };
 
@@ -276,7 +303,10 @@ const displayComponents = (e) => {
   processPrice(currentItem);
 
   // process dressings
-  processDressings(currentItem.dressingInfo);
+  processConstitutes("dressing", currentItem.dressingInfo);
+
+  // process pastas
+  processConstitutes("pasta", currentItem.pastaInfo);
 
   // process substitutes
   processSubItems("substitute", currentItem.substitutes);
@@ -303,7 +333,10 @@ const closeBox = () => {
   OrderBox.closeOrderBox();
   OrderBasicForm.closeBasicForm();
   SizeOptions.closeOptions();
-  Dressings.closeOptions();
+
+  Constitutes.closeOptions("dressing");
+  Constitutes.closeOptions("pasta");
+
   SubItems.closeOptions("substitute");
   SubItems.closeOptions("extra");
 
@@ -364,6 +397,7 @@ const extraOptionsContainer = document.querySelector(
   ".order__extras__container"
 );
 const dressingSelectionElement = document.querySelector(".dressing__options");
+const pastaSelectionElement = document.querySelector(".pasta__options");
 const addToCart = document.querySelector(".Add__to__cart");
 
 // open orderbox
@@ -422,7 +456,16 @@ dressingSelectionElement.addEventListener("click", (e) => {
   if (e.target.value === currentItem.dressingInfo.chozenDressing) return;
 
   currentItem.dressingInfo.chozenDressing = e.target.value;
-  processDressings(currentItem.dressingInfo);
+  processConstitutes("dressing", currentItem.dressingInfo);
+});
+
+// pick pasta
+pastaSelectionElement.addEventListener("click", (e) => {
+  const currentItem = getCurrentItem(e);
+  if (e.target.value === currentItem.pastaInfo.chozenPasta) return;
+
+  currentItem.pastaInfo.chozenPasta = e.target.value;
+  processConstitutes("pasta", currentItem.pastaInfo);
 });
 
 // add to cart
