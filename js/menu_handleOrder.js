@@ -3,6 +3,7 @@ import OrderBasicForm from "./components/menu_order_UI/OrderBasicForm.js";
 import SizeOptions from "./components/menu_order_UI/options/SizeOptions.js";
 import Constitutes from "./components/menu_order_UI/options/Constitutes.js";
 import SubItems from "./components/menu_order_UI/options/SubItems.js";
+import Toppings from "./components/menu_order_UI/options/Toppings.js";
 
 // activate form and form components
 OrderBox.activate();
@@ -15,6 +16,8 @@ Constitutes.activate("pasta");
 // Subitem can be substitute, extra
 SubItems.activate("substitute");
 SubItems.activate("extra");
+
+Toppings.activate();
 
 // ************************************************************
 // SCRAPING DATA FROM HTML
@@ -81,6 +84,8 @@ menuItems.forEach((item) => {
       items[key].price = priceContent;
     }
   };
+
+  // Constitute can be dressing or pasta
   const addConstitutes = (constituteType) => {
     const constituteElements = item
       .closest(".menu-group")
@@ -89,7 +94,7 @@ menuItems.forEach((item) => {
     if (constituteElements.length === 0) return;
 
     const propertyName = `${constituteType}Info`;
-    const chozenConsitute = `chozen${capitlizeFirst(constituteType)}`;
+    const chozenConsitute = `chozen${capitalizeFirst(constituteType)}`;
     const constituteOptions = `${constituteType}Options`;
 
     items[key][propertyName] = {};
@@ -99,14 +104,6 @@ menuItems.forEach((item) => {
     constituteElements.forEach((element) => {
       items[key][propertyName][constituteOptions].push(element.textContent);
     });
-
-    function capitlizeFirst(str) {
-      // checks for null, undefined and empty string
-      if (!str) return;
-      return str.match("^[a-z]")
-        ? str.charAt(0).toUpperCase() + str.substring(1)
-        : str;
-    }
   };
 
   // Subitems can be substitutes, extras
@@ -144,6 +141,25 @@ menuItems.forEach((item) => {
     }
   };
 
+  const addToppings = () => {
+    const toppingElements = item
+      .closest(".menu-group")
+      .querySelectorAll(".topping");
+
+    if (toppingElements.length === 0) return;
+
+    const toppingPrice = item.querySelector(".topping__price").textContent;
+    items[key].toppings = [];
+    toppingElements.forEach((topping) => {
+      const toppingObj = {
+        toppingName: topping.textContent,
+        quantity: 0,
+        price: toppingPrice,
+      };
+      items[key].toppings.push(toppingObj);
+    });
+  };
+
   const addOrderBtn = () => {
     items[key].orderBtn = item.querySelector(".order-button");
   };
@@ -154,16 +170,19 @@ menuItems.forEach((item) => {
   addQuantity();
   addSize();
   addPrice();
+
   addConstitutes("dressing");
   addConstitutes("pasta");
 
   addSubItems("substitute");
   addSubItems("extra");
+
+  addToppings();
   addOrderBtn();
 });
 
 // items.forEach((item) => {
-//   if (item.pastaInfo) {
+//   if (item.toppings) {
 //     console.log(item);
 //   }
 // });
@@ -172,13 +191,13 @@ menuItems.forEach((item) => {
 // UTILITY FUNCTIONS
 // ***********************************************************
 //capitalize the first letter
-const capitlizeFirst = (str) => {
+function capitalizeFirst(str) {
   // checks for null, undefined and empty string
   if (!str) return;
   return str.match("^[a-z]")
     ? str.charAt(0).toUpperCase() + str.substring(1)
     : str;
-};
+}
 
 // functions for rendering form components
 const processImage = (foodName) => {
@@ -256,16 +275,16 @@ const processPrice = (currentItem) => {
 const processConstitutes = (constituteType, constituteInfo) => {
   if (!constituteInfo) return;
 
-  const chozenConsitute = `chozen${capitlizeFirst(constituteType)}`;
+  const chozenConsitute = `chozen${capitalizeFirst(constituteType)}`;
   const constituteOptions = `${constituteType}Options`;
 
-  const capitalizedConsituteChoice = capitlizeFirst(
+  const capitalizedConsituteChoice = capitalizeFirst(
     constituteInfo[chozenConsitute]
   );
   const capitalizedConstitutes = [];
 
   constituteInfo[constituteOptions].map((constitute) =>
-    capitalizedConstitutes.push(capitlizeFirst(constitute))
+    capitalizedConstitutes.push(capitalizeFirst(constitute))
   );
 
   Constitutes.renderConstitutes(
@@ -280,6 +299,29 @@ const processSubItems = (subItemType, subItems) => {
   if (!subItems) return;
 
   SubItems.renderSubItems(subItemType, subItems);
+};
+
+const processToppings = (toppings, toppingName = null, action = null) => {
+  if (action == "remove") {
+    toppings.forEach((topping) => {
+      if (
+        capitalizeFirst(topping.toppingName) === toppingName.trim() &&
+        topping.quantity > 0
+      ) {
+        topping.quantity--;
+      }
+    });
+  }
+
+  if (action === "add") {
+    toppings.forEach((topping) => {
+      if (capitalizeFirst(topping.toppingName) === toppingName.trim()) {
+        topping.quantity++;
+      }
+    });
+  }
+
+  Toppings.renderToppings(toppings);
 };
 
 const displayComponents = (e) => {
@@ -313,6 +355,9 @@ const displayComponents = (e) => {
 
   // process extra
   processSubItems("extra", currentItem.extras);
+
+  // process toppings
+  if (currentItem.toppings) processToppings(currentItem.toppings);
 };
 
 const openBox = (e) => {
@@ -339,6 +384,8 @@ const closeBox = () => {
 
   SubItems.closeOptions("substitute");
   SubItems.closeOptions("extra");
+
+  Toppings.closeOptions();
 
   unfreezeBackground();
 };
@@ -398,6 +445,7 @@ const extraOptionsContainer = document.querySelector(
 );
 const dressingSelectionElement = document.querySelector(".dressing__options");
 const pastaSelectionElement = document.querySelector(".pasta__options");
+const toppingOptionElement = document.querySelector(".order__topping__options");
 const addToCart = document.querySelector(".Add__to__cart");
 
 // open orderbox
@@ -466,6 +514,21 @@ pastaSelectionElement.addEventListener("click", (e) => {
 
   currentItem.pastaInfo.chozenPasta = e.target.value;
   processConstitutes("pasta", currentItem.pastaInfo);
+});
+
+// choose topping
+toppingOptionElement.addEventListener("click", (e) => {
+  if (!e.target.matches(".md.hydrated")) return;
+
+  const currentItem = getCurrentItem(e);
+
+  const clikedToppingName = e.target
+    .closest(".topping__item")
+    .querySelector(".topping__name").textContent;
+
+  const action = e.target.attributes["aria-label"].nodeValue.split(" ")[0];
+
+  processToppings(currentItem.toppings, clikedToppingName, action);
 });
 
 // add to cart

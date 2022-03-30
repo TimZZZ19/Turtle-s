@@ -27,6 +27,8 @@
   transform: translate(-50%, -50%);
 
   overflow-y: auto;
+  scrollbar-color: rebeccapurple green;
+  scrollbar-width: thin;
 }
 
 .formbox__close_button {
@@ -52,12 +54,14 @@
 /*Form area */
 .order__image {
   width: 100%;
-  max-height: 32rem;
+  max-height: 23rem;
   border-radius: 1.3rem 1.3rem 0 0;
+  overflow: hidden;
 }
 
 .order__image img {
   width: 100%;
+
   border-radius: 1.3rem 1.3rem 0 0;
 }
 
@@ -124,7 +128,8 @@
 
 .constitute__options {
   cursor: pointer;
-  font-size: 1.8rem;
+  font-size: 1.3rem;
+  padding: 0.3rem;
   border: 0.2rem solid #ccc;
   border-radius: 0.6rem;
   /* text-align: center; */
@@ -147,13 +152,9 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  max-height: 11rem;
+  max-height: 10rem;
   overflow-y: auto;
 }
-
-/* .order__item__options.dressing__options {
-
-} */
 
 .order__item {
   display: flex;
@@ -168,6 +169,36 @@
 
 .order__input input {
   cursor: pointer;
+}
+
+/* TOPPINGS */
+.order__topping__options {
+  max-height: 15rem;
+}
+
+.topping__item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.topping__name {
+  width: 18rem;
+}
+
+.topping__qty__btn {
+  transition: color 0.1s;
+  display: flex;
+  align-items: center;
+  color: #555;
+}
+
+.topping__qty__btn:hover {
+  color: black;
+}
+
+.topping__qty {
+  width: 2.5rem;
+  text-align: center;
 }
 
 /* ORDER CONTROL */
