@@ -73,7 +73,7 @@ menuItems.forEach((item) => {
   };
   const addPrice = () => {
     const priceElement = item.querySelector(".food-price");
-    const priceContent = priceElement.textContent;
+    const priceContent = Number(priceElement.textContent);
     const sizeInfo = items[key].sizeInfo;
 
     if (sizeInfo) {
@@ -132,7 +132,7 @@ menuItems.forEach((item) => {
 
           const subItemObject = {
             name: subItemNameElement.textContent,
-            price: subItemPriceElement.textContent,
+            price: Number(subItemPriceElement.textContent),
             isChecked: false,
           };
           items[key][propertyName].push(subItemObject);
@@ -148,20 +148,24 @@ menuItems.forEach((item) => {
 
     if (toppingElements.length === 0) return;
 
-    const toppingPrice = item.querySelector(".topping__price").textContent;
-    items[key].toppings = [];
+    const toppingPrice = Number(
+      item.querySelector(".topping__price").textContent
+    );
+    items[key].toppingInfo = {};
+    items[key].toppingInfo["toppingPrice"] = toppingPrice;
+    items[key].toppingInfo["toppings"] = [];
+
     toppingElements.forEach((topping) => {
       const toppingObj = {
         toppingName: topping.textContent,
         quantity: 0,
-        price: toppingPrice,
       };
-      items[key].toppings.push(toppingObj);
+      items[key].toppingInfo.toppings.push(toppingObj);
     });
   };
 
-  const addOrderBtn = () => {
-    items[key].orderBtn = item.querySelector(".order-button");
+  const addaddToCartBtn = () => {
+    items[key].addToCartBtn = item.querySelector(".order-button");
   };
 
   // call above methods to scrape data
@@ -178,14 +182,10 @@ menuItems.forEach((item) => {
   addSubItems("extra");
 
   addToppings();
-  addOrderBtn();
+  addaddToCartBtn();
 });
 
-// items.forEach((item) => {
-//   if (item.toppings) {
-//     console.log(item);
-//   }
-// });
+// console.log(items);
 
 // ***********************************************************
 // UTILITY FUNCTIONS
@@ -218,27 +218,27 @@ const processDescription = (description) => {
   OrderBasicForm.renderDescription(description);
 };
 
-const processQuantity = (currentItem) => {
-  const quantity = currentItem.quantity;
-  const orderBtn = currentItem.orderBtn;
-  OrderBasicForm.renderQuantity(quantity, orderBtn);
+const processQuantity = (currentItem, action = null) => {
+  if (action === "add") currentItem.quantity++;
+  if (action === "remove" && currentItem.quantity > 0) currentItem.quantity--;
+
+  OrderBasicForm.renderQuantity(currentItem.quantity, currentItem.addToCartBtn);
 };
 
-const processSize = (sizeInfo) => {
-  if (!sizeInfo) return;
-
-  const currentSize = sizeInfo.chozenSize;
-  const mediumPrice = sizeInfo.sizePricePairs["meidum"];
+const processSize = (currentItem, userSelectedSize = null) => {
+  if (userSelectedSize) currentItem.sizeInfo.chozenSize = userSelectedSize;
+  const currentSize = currentItem.sizeInfo.chozenSize;
+  const mediumPrice = currentItem.sizeInfo.sizePricePairs["meidum"];
   SizeOptions.renderSize(currentSize, mediumPrice);
 };
 
 const processPrice = (currentItem) => {
+  // factors that are related to price calculation
   const currentQuantity = currentItem.quantity;
-
   const sizeInfo = currentItem.sizeInfo;
-
   const currentSubstitutes = currentItem.substitutes;
   const currentExtras = currentItem.extras;
+  const currentToppingInfo = currentItem.toppingInfo;
 
   let currentPrice = currentItem.price;
 
@@ -268,42 +268,62 @@ const processPrice = (currentItem) => {
     });
   }
 
+  // if this current item has toppings information, add topping price to current price
+  if (currentToppingInfo) {
+    const currentToppingPrice = Number(currentToppingInfo.toppingPrice);
+    let totalToppingQty = 0;
+
+    currentToppingInfo.toppings.forEach((topping) => {
+      if (topping.quantity > 0) {
+        totalToppingQty += Number(topping.quantity);
+      }
+    });
+
+    currentPrice = Number(currentPrice) + currentToppingPrice * totalToppingQty;
+    console.log(currentPrice, typeof currentPrice);
+  }
+
   const priceToBeRendered = currentPrice * currentQuantity;
   OrderBasicForm.renderPrice(priceToBeRendered);
 };
 
-const processConstitutes = (constituteType, constituteInfo) => {
-  if (!constituteInfo) return;
-
+// dressing, pasta
+const processConstitutes = (
+  constituteType,
+  currentItem,
+  chozenConstitute = null
+) => {
+  const propertyName = `${constituteType}Info`;
   const chozenConsitute = `chozen${capitalizeFirst(constituteType)}`;
   const constituteOptions = `${constituteType}Options`;
 
-  const capitalizedConsituteChoice = capitalizeFirst(
-    constituteInfo[chozenConsitute]
-  );
-  const capitalizedConstitutes = [];
-
-  constituteInfo[constituteOptions].map((constitute) =>
-    capitalizedConstitutes.push(capitalizeFirst(constitute))
-  );
+  if (chozenConstitute) {
+    currentItem[propertyName][chozenConsitute] = chozenConstitute;
+  }
 
   Constitutes.renderConstitutes(
     constituteType,
-    capitalizedConsituteChoice,
-    capitalizedConstitutes
+    currentItem[propertyName][chozenConsitute],
+    currentItem[propertyName][constituteOptions]
   );
 };
 
 // SubItems can be substitutes, extras
-const processSubItems = (subItemType, subItems) => {
-  if (!subItems) return;
+const processSubItems = (subItemType, currentItem, chozenSubItem = null) => {
+  if (chozenSubItem) {
+    currentItem[`${subItemType}s`].forEach((subItem) => {
+      if (subItem.name.split(" ").join("") == chozenSubItem.id) {
+        subItem.isChecked = chozenSubItem.checked;
+      }
+    });
+  }
 
-  SubItems.renderSubItems(subItemType, subItems);
+  SubItems.renderSubItems(subItemType, currentItem[`${subItemType}s`]);
 };
 
-const processToppings = (toppings, toppingName = null, action = null) => {
+const processToppings = (currentItem, toppingName = null, action = null) => {
   if (action == "remove") {
-    toppings.forEach((topping) => {
+    currentItem.toppingInfo.toppings.forEach((topping) => {
       if (
         capitalizeFirst(topping.toppingName) === toppingName.trim() &&
         topping.quantity > 0
@@ -314,14 +334,14 @@ const processToppings = (toppings, toppingName = null, action = null) => {
   }
 
   if (action === "add") {
-    toppings.forEach((topping) => {
+    currentItem.toppingInfo.toppings.forEach((topping) => {
       if (capitalizeFirst(topping.toppingName) === toppingName.trim()) {
         topping.quantity++;
       }
     });
   }
 
-  Toppings.renderToppings(toppings);
+  Toppings.renderToppings(currentItem.toppingInfo.toppings);
 };
 
 const displayComponents = (e) => {
@@ -340,24 +360,36 @@ const displayComponents = (e) => {
 
   processQuantity(currentItem);
 
-  processSize(currentItem.sizeInfo);
+  if (currentItem.sizeInfo) {
+    processSize(currentItem);
+  }
 
   processPrice(currentItem);
 
   // process dressings
-  processConstitutes("dressing", currentItem.dressingInfo);
+  if (currentItem.dressingInfo) {
+    processConstitutes("dressing", currentItem);
+  }
 
   // process pastas
-  processConstitutes("pasta", currentItem.pastaInfo);
+  if (currentItem.pastaInfo) {
+    processConstitutes("pasta", currentItem);
+  }
 
   // process substitutes
-  processSubItems("substitute", currentItem.substitutes);
+  if (currentItem.substitutes) {
+    processSubItems("substitute", currentItem);
+  }
 
   // process extra
-  processSubItems("extra", currentItem.extras);
+  if (currentItem.extras) {
+    processSubItems("extra", currentItem);
+  }
 
   // process toppings
-  if (currentItem.toppings) processToppings(currentItem.toppings);
+  if (currentItem.toppingInfo) {
+    processToppings(currentItem);
+  }
 };
 
 const openBox = (e) => {
@@ -390,39 +422,6 @@ const closeBox = () => {
   unfreezeBackground();
 };
 
-const getCurrentItem = (e) => {
-  const currentKey = e.target.closest(".order__form").key;
-  const currentItem = items[currentKey];
-  return currentItem;
-};
-
-const updateQuantity = (e, action) => {
-  const currentItem = getCurrentItem(e);
-
-  if (action === "add") currentItem.quantity++;
-  if (action === "remove" && currentItem.quantity > 0) currentItem.quantity--;
-
-  processQuantity(currentItem);
-  processPrice(currentItem);
-};
-
-const updateSubItems = (e, subItemType) => {
-  if (!e.target.matches(`.${subItemType}__input__checkbox`)) return;
-
-  const currentItem = getCurrentItem(e);
-  const propertyName = `${subItemType}s`;
-  const currentSubItems = currentItem[propertyName];
-
-  currentSubItems.forEach((stf) => {
-    if (stf.name.split(" ").join("") == e.target.id) {
-      stf.isChecked = e.target.checked;
-    }
-  });
-
-  processSubItems(subItemType, currentItem[propertyName]);
-  processPrice(currentItem);
-};
-
 // *********************************************************
 // EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
 // *********************************************************
@@ -448,6 +447,13 @@ const pastaSelectionElement = document.querySelector(".pasta__options");
 const toppingOptionElement = document.querySelector(".order__topping__options");
 const addToCart = document.querySelector(".Add__to__cart");
 
+// Utility function to get the current item after clicking a menu item
+const getCurrentItem = (e) => {
+  const currentKey = e.target.closest(".order__form").key;
+  const currentItem = items[currentKey];
+  return currentItem;
+};
+
 // open orderbox
 menuArea.addEventListener("click", (e) => {
   if (!e.target.matches(".order-button") && !e.target.matches(".food-name"))
@@ -469,12 +475,18 @@ formContainer.addEventListener("click", (e) => {
 
 // add quantity
 orderAddButton.addEventListener("click", (e) => {
-  updateQuantity(e, "add");
+  const currentItem = getCurrentItem(e);
+
+  processQuantity(currentItem, "add");
+  processPrice(currentItem);
 });
 
 // remove quantity
 orderRemoveButton.addEventListener("click", (e) => {
-  updateQuantity(e, "remove");
+  const currentItem = getCurrentItem(e);
+
+  processQuantity(currentItem, "remove");
+  processPrice(currentItem);
 });
 
 // choose size
@@ -482,20 +494,32 @@ sizeOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(".size__option__input")) return;
 
   const currentItem = getCurrentItem(e);
-  currentItem.sizeInfo.chozenSize = e.target.id;
+  const userSelectedSize = e.target.id;
 
-  processSize(currentItem.sizeInfo);
+  processSize(currentItem, userSelectedSize);
   processPrice(currentItem);
 });
 
 // choose substitute
 substituteOptionsContainer.addEventListener("click", (e) => {
-  updateSubItems(e, "substitute");
+  if (!e.target.matches(`.substitute__input__checkbox`)) return;
+
+  const currentItem = getCurrentItem(e);
+  const chozenSubstitute = e.target;
+
+  processSubItems("substitute", currentItem, chozenSubstitute);
+  processPrice(currentItem);
 });
 
 // choose extra
 extraOptionsContainer.addEventListener("click", (e) => {
-  updateSubItems(e, "extra");
+  if (!e.target.matches(`.extra__input__checkbox`)) return;
+
+  const currentItem = getCurrentItem(e);
+  const chozenExtra = e.target;
+
+  processSubItems("extra", currentItem, chozenExtra);
+  processPrice(currentItem);
 });
 
 // pick dressing
@@ -503,8 +527,8 @@ dressingSelectionElement.addEventListener("click", (e) => {
   const currentItem = getCurrentItem(e);
   if (e.target.value === currentItem.dressingInfo.chozenDressing) return;
 
-  currentItem.dressingInfo.chozenDressing = e.target.value;
-  processConstitutes("dressing", currentItem.dressingInfo);
+  const chozenDressing = e.target.value;
+  processConstitutes("dressing", currentItem, chozenDressing);
 });
 
 // pick pasta
@@ -512,8 +536,8 @@ pastaSelectionElement.addEventListener("click", (e) => {
   const currentItem = getCurrentItem(e);
   if (e.target.value === currentItem.pastaInfo.chozenPasta) return;
 
-  currentItem.pastaInfo.chozenPasta = e.target.value;
-  processConstitutes("pasta", currentItem.pastaInfo);
+  const chozenPasta = e.target.value;
+  processConstitutes("pasta", currentItem, chozenPasta);
 });
 
 // choose topping
@@ -528,7 +552,8 @@ toppingOptionElement.addEventListener("click", (e) => {
 
   const action = e.target.attributes["aria-label"].nodeValue.split(" ")[0];
 
-  processToppings(currentItem.toppings, clikedToppingName, action);
+  processToppings(currentItem, clikedToppingName, action);
+  processPrice(currentItem);
 });
 
 // add to cart

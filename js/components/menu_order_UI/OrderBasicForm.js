@@ -39,12 +39,6 @@ export default class OrderFormbox {
     // so we can have access to the global data object in evenlisteners.
   }
 
-  static closeBasicForm() {
-    const form = document.querySelector(".order__form");
-    form.style.display = "none";
-    form.key = null;
-  }
-
   static renderImage(imgElement) {
     const foodImgElement = document.querySelector(".order__image");
     if (foodImgElement.firstChild) {
@@ -64,7 +58,7 @@ export default class OrderFormbox {
       : "";
   }
 
-  static renderQuantity(quantity, orderBtn) {
+  static renderQuantity(quantity, addToCartBtn) {
     const orderRemoveButton = document.querySelector("#order__qty__btn_left");
     const displayedQuantity = document.querySelector(".order__actual__qty");
 
@@ -77,8 +71,8 @@ export default class OrderFormbox {
       if (!addToCart.classList.contains("Add__to__cart_inactive"))
         addToCart.classList.add("Add__to__cart_inactive");
 
-      if (orderBtn && orderBtn.classList.contains("order__on__hold"))
-        orderBtn.classList.remove("order__on__hold");
+      if (addToCartBtn && addToCartBtn.classList.contains("order__on__hold"))
+        addToCartBtn.classList.remove("order__on__hold");
     }
 
     if (quantity > 0) {
@@ -88,8 +82,8 @@ export default class OrderFormbox {
       if (addToCart.classList.contains("Add__to__cart_inactive"))
         addToCart.classList.remove("Add__to__cart_inactive");
 
-      if (orderBtn && !orderBtn.classList.contains("order__on__hold"))
-        orderBtn.classList.add("order__on__hold");
+      if (addToCartBtn && !addToCartBtn.classList.contains("order__on__hold"))
+        addToCartBtn.classList.add("order__on__hold");
     }
 
     displayedQuantity.textContent = quantity;
@@ -98,5 +92,11 @@ export default class OrderFormbox {
   static renderPrice(price) {
     const displayedPrice = document.querySelector(".order__price");
     displayedPrice.textContent = `$ ${Number(price).toFixed(2)}`;
+  }
+
+  static closeBasicForm() {
+    const form = document.querySelector(".order__form");
+    form.style.display = "none";
+    form.key = null;
   }
 }
