@@ -66,14 +66,17 @@ allGroups.forEach(function (group) {
   group.classList.add("menu-group-hidden");
 });
 
-// Assign unique id to each menu item
-const menuItems = document.querySelectorAll(".menu-item");
-const idSet = [];
-const getRandomNumber = () => Math.floor(1000 + Math.random() * 9000);
-menuItems.forEach((item) => {
-  let uniqueId = getRandomNumber();
-  while (idSet.includes(uniqueId)) uniqueId = getRandomNumber();
+// Use food name as unique id and assign it to each menu item
 
-  idSet.push(uniqueId);
-  item.key = uniqueId;
-});
+function assignUniqueIDs(menuItems) {
+  menuItems.forEach((item) => {
+    const uniqueId = item
+      .querySelector(".food-name")
+      .textContent.split(" ")
+      .join("");
+    item.key = uniqueId;
+  });
+}
+
+const menuItems = document.querySelectorAll(".menu-item");
+assignUniqueIDs(menuItems);

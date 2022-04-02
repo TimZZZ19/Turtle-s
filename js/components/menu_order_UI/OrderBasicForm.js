@@ -32,11 +32,9 @@ export default class OrderFormbox {
     contentBox.innerHTML = form;
   }
 
-  static displayBasicForm(key) {
+  static displayBasicForm() {
     const form = document.querySelector(".order__form");
     form.style.display = null;
-    form.key = key; // store the current food's key here,
-    // so we can have access to the global data object in evenlisteners.
   }
 
   static renderImage(imgElement) {

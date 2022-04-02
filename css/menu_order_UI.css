@@ -148,6 +148,7 @@
 .order__item__options {
   border-bottom: 0.2rem solid #ccc;
   padding: 2.5rem;
+  margin-top: 1rem;
   font-size: 1.8rem;
   display: flex;
   flex-direction: column;
