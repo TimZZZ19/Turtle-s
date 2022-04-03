@@ -131,3 +131,5 @@ cartPage.addEventListener("click", (e) => {
   if (!e.target.matches(".cart__page")) return;
   cartPage.classList.toggle("cart__page_open");
 });
+
+console.log("run");
