@@ -132,4 +132,4 @@ cartPage.addEventListener("click", (e) => {
   cartPage.classList.toggle("cart__page_open");
 });
 
-console.log("run");
+console.log("run2");
