@@ -625,6 +625,8 @@ addToCart.addEventListener("click", (e) => {
   // display it for new order
   displayComponents(currentItem);
   closeBox();
+
+  // display the added message
 });
 
 function packDataIntoOneItem(item) {

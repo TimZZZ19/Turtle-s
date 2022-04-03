@@ -156,9 +156,8 @@ rightButton.addEventListener("click", (e) => {
 
 // Close lightbox
 lightBox.addEventListener("mousedown", (e) => {
-  if (e.target.matches("#lightbox")) {
-    closeLightbox();
-  }
+  if (!e.target.matches("#lightbox")) return;
+  closeLightbox();
 });
 
 lightBoxCloseButton.addEventListener("click", (e) => {

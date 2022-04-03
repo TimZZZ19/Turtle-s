@@ -15,9 +15,11 @@
     ></script>
 
     <!-- custom css file link -->
+    <!-- mutual css -->
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/queries.css" />
     <link rel="stylesheet" href="../css/menu_queries.css" />
+    <link rel="stylesheet" href="../css/cart.css" />
   </head>
   <body>
     <header class="header sticky">
@@ -32,7 +34,7 @@
           <li>
             <a class="main-nav-link" href="gallery.html">Gallery</a>
           </li>
-          <li><a class="cart__btn main-nav-link" href="#">Cart | 0</a></li>
+          <li class="cart__li"></li>
         </ul>
       </nav>
 
@@ -398,7 +400,11 @@
         </div>
       </div>
     </footer>
+    <!-- mutual scripts -->
     <script src="../js/script.js"></script>
+    <script src="/js/components/cart/cart.js"></script>
+
+    <!-- private scripts -->
     <script src="../js/index_script.js"></script>
   </body>
 </html>
