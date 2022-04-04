@@ -5,12 +5,12 @@
   border-radius: 36px;
   padding: 0.5rem 1rem;
   background-color: #b98f71;
-  color: #333;
+  color: #fff;
   width: 9rem;
 }
 
 #cart__btn:hover {
-  color: black;
+  color: #ccc;
 }
 
 #cart__btn span {
@@ -18,34 +18,6 @@
 }
 
 /* Cart page */
-
-/* .main-nav {
-  background-color: rgba(255, 255, 255, 0.96);
-
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-  transition: all 0.2s ease-out;
-  transform: translateX(100%);
-}
-
-.nav-open .main-nav {
-  opacity: 1;
-  pointer-events: auto;
-  visibility: visible;
-  transform: translateX(0);
-} */
 
 .cart__page {
   position: fixed;
