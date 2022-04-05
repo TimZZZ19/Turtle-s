@@ -25,7 +25,7 @@ export default class cartItems {
                                 <span class="cart__final__amount">$ 123.21</span>
                               </div>
                            </div>
-                          `;
+                        `;
     cartContentArea.insertAdjacentHTML("beforeend", cartBillHTML);
   }
 }

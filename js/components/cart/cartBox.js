@@ -3,19 +3,23 @@ export default class cartBox {
     const cartBoxHTML = `
                     <div class="cart__page" >
                       <aside class="cart__box">
-                      
+
                         <div class="cart__close__btn">
                           <ion-icon name="close-outline"></ion-icon>
                         </div>
-                        
-                        <div class="cart__content__area">
-                          <p>Cart</p>
 
-                        </div>
+                        <div class="cart_main">
                         
-                        <div class="cart__control">
-                          <button class="cart__empty__btn">EMPTY CART</button>
-                          <button class="cart__checkout__btn">CHECK OUT</button>
+                          <div class="cart__content__area">
+                            <p>Cart</p>
+
+                          </div>
+                          
+                          <div class="cart__control">
+                            <button class="cart__empty__btn">EMPTY CART</button>
+                            <button class="cart__checkout__btn">CHECK OUT</button>
+                          </div>
+                          
                         </div>
 
                       </aside>

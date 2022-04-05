@@ -39,7 +39,7 @@
 }
 
 .cart__box {
-  background-color: yellow;
+  background-color: white;
   z-index: 100;
 
   width: 40rem;
@@ -75,4 +75,66 @@
 .cart__close__btn ion-icon {
   font-size: 4rem;
   cursor: pointer;
+}
+
+/* Cart main */
+.cart_main {
+  display: flex;
+  flex-direction: column;
+  padding: 5rem 2.5rem;
+}
+
+/* Content area */
+.cart__content__area {
+  max-height: 90rem;
+  overflow-y: scroll;
+  border: 5px solid red;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.cart__content__area p {
+  font-size: 2.8rem;
+}
+
+/* Delivery methods */
+.delivery__methods {
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: 3rem;
+  border-bottom: 0.2rem solid #ccc;
+}
+
+.delivery__option {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.delivery__option label {
+  font-size: 2.2rem;
+}
+
+.cart__items {
+  list-style: none;
+}
+
+.cart__item {
+  border-bottom: 0.2rem solid #ccc;
+  padding-bottom: 3rem;
+
+  display: flex;
+  justify-content: space-around;
+}
+
+.item__information {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 2rem;
+}
+
+.item__constitution {
+  list-style: none;
 }
