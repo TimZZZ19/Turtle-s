@@ -8,20 +8,8 @@ export default class cartBox {
                           <ion-icon name="close-outline"></ion-icon>
                         </div>
 
-                        <div class="cart_main">
+                        <p class="empty__cart__msg">Your cart is empty</p>
                         
-                          <div class="cart__content__area">
-                            <p>Cart</p>
-
-                          </div>
-                          
-                          <div class="cart__control">
-                            <button class="cart__empty__btn">EMPTY CART</button>
-                            <button class="cart__checkout__btn">CHECK OUT</button>
-                          </div>
-                          
-                        </div>
-
                       </aside>
                     </div>
                     `;

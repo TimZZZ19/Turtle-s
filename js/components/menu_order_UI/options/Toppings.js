@@ -44,7 +44,8 @@ export default class Toppings {
               <span 
                 class="topping__qty__btn 
                        topping__qty__btn_left 
-                       ${!quantity && "qty__btn_inactive"}">
+                       ${!quantity && "qty__btn_inactive"}"
+              >
                 <ion-icon name="remove-circle-outline"></ion-icon>
               </span>
               <span class="topping__qty"> ${quantity} </span>

@@ -2,24 +2,27 @@ export default class cartDeliveryMethods {
   static activate() {
     const cartContentArea = document.querySelector(".cart__content__area");
     const deliveryMethodsHTML = ` <div class="delivery__methods">
-                                    <span class="delivery__option">
-                                      <input
-                                        type="radio"
-                                        class="delivery__input"
-                                        id="delivery__choice_delivery"
-                                        name="delivery__choice"
-                                      />
-                                      <label>Delivery</label>
-                                    </span>
-                                    <span class="delivery__option">
-                                      <input
-                                        type="radio"
-                                        class="delivery__input"
-                                        id="delivery__choice_pickup"
-                                        name="delivery__choice"
-                                      />
-                                      <label>Pickup</label>
-                                    </span>
+                                    <p>This is for : </p>
+                                    <div>
+                                      <span class="delivery__option">
+                                        <input
+                                          type="radio"
+                                          class="delivery__input"
+                                          id="delivery__choice_delivery"
+                                          name="delivery__choice"
+                                        />
+                                        <label>Delivery</label>
+                                      </span>
+                                      <span class="delivery__option">
+                                        <input
+                                          type="radio"
+                                          class="delivery__input"
+                                          id="delivery__choice_pickup"
+                                          name="delivery__choice"
+                                        />
+                                        <label>Pickup</label>
+                                      </span>
+                                    </div>
                                   </div> 
                                 `;
     cartContentArea.insertAdjacentHTML("beforeend", deliveryMethodsHTML);

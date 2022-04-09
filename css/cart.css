@@ -1,4 +1,6 @@
-/* Cart button */
+/* **************** */
+/* CART BUTTON */
+/* **************** */
 
 #cart__btn {
   display: inline-block;
@@ -17,7 +19,9 @@
   font-size: 1.4rem;
 }
 
-/* Cart page */
+/* **************** */
+/* CART PAGE */
+/* **************** */
 
 .cart__page {
   position: fixed;
@@ -38,6 +42,10 @@
   visibility: visible;
 }
 
+/* **************** */
+/* CART BOX */
+/* **************** */
+
 .cart__box {
   background-color: white;
   z-index: 100;
@@ -51,6 +59,8 @@
 
   transform: translateX(100%);
   transition: all 0.3s ease-out;
+
+  overflow-y: scroll;
 }
 
 .cart__page_open .cart__box {
@@ -65,11 +75,12 @@
 
   width: 4rem;
   height: 4rem;
-  background-color: black;
 
   position: absolute;
   top: 0rem;
   right: 0rem;
+
+  z-index: 12;
 }
 
 .cart__close__btn ion-icon {
@@ -77,34 +88,72 @@
   cursor: pointer;
 }
 
-/* Cart main */
-.cart_main {
-  display: flex;
-  flex-direction: column;
-  padding: 5rem 2.5rem;
+/* The Empty Cart message */
+
+.empty__cart__msg {
+  font-size: 3rem;
+  z-index: 1;
+
+  position: absolute;
+  top: 30%;
+  left: 50%;
+
+  width: 25rem;
+
+  transform: translateX(-50%);
 }
 
-/* Content area */
-.cart__content__area {
-  max-height: 90rem;
-  overflow-y: scroll;
-  border: 5px solid red;
+/* ******************************************************** */
+/* CART MAIN */
+/* ******************************************************** */
 
+.cart__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding: 5rem 2.5rem;
+  z-index: 10;
+  background-color: white;
+}
+
+/* ****************************************** */
+/* CART CONTENT AREA */
+/* ****************************************** */
+
+.cart__content__area {
   display: flex;
   flex-direction: column;
   gap: 3rem;
 }
 
-.cart__content__area p {
+.cart__title {
   font-size: 2.8rem;
+  font-weight: 600;
+  border-bottom: 0.3rem solid #ccc;
+  padding-bottom: 1rem;
 }
 
-/* Delivery methods */
+/* **************** */
+/* DELIVERY METHODS */
+/* **************** */
+
 .delivery__methods {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  gap: 2rem;
   padding-bottom: 3rem;
   border-bottom: 0.2rem solid #ccc;
+}
+
+.delivery__methods p {
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.delivery__methods div {
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .delivery__option {
@@ -113,21 +162,39 @@
   gap: 1.5rem;
 }
 
-.delivery__option label {
-  font-size: 2.2rem;
+.delivery__input {
+  cursor: pointer;
 }
+
+.delivery__option label {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* **************** */
+/* CART ITEMS */
+/* **************** */
 
 .cart__items {
   list-style: none;
 }
 
+/* cart item */
+
 .cart__item {
-  border-bottom: 0.2rem solid #ccc;
-  padding-bottom: 3rem;
+  padding: 3rem 0;
 
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+
+  font-size: 1.4rem;
 }
+
+.cart__item:first-child {
+  padding-top: 0;
+}
+
+/* item information  */
 
 .item__information {
   display: flex;
@@ -135,6 +202,188 @@
   gap: 2rem;
 }
 
-.item__constitution {
+.item__composition_and_control {
+  width: 20rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.item__composition {
   list-style: none;
+  line-height: 2rem;
+}
+
+.item__name {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.item__topping {
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.item__control {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.item__control span {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgb(2, 155, 2);
+  cursor: pointer;
+}
+.item__control span:hover {
+  color: rgb(0, 80, 0);
+}
+
+/* item price */
+
+.item__price {
+  position: relative;
+  width: 8rem;
+}
+
+.item__price span {
+  position: absolute;
+  right: 0;
+}
+
+/* ****************************************** */
+/* CART BILL AND CONTROL */
+/* ****************************************** */
+
+.cart__bill_and_control {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  border-top: 0.3rem solid #ccc;
+
+  padding: 3rem 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* **************** */
+/* CART BILL  */
+/* **************** */
+.cart__bill__items {
+  list-style: none;
+  font-size: 1.8rem;
+  padding: 0 3rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart__bill__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Tax and fees */
+.cart__tax__fees {
+  position: relative;
+}
+
+.cart__tax__fees span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.cart__tf__btn {
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgb(156, 154, 154);
+  transition: all 0.3s;
+}
+
+ion-icon {
+  pointer-events: none;
+}
+
+.cart__tf__btn:hover {
+  color: black;
+}
+
+.cart__tf__popup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: absolute;
+  font-size: 1.4rem;
+  padding: 1rem;
+  top: 2rem;
+  left: 11rem;
+  border-radius: 1rem;
+  border-top-left-radius: 0;
+  max-width: 16rem;
+  max-height: 6rem;
+  background-color: rgba(192, 191, 191);
+}
+
+/* Tip input  */
+.cart__bill__tip__input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#tip__value {
+  display: inline;
+  max-width: 6rem;
+  align-self: center;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+/* Final balance */
+.cart__final__balance {
+  font-weight: 800;
+}
+
+/* **************** */
+/* CART CONTROL  */
+/* **************** */
+.cart__control {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+
+  display: flex;
+  justify-content: space-around;
+}
+
+.cart__control button {
+  font-size: 1.8rem;
+  color: grey;
+  transition: all 0.3s;
+}
+
+.cart__control button:hover {
+  color: black;
+}
+
+.cart__control__button {
+  background-color: white;
+  border-radius: 3.6rem;
+  padding: 0.6rem 1.6rem;
+  border-width: 0;
+  box-shadow: 0rem 0.3rem 0.8rem #ccc;
+  transform: translateY(0.5rem);
+  transition: all 0.3s;
+  cursor: pointer;
 }

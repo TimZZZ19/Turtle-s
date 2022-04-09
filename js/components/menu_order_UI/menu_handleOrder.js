@@ -577,7 +577,12 @@ pastaSelectionElement.addEventListener("click", (e) => {
 
 // choose topping
 toppingOptionElement.addEventListener("click", (e) => {
-  if (!e.target.matches(".md.hydrated")) return;
+  // if (!e.target.matches(".md.hydrated")) return;
+  console.log(e.target.action);
+
+  if (!e.target.matches(".topping__qty__btn")) return;
+
+  console.log("button clicked");
 
   const currentItem = getCurrentItemFromOrderBox(e);
 
@@ -585,7 +590,10 @@ toppingOptionElement.addEventListener("click", (e) => {
     .closest(".topping__item")
     .querySelector(".topping__name").textContent;
 
-  const action = e.target.attributes["aria-label"].nodeValue.split(" ")[0];
+  // const action = e.target.attributes["aria-label"].nodeValue.split(" ")[0];
+  const action = e.target.classList.contains("topping__qty__btn_left")
+    ? "remove"
+    : "add";
 
   processToppings(currentItem, clikedToppingName, action);
   processPrice(currentItem);
@@ -621,12 +629,13 @@ addToCart.addEventListener("click", (e) => {
   // store carItem in an array and store the array in local storage
   storeCartItemInLS(cartItem);
 
-  // since current item has been reset,
-  // display it for new order
+  // since current item has been reset, display it to show that
+  // it has been reset and also to turn off the onhold status
   displayComponents(currentItem);
   closeBox();
 
-  // display the added message
+  // display number of items
+  displayCartBtnNumber();
 });
 
 function packDataIntoOneItem(item) {
@@ -686,4 +695,12 @@ function packDataIntoOneItem(item) {
   }
 
   return cartItem;
+}
+
+function displayCartBtnNumber() {
+  const numberOfItems = localStorage.getItem("cartItems")
+    ? JSON.parse(localStorage.getItem("cartItems")).length
+    : 0;
+  const numberOfItemsSpan = document.querySelector(".number__of__items");
+  numberOfItemsSpan.textContent = numberOfItems;
 }

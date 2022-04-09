@@ -5,7 +5,7 @@ export default class cartBtn {
     const cartBtnHTML = `
                           <a class="main-nav-link" id="cart__btn" href="#">
                             Cart |
-                            <span>10</span>
+                            <span class="number__of__items">10</span>
                           </a>
                          `;
     cartBtnElement.innerHTML = cartBtnHTML;
