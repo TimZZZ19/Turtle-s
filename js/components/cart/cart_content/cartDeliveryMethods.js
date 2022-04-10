@@ -1,4 +1,4 @@
-export default class cartDeliveryMethods {
+export default class CartDeliveryMethods {
   static activate() {
     const cartContentArea = document.querySelector(".cart__content__area");
     const deliveryMethodsHTML = ` <div class="delivery__methods">

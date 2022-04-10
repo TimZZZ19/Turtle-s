@@ -3,30 +3,24 @@
 // ************************************************************
 
 // import components
-import cartBtn from "./cartBtn.js";
-import cartBox from "./cartBox.js";
-import cartMain from "./cartMain.js";
+import CartBtn from "./CartBtn.js";
+import CartBox from "./CartBox.js";
+import CartMain from "./CartMain.js";
 
-import cartDeliveryMethods from "./cart_content/cartDeliveryMethods.js";
-import cartItems from "./cart_content/cartItems.js";
-import cartBill from "./cart_content/cartBill.js";
-
-// These are functions needed for editing items in the cart
-// import {
-//   items,
-//   openBox as openOrderBox,
-// } from "../../components/menu_order_UI/menu_handleOrder.js";
+import CartDeliveryMethods from "./cart_content/CartDeliveryMethods.js";
+import CartItems from "./cart_content/CartItems.js";
+import CartBill from "./cart_content/CartBill.js";
 
 // activate components
 // main components of cart
-cartBtn.activate();
-cartBox.activate();
-cartMain.activate();
+CartBtn.activate();
+CartBox.activate();
+CartMain.activate();
 
 // sub components of cart
-cartDeliveryMethods.activate();
-cartItems.activate();
-cartBill.activate();
+CartDeliveryMethods.activate();
+CartItems.activate();
+CartBill.activate();
 
 // ************************************************************
 // UTILITY FUNCTIONS - processing user inputs
@@ -38,7 +32,7 @@ const processDelivery = (order, deliveryUpdateRequest = null) => {
       deliveryUpdateRequest.updateOption;
   }
 
-  cartDeliveryMethods.displayDeliveryMethods(
+  CartDeliveryMethods.displayDeliveryMethods(
     order.deliveryInformation.deliveryMethod
   );
 };
@@ -51,7 +45,7 @@ const processCartItems = (order, itemsUpdateRequest = null) => {
       );
     }
   }
-  cartItems.displayCartItems(order.items);
+  CartItems.displayCartItems(order.items);
 };
 
 const processBill = (order, billUpdateRequest = null) => {
@@ -70,7 +64,7 @@ const processBill = (order, billUpdateRequest = null) => {
     calculateOrderTotal(order);
   }
 
-  cartBill.displayBillItems(
+  CartBill.displayBillItems(
     order.subtotal,
     order.tip,
     order.taxAmount,
@@ -87,16 +81,16 @@ const handleOrder = (order) => {
 };
 
 const openBox = () => {
-  cartBox.openBox();
+  CartBox.openBox();
 };
 
 const closeBox = () => {
-  cartBox.closeBox();
-  cartMain.closeCartMain();
+  CartBox.closeBox();
+  CartMain.closeCartMain();
 };
 
 // ************************************************************
-// ORDER CREATION AND UPDATE
+// DATA - ORDER CREATION AND UPDATE
 // ************************************************************
 
 // COLLECTING DATA - pulling data from local storage
@@ -170,6 +164,9 @@ const order = {
   serviceFee: 0.99,
 };
 
+// also get a copy of menuItems for edit
+const menuItems = JSON.parse(localStorage.getItem("menuItems"));
+
 // ************************************************************
 // EVENT LISTENERS - taking user inputs
 // ************************************************************
@@ -189,8 +186,9 @@ cartBtnElement.addEventListener("click", (e) => {
 
   if (!localStorage.getItem("cartItems")) return; // if LS is empty then just return
 
-  buildOrder(order); // if not empty, pull data from LS and create order
-  cartMain.displayCartMain(); // lay out the 'canvas'
+  // if not empty, pull data from LS and create order
+  buildOrder(order);
+  CartMain.displayCartMain(); // lay out the 'canvas'
   handleOrder(order); // then handle the order data. Hanlde means to process and display the data
 });
 
@@ -220,6 +218,7 @@ tipInputBox.addEventListener("change", (e) => {
   });
 });
 
+// Edit or Remove items
 cartItemsArea.addEventListener("click", (e) => {
   if (!e.target.matches(".item__control__btn")) return;
 
@@ -239,15 +238,22 @@ cartItemsArea.addEventListener("click", (e) => {
     // close cart box and cart page
     closeBox();
 
-    // open order box and render clickedItem on it
-    // const key = clickedItem.foodName.split(" ").join("");
-    // const renderItem = items[key];
-    // openOrderBox(renderItem);
-    // edit item and click update and create a new item
+    // update menuItems with clickedItem's current setting
+    // open order box and rener menuItems[clickedItem]
+
+    // render clickedItem's default info
+    // create a new item using clickedItem's current setting
+    // render the new item
+    // edit item
+    // when clicked update, return the new item
     // replace the old item with this new item using processCartItems
     // update bill with the updated items
   }
 });
+
+// ************************************************************
+//
+// ************************************************************
 
 // Display the most recent number of cart items
 const displayCartBtnNumber = () => {
@@ -259,7 +265,3 @@ const displayCartBtnNumber = () => {
 };
 
 displayCartBtnNumber();
-
-// ************************************************************
-//
-// ************************************************************

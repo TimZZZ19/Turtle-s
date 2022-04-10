@@ -1,4 +1,4 @@
-export default class cartItems {
+export default class CartBill {
   static activate() {
     const cartContentArea = document.querySelector(".cart__bill_and_control");
     const cartBillHTML = ` 

@@ -1,4 +1,4 @@
-export default class cartBtn {
+export default class CartBtn {
   static activate() {
     const cartBtnElement = document.querySelector(".cart__li");
 

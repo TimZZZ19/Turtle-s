@@ -1,4 +1,4 @@
-export default class OrderFormbox {
+export default class OrderBasicForm {
   static activate() {
     // const contentBox = document.getElementsByClassName("formbox__content");
     const contentBox = document.querySelector(".formbox");

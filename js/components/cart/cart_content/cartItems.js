@@ -1,4 +1,4 @@
-export default class cartItems {
+export default class CartItems {
   static activate() {
     const cartContentArea = document.querySelector(".cart__content__area");
     const cartItemsHTML = `<ul class="cart__items">

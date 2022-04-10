@@ -1,4 +1,4 @@
-export default class {
+export default class CartBtn {
   static activate() {
     const cartMainHTML = `
                           <div class="cart__main" style="display:none">

@@ -181,8 +181,6 @@ const processToppings = (currentItem, toppingName = null, action = null) => {
 
 // using the functions above
 const displayComponents = (currentItem) => {
-  OrderBasicForm.displayBasicForm();
-
   processImage(currentItem.foodName);
 
   processName(currentItem.foodName);
@@ -224,20 +222,12 @@ const displayComponents = (currentItem) => {
 };
 
 const openBox = (currentItem) => {
-  const freezeBackground = () => {
-    document.querySelector("html").style.overflowY = "hidden";
-  };
-
-  freezeBackground();
   OrderBox.OpenOrderBox();
+  OrderBasicForm.displayBasicForm();
   displayComponents(currentItem);
 };
 
 const closeBox = () => {
-  const unfreezeBackground = () => {
-    document.querySelector("html").style.overflowY = null;
-  };
-
   OrderBox.closeOrderBox();
   OrderBasicForm.closeBasicForm();
   SizeOptions.closeOptions();
@@ -249,8 +239,6 @@ const closeBox = () => {
   SubItems.closeOptions("extra");
 
   Toppings.closeOptions();
-
-  unfreezeBackground();
 };
 
 // ************************************************************
@@ -260,7 +248,7 @@ const closeBox = () => {
 // Create kvps for every food item, these kvps will be used to store
 // user data and be constantly updated and accessed.
 const scrapData = (menuItems) => {
-  const items = [];
+  const items = {};
 
   menuItems.forEach((item) => {
     // get current item's key and create an object for it
@@ -437,6 +425,10 @@ const scrapData = (menuItems) => {
 const menuItems = document.querySelectorAll(".menu-item");
 const items = scrapData(menuItems);
 
+// Store a copy of items in LS, so it will be used in cartController.
+if (!localStorage.getItem("menuItems"))
+  localStorage.setItem("menuItems", JSON.stringify(items));
+
 // *********************************************************
 // EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
 // *********************************************************
@@ -477,7 +469,6 @@ menuArea.addEventListener("click", (e) => {
     return;
 
   const currentItem = getCurrentItemFromMenuPage(e);
-  console.log(currentItem);
 
   openBox(currentItem);
 
@@ -705,5 +696,3 @@ function displayCartBtnNumber() {
   const numberOfItemsSpan = document.querySelector(".number__of__items");
   numberOfItemsSpan.textContent = numberOfItems;
 }
-
-// export { items, openBox };
