@@ -89,8 +89,8 @@ export default class cartItems {
                   <ul class="item__composition">
                   </ul>
                   <div class="item__control">
-                    <span class="item__edit">EDIT</span> 
-                    <span class="item__remove">REMOVE</span>
+                    <span class="item__control__btn item__edit">EDIT</span> 
+                    <span class="item__control__btn item__remove">REMOVE</span>
                   </div>
                 </div>
               </div>

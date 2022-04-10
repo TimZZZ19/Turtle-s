@@ -477,6 +477,7 @@ menuArea.addEventListener("click", (e) => {
     return;
 
   const currentItem = getCurrentItemFromMenuPage(e);
+  console.log(currentItem);
 
   openBox(currentItem);
 
@@ -704,3 +705,5 @@ function displayCartBtnNumber() {
   const numberOfItemsSpan = document.querySelector(".number__of__items");
   numberOfItemsSpan.textContent = numberOfItems;
 }
+
+// export { items, openBox };

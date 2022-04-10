@@ -109,7 +109,7 @@ export default class cartItems {
     const deliveryMethodSpan = document.querySelector(".cart__deliveryMethod");
     const deliveryFeeSpan = document.querySelector(".cart__deliveryFee");
 
-    deliveryMethodSpan.textContent = `${capitalizeFirst(deliveryMethod)}`;
+    deliveryMethodSpan.textContent = `Delivery fee`;
     deliveryFeeSpan.textContent = `${deliveryFee}`;
 
     function capitalizeFirst(str) {

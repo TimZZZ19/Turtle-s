@@ -3,19 +3,23 @@
 /* **************** */
 
 #cart__btn {
-  display: inline-block;
   border-radius: 36px;
   padding: 0.5rem 1rem;
   background-color: #b98f71;
   color: #fff;
   width: 9rem;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1.8rem;
 }
 
 #cart__btn:hover {
   color: #ccc;
 }
 
-#cart__btn span {
+.number__of__items {
   font-size: 1.4rem;
 }
 
