@@ -2,7 +2,7 @@ export default class SizeOptions {
   static activate() {
     const formControl = document.querySelector(".order__form__control");
 
-    const element = `<div class="order__size__options" style="display: none;">
+    const element = `<div class="order__size__options" >
                         <p>Choose your size : </p>
                         <div class="size_options__container">
                           <div>
@@ -40,7 +40,6 @@ export default class SizeOptions {
   }
 
   static renderSize(currentSize, mediumPrice) {
-    document.querySelector(".order__size__options").style.display = null;
     const mediumOption = document.querySelector("#medium");
 
     if (!mediumPrice) {
@@ -58,9 +57,5 @@ export default class SizeOptions {
     if (currentSize === "large") {
       document.querySelector("#large").checked = true;
     }
-  }
-
-  static closeOptions() {
-    document.querySelector(".order__size__options").style.display = "none";
   }
 }

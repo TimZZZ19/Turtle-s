@@ -3,7 +3,7 @@ export default class Toppings {
     const formControl = document.querySelector(".order__form__control");
 
     const element = `
-                    <div class="order__item__container order__toppings__container" style="display: none;">
+                    <div class="order__item__container order__toppings__container" >
                       <p> Choose your toppping(s) : </p>
                       <div class="order__item__options order__topping__options">
                       </div>
@@ -14,9 +14,6 @@ export default class Toppings {
   }
 
   static renderToppings(toppings) {
-    const container = document.querySelector(".order__toppings__container");
-    container.style.display = null;
-
     const options = document.querySelector(`.order__topping__options`);
     while (options.firstChild) options.removeChild(options.firstChild);
 
@@ -54,13 +51,5 @@ export default class Toppings {
               </span>
             </div>
           `;
-  }
-
-  static closeOptions() {
-    const container = document.querySelector(".order__toppings__container");
-    container.style.display = "none";
-
-    const options = document.querySelector(`.order__topping__options`);
-    while (options.firstChild) options.removeChild(options.firstChild);
   }
 }

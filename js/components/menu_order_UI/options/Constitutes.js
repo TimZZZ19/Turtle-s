@@ -2,7 +2,7 @@ export default class Constitutes {
   static activate(constituteType) {
     const formControl = document.querySelector(".order__form__control");
 
-    const element = `<div class="constitutes__container ${constituteType}s__container" style="display: none;">
+    const element = `<div class="constitutes__container ${constituteType}s__container" >
                         <label for="${constituteType}s"> Pick your ${constituteType}: </label>
 
                         <select  id="${constituteType}s" name="${constituteType}s" class="constitute__options ${constituteType}__options">
@@ -19,9 +19,6 @@ export default class Constitutes {
     chozenConstitute,
     constituteOptions
   ) {
-    const container = document.querySelector(`.${constituteType}s__container`);
-    container.style.display = null;
-
     const options = document.querySelector(`.${constituteType}__options`);
     while (options.firstChild) options.removeChild(options.firstChild);
 
@@ -39,12 +36,5 @@ export default class Constitutes {
               ${constituteToBeRendered} 
             </option>
           `;
-  }
-
-  static closeOptions(constituteType) {
-    const container = document.querySelector(`.${constituteType}s__container`);
-    container.style.display = "none";
-    const options = document.querySelector(`.${constituteType}__options`);
-    while (options.firstChild) options.removeChild(options.firstChild);
   }
 }
