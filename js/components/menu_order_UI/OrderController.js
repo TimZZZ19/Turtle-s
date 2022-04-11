@@ -5,6 +5,14 @@ import Constitutes from "./options/Constitutes.js";
 import SubItems from "./options/SubItems.js";
 import Toppings from "./options/Toppings.js";
 
+// ************************************************************
+// INITIALIZATION - components activation and local db creation
+// ************************************************************
+
+// *****************
+// Components Activation
+// ****************
+
 // activate form and form components
 OrderBox.activate();
 OrderBasicForm.activate();
@@ -18,6 +26,194 @@ SubItems.activate("substitute");
 SubItems.activate("extra");
 
 Toppings.activate();
+
+// *****************
+// Local Database Creation
+// ****************
+
+// Store every menu item as an object in local storage.
+const storeMenuItemsInLS = (menuItemElements) => {
+  menuItemElements.forEach((item) => {
+    // If LS has already stored this item, then skip to the next loop;
+    if (localStorage.getItem(item.key)) return;
+
+    // if not, then make an object out of current item and store it in LS.
+    const obj = {};
+
+    // methods to add properties to each item
+    const addLSKey = () => {
+      obj.LSkey = item.key;
+    };
+    const addFoodName = () => {
+      obj.foodName = item.querySelector(".food-name").textContent;
+    };
+    const addDescription = () => {
+      const foodDescriptionElement = item.querySelector(".food-description");
+      obj.description = foodDescriptionElement
+        ? foodDescriptionElement.textContent
+        : null;
+    };
+    const addQuantity = () => {
+      obj.quantity = 0;
+    };
+    const addSize = () => {
+      const priceElement = item.querySelector(".food-price");
+      const priceContent = priceElement.textContent;
+
+      if (!priceElement.classList.contains("size__options")) return;
+
+      const smallPrice = priceContent.split(",")[0].slice(-5);
+      const mediumPrice = priceContent.includes("M")
+        ? priceContent.split(",")[1].slice(-5)
+        : null;
+      const largePrice = priceContent.includes("M")
+        ? priceContent.split(",")[2].slice(-5)
+        : priceContent.split(",")[1].slice(-5);
+
+      // set sizeInfo property
+      obj.sizeInfo = {};
+      // add chozenSize and set small as default
+      obj.sizeInfo.chozenSize = "small";
+
+      // add sizePricePairs
+      obj.sizeInfo.sizePricePairs = {
+        small: smallPrice,
+        medium: mediumPrice,
+        large: largePrice,
+      };
+    };
+    const addUnitPrice = () => {
+      const priceElement = item.querySelector(".food-price");
+      const priceContent = Number(priceElement.textContent);
+      const sizeInfo = obj.sizeInfo;
+
+      if (sizeInfo) {
+        const sizeKey = sizeInfo.chozenSize;
+        const kvp = sizeInfo.sizePricePairs;
+        obj.unitPrice = kvp[sizeKey];
+      } else {
+        obj.unitPrice = priceContent;
+      }
+    };
+    const addCurrentPrice = () => {
+      obj["currentPrice"] = 0;
+    };
+
+    // Constitute can be dressing or pasta
+    const addConstitutes = (constituteType) => {
+      const constituteElements = item
+        .closest(".menu-group")
+        .querySelectorAll(`.${constituteType}`);
+
+      if (constituteElements.length === 0) return;
+
+      const propertyName = `${constituteType}Info`;
+      const chozenConsitute = `chozen${capitalizeFirst(constituteType)}`;
+      const constituteOptions = `${constituteType}Options`;
+
+      obj[propertyName] = {};
+      obj[propertyName][chozenConsitute] = null;
+      obj[propertyName][constituteOptions] = [];
+
+      constituteElements.forEach((element) => {
+        obj[propertyName][constituteOptions].push(element.textContent);
+      });
+
+      obj[propertyName][chozenConsitute] =
+        obj[propertyName][constituteOptions][0];
+    };
+
+    // Subitems can be substitutes, extras
+    const addSubItems = (subItem) => {
+      const subItemElements = item.querySelectorAll(
+        `.${subItem}__in__sub_item`
+      );
+      const subItemGroupDescription = item
+        .closest(".menu-group")
+        .querySelectorAll(`.${subItem}__in__group_description`);
+
+      if (subItemElements.length === 0 && subItemGroupDescription.length === 0)
+        return;
+
+      const propertyName = `${subItem}s`;
+      obj[propertyName] = [];
+
+      fillInSubItems(subItemElements);
+      fillInSubItems(subItemGroupDescription);
+
+      function fillInSubItems(subItemElements) {
+        if (subItemElements.length !== 0) {
+          subItemElements.forEach((element) => {
+            const subItemNameElement = element.querySelector(
+              `.${subItem}__name`
+            );
+            const subItemPriceElement = element.querySelector(
+              `.${subItem}__price`
+            );
+
+            const subItemObject = {
+              name: subItemNameElement.textContent,
+              price: Number(subItemPriceElement.textContent),
+              isChecked: false,
+            };
+            obj[propertyName].push(subItemObject);
+          });
+        }
+      }
+    };
+
+    const addToppings = () => {
+      const toppingElements = item
+        .closest(".menu-group")
+        .querySelectorAll(".topping");
+
+      if (toppingElements.length === 0) return;
+
+      const toppingPrice = Number(
+        item.querySelector(".topping__price").textContent
+      );
+      obj.toppingInfo = {};
+      obj.toppingInfo["toppingPrice"] = toppingPrice;
+      obj.toppingInfo["toppings"] = [];
+
+      toppingElements.forEach((topping) => {
+        const toppingObj = {
+          toppingName: topping.textContent,
+          quantity: 0,
+        };
+        obj.toppingInfo.toppings.push(toppingObj);
+      });
+    };
+
+    // const addaddToCartBtn = () => {
+    //   obj.addToCartBtn = item.querySelector(".order-button");
+    // };
+
+    // call above methods to build obj
+    addLSKey();
+    addFoodName();
+    addDescription();
+    addQuantity();
+    addSize();
+    addUnitPrice();
+    addCurrentPrice();
+
+    addConstitutes("dressing");
+    addConstitutes("pasta");
+
+    addSubItems("substitute");
+    addSubItems("extra");
+
+    addToppings();
+    // addToCartBtn();
+
+    // Store current item as this obj in LS
+    localStorage.setItem(item.key, JSON.stringify(obj));
+  });
+};
+
+const menuItemElements = document.querySelectorAll(".menu-item");
+storeMenuItemsInLS(menuItemElements);
 
 // ***********************************************************
 // UTILITY FUNCTIONS
@@ -34,7 +230,9 @@ function capitalizeFirst(str) {
     : str;
 }
 
-// functions for processing data and rendering form components
+// Functions for processing data and rendering form components
+
+// Constant food item information: foodImage, foodName, description
 const processImage = (foodName) => {
   const foodNameNoSpace = foodName.split(" ").join("");
 
@@ -53,11 +251,22 @@ const processDescription = (description) => {
   OrderBasicForm.renderDescription(description);
 };
 
-const processQuantity = (currentItem, action = null) => {
-  if (action === "add") currentItem.quantity++;
-  if (action === "remove" && currentItem.quantity > 0) currentItem.quantity--;
+// Variable food item information: quantity, size, price,
+// subItem(extra, substitute), constitute(dressing, pasta), toppings
 
-  OrderBasicForm.renderQuantity(currentItem.quantity, currentItem.addToCartBtn);
+const processQuantity = (currentItem, updateQtyRequest = null) => {
+  if (updateQtyRequest) updateQty(updateQtyRequest);
+
+  OrderBasicForm.renderQuantity(currentItem.quantity);
+
+  function updateQty({ updateOption, LSkey }) {
+    if (updateOption === "add") {
+      currentItem.quantity++;
+    }
+    if (updateOption === "remove" && currentItem.quantity > 0) {
+      currentItem.quantity--;
+    }
+  }
 };
 
 const processSize = (currentItem, userSelectedSize = null) => {
@@ -181,13 +390,18 @@ const processToppings = (currentItem, toppingName = null, action = null) => {
 
 // using the functions above
 const displayComponents = (currentItem) => {
+  // Basic food item information: foodImage, foodName, description
+
   processImage(currentItem.foodName);
 
   processName(currentItem.foodName);
 
   processDescription(currentItem.description);
 
-  processQuantity(currentItem);
+  // Variable food item information: quantity, size, price,
+  // subItem(extra, substitute), constitute(dressing, pasta), toppings
+
+  processQuantity(currentItem.quantity);
 
   if (currentItem.sizeInfo) {
     processSize(currentItem);
@@ -222,8 +436,11 @@ const displayComponents = (currentItem) => {
 };
 
 const openBox = (currentItem) => {
+  // Lay out the canvas
   OrderBox.OpenOrderBox();
   OrderBasicForm.displayBasicForm();
+
+  // Draw the currentItem on the canvas
   displayComponents(currentItem);
 };
 
@@ -240,194 +457,6 @@ const closeBox = () => {
 
   Toppings.closeOptions();
 };
-
-// ************************************************************
-// SCRAPPING DATA FROM HTML
-// ************************************************************
-
-// Create kvps for every food item, these kvps will be used to store
-// user data and be constantly updated and accessed.
-const scrapData = (menuItems) => {
-  const items = {};
-
-  menuItems.forEach((item) => {
-    // get current item's key and create an object for it
-    const key = item.key;
-    items[key] = {};
-
-    // methods to add properties to each item
-    const addFoodName = () => {
-      items[key].foodName = item.querySelector(".food-name").textContent;
-    };
-    const addDescription = () => {
-      const foodDescriptionElement = item.querySelector(".food-description");
-      items[key].description = foodDescriptionElement
-        ? foodDescriptionElement.textContent
-        : null;
-    };
-    const addQuantity = () => {
-      items[key].quantity = 0;
-    };
-    const addSize = () => {
-      const priceElement = item.querySelector(".food-price");
-      const priceContent = priceElement.textContent;
-
-      if (!priceElement.classList.contains("size__options")) return;
-
-      const smallPrice = priceContent.split(",")[0].slice(-5);
-      const mediumPrice = priceContent.includes("M")
-        ? priceContent.split(",")[1].slice(-5)
-        : null;
-      const largePrice = priceContent.includes("M")
-        ? priceContent.split(",")[2].slice(-5)
-        : priceContent.split(",")[1].slice(-5);
-
-      // set sizeInfo property
-      items[key].sizeInfo = {};
-      // add chozenSize and set small as default
-      items[key].sizeInfo.chozenSize = "small";
-
-      // add sizePricePairs
-      items[key].sizeInfo.sizePricePairs = {
-        small: smallPrice,
-        medium: mediumPrice,
-        large: largePrice,
-      };
-    };
-    const addUnitPrice = () => {
-      const priceElement = item.querySelector(".food-price");
-      const priceContent = Number(priceElement.textContent);
-      const sizeInfo = items[key].sizeInfo;
-
-      if (sizeInfo) {
-        const sizeKey = sizeInfo.chozenSize;
-        const kvp = sizeInfo.sizePricePairs;
-        items[key].unitPrice = kvp[sizeKey];
-      } else {
-        items[key].unitPrice = priceContent;
-      }
-    };
-    const addCurrentPrice = () => {
-      items[key]["currentPrice"] = 0;
-    };
-
-    // Constitute can be dressing or pasta
-    const addConstitutes = (constituteType) => {
-      const constituteElements = item
-        .closest(".menu-group")
-        .querySelectorAll(`.${constituteType}`);
-
-      if (constituteElements.length === 0) return;
-
-      const propertyName = `${constituteType}Info`;
-      const chozenConsitute = `chozen${capitalizeFirst(constituteType)}`;
-      const constituteOptions = `${constituteType}Options`;
-
-      items[key][propertyName] = {};
-      items[key][propertyName][chozenConsitute] = null;
-      items[key][propertyName][constituteOptions] = [];
-
-      constituteElements.forEach((element) => {
-        items[key][propertyName][constituteOptions].push(element.textContent);
-      });
-
-      items[key][propertyName][chozenConsitute] =
-        items[key][propertyName][constituteOptions][0];
-    };
-
-    // Subitems can be substitutes, extras
-    const addSubItems = (subItem) => {
-      const subItemElements = item.querySelectorAll(
-        `.${subItem}__in__sub_item`
-      );
-      const subItemGroupDescription = item
-        .closest(".menu-group")
-        .querySelectorAll(`.${subItem}__in__group_description`);
-
-      if (subItemElements.length === 0 && subItemGroupDescription.length === 0)
-        return;
-
-      const propertyName = `${subItem}s`;
-      items[key][propertyName] = [];
-
-      fillInSubItems(subItemElements);
-      fillInSubItems(subItemGroupDescription);
-
-      function fillInSubItems(subItemElements) {
-        if (subItemElements.length !== 0) {
-          subItemElements.forEach((element) => {
-            const subItemNameElement = element.querySelector(
-              `.${subItem}__name`
-            );
-            const subItemPriceElement = element.querySelector(
-              `.${subItem}__price`
-            );
-
-            const subItemObject = {
-              name: subItemNameElement.textContent,
-              price: Number(subItemPriceElement.textContent),
-              isChecked: false,
-            };
-            items[key][propertyName].push(subItemObject);
-          });
-        }
-      }
-    };
-
-    const addToppings = () => {
-      const toppingElements = item
-        .closest(".menu-group")
-        .querySelectorAll(".topping");
-
-      if (toppingElements.length === 0) return;
-
-      const toppingPrice = Number(
-        item.querySelector(".topping__price").textContent
-      );
-      items[key].toppingInfo = {};
-      items[key].toppingInfo["toppingPrice"] = toppingPrice;
-      items[key].toppingInfo["toppings"] = [];
-
-      toppingElements.forEach((topping) => {
-        const toppingObj = {
-          toppingName: topping.textContent,
-          quantity: 0,
-        };
-        items[key].toppingInfo.toppings.push(toppingObj);
-      });
-    };
-
-    const addaddToCartBtn = () => {
-      items[key].addToCartBtn = item.querySelector(".order-button");
-    };
-
-    // call above methods to scrape data
-    addFoodName();
-    addDescription();
-    addQuantity();
-    addSize();
-    addUnitPrice();
-    addCurrentPrice();
-
-    addConstitutes("dressing");
-    addConstitutes("pasta");
-
-    addSubItems("substitute");
-    addSubItems("extra");
-
-    addToppings();
-    addaddToCartBtn();
-  });
-
-  return items;
-};
-
-const menuItems = document.querySelectorAll(".menu-item");
-const items = scrapData(menuItems);
-
-// Store a copy of items in LS, so it will be used in cartController.
-if (!localStorage.getItem("menuItems"))
-  localStorage.setItem("menuItems", JSON.stringify(items));
 
 // *********************************************************
 // EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
@@ -453,14 +482,20 @@ const dressingSelectionElement = document.querySelector(".dressing__options");
 const pastaSelectionElement = document.querySelector(".pasta__options");
 const toppingOptionElement = document.querySelector(".order__topping__options");
 
-// Utility function to get the current item after clicking a menu item
+// Utility functions to get the current item
+const getItemFromLS = (foodName) => {
+  const key = foodName.split(" ").join("");
+  const menuItems = JSON.parse(localStorage.getItem("menuItems"));
+  const currentItem = menuobj;
+  return currentItem;
+};
+
 const getCurrentItemFromOrderBox = (e) => {
   const foodName = e.target
     .closest(".order__form")
     .querySelector(".order__name").textContent;
-  const currentKey = foodName.split(" ").join("");
-  const currentItem = items[currentKey];
-  return currentItem;
+
+  return getItemFromLS(foodName);
 };
 
 // open orderbox
@@ -469,23 +504,18 @@ menuArea.addEventListener("click", (e) => {
     return;
 
   const currentItem = getCurrentItemFromMenuPage(e);
+  console.log(currentItem);
 
   openBox(currentItem);
 
   function getCurrentItemFromMenuPage(e) {
-    let foodName;
+    // We get foodName either from the food-name span
+    // or the order button that contains it.
+    const foodName = e.target.matches(".food-name")
+      ? e.target.textContent
+      : e.target.querySelector(".food-name").textContent;
 
-    if (e.target.matches(".order-button")) {
-      foodName = e.target.querySelector(".food-name").textContent;
-    }
-
-    if (e.target.matches(".food-name")) {
-      foodName = e.target.textContent;
-    }
-
-    const key = foodName.split(" ").join("");
-
-    return items[key];
+    return getItemFromLS(foodName);
   }
 });
 
@@ -504,7 +534,10 @@ formContainer.addEventListener("click", (e) => {
 orderAddButton.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
 
-  processQuantity(currentItem, "add");
+  processQuantity(currentItem.quantity, {
+    updateOption: "add",
+    LSkey: currentItem.key,
+  });
   processPrice(currentItem);
 });
 
@@ -512,7 +545,10 @@ orderAddButton.addEventListener("click", (e) => {
 orderRemoveButton.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
 
-  processQuantity(currentItem, "remove");
+  processQuantity(currentItem.quantity, {
+    updateOption: "remove",
+    LSkey: currentItem.key,
+  });
   processPrice(currentItem);
 });
 

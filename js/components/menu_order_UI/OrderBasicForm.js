@@ -56,32 +56,32 @@ export default class OrderBasicForm {
       : "";
   }
 
-  static renderQuantity(quantity, addToCartBtn) {
+  static renderQuantity(quantity) {
     const orderRemoveButton = document.querySelector("#order__qty__btn_left");
     const displayedQuantity = document.querySelector(".order__actual__qty");
 
-    const addToCart = document.querySelector(".Add__to__cart");
+    // const addToCart = document.querySelector(".Add__to__cart");
 
     if (quantity <= 0) {
       if (!orderRemoveButton.classList.contains("qty__btn_inactive"))
         orderRemoveButton.classList.add("qty__btn_inactive");
 
-      if (!addToCart.classList.contains("Add__to__cart_inactive"))
-        addToCart.classList.add("Add__to__cart_inactive");
+      // if (!addToCart.classList.contains("Add__to__cart_inactive"))
+      // addToCart.classList.add("Add__to__cart_inactive");
 
-      if (addToCartBtn && addToCartBtn.classList.contains("order__on__hold"))
-        addToCartBtn.classList.remove("order__on__hold");
+      // if (addToCartBtn && addToCartBtn.classList.contains("order__on__hold"))
+      //   addToCartBtn.classList.remove("order__on__hold");
     }
 
     if (quantity > 0) {
       if (orderRemoveButton.classList.contains("qty__btn_inactive"))
         orderRemoveButton.classList.remove("qty__btn_inactive");
 
-      if (addToCart.classList.contains("Add__to__cart_inactive"))
-        addToCart.classList.remove("Add__to__cart_inactive");
+      // if (addToCart.classList.contains("Add__to__cart_inactive"))
+      // addToCart.classList.remove("Add__to__cart_inactive");
 
-      if (addToCartBtn && !addToCartBtn.classList.contains("order__on__hold"))
-        addToCartBtn.classList.add("order__on__hold");
+      // if (addToCartBtn && !addToCartBtn.classList.contains("order__on__hold"))
+      //   addToCartBtn.classList.add("order__on__hold");
     }
 
     displayedQuantity.textContent = quantity;
