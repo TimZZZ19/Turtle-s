@@ -9,7 +9,7 @@ export default class SubItems {
     if (subitem === "extra") title = "Add extra";
 
     const element = `
-                    <div class="order__item__container order__${subitem}s__container" >
+                    <div class="order__item__container order__${subitem}s__container" style="display: none;">
                       <p>${title} : </p>
                       <div class="order__item__options order__${subitem}__options">
                       </div>
@@ -20,8 +20,12 @@ export default class SubItems {
   }
 
   static renderSubItems(subItemType, subItems) {
+    const container = document.querySelector(
+      `.order__${subItemType}s__container`
+    );
+    container.style.display = null;
+
     const options = document.querySelector(`.order__${subItemType}__options`);
-    while (options.firstChild) options.removeChild(options.firstChild);
 
     subItems.forEach((item) => {
       const itemToBeRendered = this.getItem(
@@ -62,5 +66,16 @@ export default class SubItems {
               </span> 
             </div>
           `;
+  }
+
+  static closeSubItemOptions(subItemType) {
+    const container = document.querySelector(
+      `.order__${subItemType}s__container`
+    );
+
+    container.style.display = "none";
+
+    const options = document.querySelector(`.order__${subItemType}__options`);
+    while (options.firstChild) options.removeChild(options.firstChild);
   }
 }

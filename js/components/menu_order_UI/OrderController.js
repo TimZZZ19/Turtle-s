@@ -445,6 +445,15 @@ const openBox = (currentItem) => {
 const closeBox = () => {
   OrderPageBNG.closeOrderPageBNG();
   OrderBasicForm.closeBasicForm();
+
+  SizeOptions.closeSizeOptions();
+  Constitutes.closeConstituteOptions("dressing");
+  Constitutes.closeConstituteOptions("pasta");
+
+  SubItems.closeSubItemOptions("substitute");
+  SubItems.closeSubItemOptions("extra");
+
+  Toppings.closeToppingOptions();
 };
 
 // *********************************************************

@@ -1,4 +1,6 @@
-// Menu navbar indicator
+// **************************************************************
+// MENU NAVBAR INDICATOR
+// **************************************************************
 const menuNavbar = document.querySelector(".menu-navbar");
 let activeCategory = menuNavbar.firstElementChild;
 activeCategory.classList.add("menu-category-active");
@@ -25,7 +27,10 @@ menuNavbar.addEventListener("click", (e) => {
   });
 });
 
-// Scroll progress indicator using Intersection Observer API
+// **************************************************************
+// SCROLLING PROGRESS INDICATOR USING Intersection Observer API
+// **************************************************************
+
 const menuGroups = document.querySelectorAll(".menu-group");
 const options = {
   root: null,
@@ -49,7 +54,10 @@ menuGroups.forEach((menuGroup) => {
   indicatorGroupObserver.observe(menuGroup);
 });
 
-// Reveal menu groups as scrolling
+// *********************************************************
+// REVEAL MENU GROUPS AS SCROLLING
+// *********************************************************
+
 const allGroups = document.querySelectorAll(".menu-group");
 const revealGroup = function (entries, observer) {
   const [entry] = entries;
@@ -66,7 +74,9 @@ allGroups.forEach(function (group) {
   group.classList.add("menu-group-hidden");
 });
 
-// Use food name as unique id and assign it to each menu item
+// *********************************************************
+// ASSIGN EACH MENU ITEM A UNIQUE ID (THE NAME OF THE ITEM)
+// *********************************************************
 
 function assignUniqueIDs(menuItems) {
   menuItems.forEach((item) => {
@@ -80,3 +90,11 @@ function assignUniqueIDs(menuItems) {
 
 const menuItems = document.querySelectorAll(".menu-item");
 assignUniqueIDs(menuItems);
+
+// *********************************************************
+// SCROLL FROM THE TOP ONREFRESHING
+// *********************************************************
+
+window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+};
