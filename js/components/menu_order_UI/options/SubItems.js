@@ -64,7 +64,7 @@ export default class SubItems {
                 <label> ${capitlizeFirst(name)}  </label>
               </span>
               <span class="${subItemType}__price">
-                + $&nbsp;${price}
+                + $&nbsp;${price.toFixed(2)}
               </span> 
             </div>
           `;

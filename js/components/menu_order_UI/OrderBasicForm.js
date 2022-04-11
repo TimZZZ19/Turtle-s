@@ -37,7 +37,19 @@ export default class OrderBasicForm {
     form.style.display = null;
   }
 
-  static renderImage(imgElement) {
+  static renderImage(foodName) {
+    const prepareImgElement = (foodName) => {
+      const foodNameNoSpace = foodName.split(" ").join("");
+
+      const currentFoodImg = document.createElement("img");
+      currentFoodImg.src = `/img/order-imgs/${foodNameNoSpace}.jpg`;
+      currentFoodImg.alt = foodNameNoSpace;
+
+      return currentFoodImg;
+    };
+
+    const imgElement = prepareImgElement(foodName);
+
     const foodImgElement = document.querySelector(".order__image");
     if (foodImgElement.firstChild) {
       foodImgElement.removeChild(foodImgElement.firstChild);

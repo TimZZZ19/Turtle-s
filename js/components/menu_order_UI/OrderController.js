@@ -1,4 +1,4 @@
-import OrderBox from "./OrderBox.js";
+import OrderPageBNG from "./OrderPageBNG.js";
 import OrderBasicForm from "./OrderBasicForm.js";
 import SizeOptions from "./options/SizeOptions.js";
 import Constitutes from "./options/Constitutes.js";
@@ -14,7 +14,7 @@ import Toppings from "./options/Toppings.js";
 // ****************
 
 // activate form and form components
-OrderBox.activate();
+OrderPageBNG.activate();
 OrderBasicForm.activate();
 SizeOptions.activate();
 
@@ -73,7 +73,7 @@ const storeMenuItemsInLS = (menuItemElements) => {
       // set sizeInfo property
       obj.sizeInfo = {};
       // add chozenSize and set small as default
-      obj.sizeInfo.chozenSize = "small";
+      obj.sizeInfo.chozenSize = null;
 
       // add sizePricePairs
       obj.sizeInfo.sizePricePairs = {
@@ -208,6 +208,7 @@ const storeMenuItemsInLS = (menuItemElements) => {
     // addToCartBtn();
 
     // Store current item as this obj in LS
+
     localStorage.setItem(item.key, JSON.stringify(obj));
   });
 };
@@ -218,8 +219,6 @@ storeMenuItemsInLS(menuItemElements);
 // ***********************************************************
 // UTILITY FUNCTIONS
 // ***********************************************************
-// At this level, we only care about processing data
-// and sending that data to the rendering part.
 
 //capitalize the first letter
 function capitalizeFirst(str) {
@@ -230,146 +229,71 @@ function capitalizeFirst(str) {
     : str;
 }
 
+const updateLocalStorage = (item) => {
+  localStorage.setItem(`${item.LSkey}`, JSON.stringify(item));
+};
+
 // Functions for processing data and rendering form components
-
-// Constant food item information: foodImage, foodName, description
-const processImage = (foodName) => {
-  const foodNameNoSpace = foodName.split(" ").join("");
-
-  const currentFoodImg = document.createElement("img");
-  currentFoodImg.src = `/img/order-imgs/${foodNameNoSpace}.jpg`;
-  currentFoodImg.alt = foodNameNoSpace;
-
-  OrderBasicForm.renderImage(currentFoodImg);
-};
-
-const processName = (foodName) => {
-  OrderBasicForm.renderName(foodName);
-};
-
-const processDescription = (description) => {
-  OrderBasicForm.renderDescription(description);
-};
 
 // Variable food item information: quantity, size, price,
 // subItem(extra, substitute), constitute(dressing, pasta), toppings
 
-const processQuantity = (currentItem, updateQtyRequest = null) => {
-  if (updateQtyRequest) updateQty(updateQtyRequest);
+const updateQuantity = ({ updateOption, currentItem }) => {
+  if (updateOption === "add") currentItem.quantity++;
+
+  if (updateOption === "remove" && currentItem.quantity > 0)
+    currentItem.quantity--;
 
   OrderBasicForm.renderQuantity(currentItem.quantity);
 
-  function updateQty({ updateOption, LSkey }) {
-    if (updateOption === "add") {
-      currentItem.quantity++;
-    }
-    if (updateOption === "remove" && currentItem.quantity > 0) {
-      currentItem.quantity--;
-    }
-  }
+  updateLocalStorage(currentItem);
 };
 
-const processSize = (currentItem, userSelectedSize = null) => {
-  if (userSelectedSize) currentItem.sizeInfo.chozenSize = userSelectedSize;
+const updateSize = ({ updateValue, currentItem }) => {
+  currentItem.sizeInfo.chozenSize = updateValue;
   const currentSize = currentItem.sizeInfo.chozenSize;
   const mediumPrice = currentItem.sizeInfo.sizePricePairs["meidum"];
+
   SizeOptions.renderSize(currentSize, mediumPrice);
-};
 
-const processPrice = (currentItem) => {
-  // factors that are related to price calculation
-  const currentQuantity = currentItem.quantity;
-  const sizeInfo = currentItem.sizeInfo;
-  const currentSubstitutes = currentItem.substitutes;
-  const currentExtras = currentItem.extras;
-  const currentToppingInfo = currentItem.toppingInfo;
-
-  let currentPrice = currentItem.unitPrice;
-
-  // if different sizes are present for this item,
-  // then set the current price to whatever the current size-price is
-  if (sizeInfo) {
-    const currentSize = sizeInfo.chozenSize;
-    const currentSizePrice = sizeInfo.sizePricePairs[currentSize];
-    currentPrice = currentSizePrice;
-  }
-
-  // if the current item has substitutes, add substitutes prices to its price
-  if (currentSubstitutes) {
-    currentSubstitutes.forEach((substitute) => {
-      if (substitute.isChecked) {
-        currentPrice = +currentPrice + +substitute.price;
-      }
-    });
-  }
-
-  // if the current item has extras, add extras prices to its price
-  if (currentExtras) {
-    currentExtras.forEach((extra) => {
-      if (extra.isChecked) {
-        currentPrice = +currentPrice + +extra.price;
-      }
-    });
-  }
-
-  // if this current item has toppings information, add topping price to current price
-  if (currentToppingInfo) {
-    const currentToppingPrice = Number(currentToppingInfo.toppingPrice);
-    let totalToppingQty = 0;
-
-    currentToppingInfo.toppings.forEach((topping) => {
-      if (topping.quantity > 0) {
-        totalToppingQty += Number(topping.quantity);
-      }
-    });
-
-    currentPrice = Number(currentPrice) + currentToppingPrice * totalToppingQty;
-  }
-
-  currentItem.currentPrice = currentPrice * currentQuantity;
-
-  OrderBasicForm.renderPrice(currentItem.currentPrice);
+  updateLocalStorage(currentItem);
 };
 
 // dressing, pasta
-const processConstitutes = (
-  constituteType,
-  currentItem,
-  chozenConstitute = null
-) => {
-  const propertyName = `${constituteType}Info`;
-  const chozenConsitute = `chozen${capitalizeFirst(constituteType)}`;
-  const constituteOptions = `${constituteType}Options`;
+const updateConstitute = ({ updateOption, updateValue, currentItem }) => {
+  const propertyName = `${updateOption}Info`;
+  const chozenConsitute = `chozen${capitalizeFirst(updateOption)}`;
+  const constituteOptions = `${updateOption}Options`;
 
-  if (chozenConstitute) {
-    currentItem[propertyName][chozenConsitute] = chozenConstitute;
-  }
+  currentItem[propertyName][chozenConsitute] = updateValue;
 
   Constitutes.renderConstitutes(
-    constituteType,
+    updateOption,
     currentItem[propertyName][chozenConsitute],
     currentItem[propertyName][constituteOptions]
   );
+
+  updateLocalStorage(currentItem);
 };
 
 // SubItems can be substitutes, extras
-const processSubItems = (subItemType, currentItem, chozenSubItem = null) => {
-  if (chozenSubItem) {
-    currentItem[`${subItemType}s`].forEach((subItem) => {
-      if (subItem.name.split(" ").join("") == chozenSubItem.id) {
-        subItem.isChecked = chozenSubItem.checked;
-      }
-    });
-  }
+const updateSubItem = ({ updateOption, updateValue, currentItem }) => {
+  currentItem[`${updateOption}s`].forEach((subItem) => {
+    if (subItem.name.split(" ").join("") == updateValue.id) {
+      subItem.isChecked = updateValue.checked;
+    }
+  });
 
-  SubItems.renderSubItems(subItemType, currentItem[`${subItemType}s`]);
+  SubItems.renderSubItems(updateOption, currentItem[`${updateOption}s`]);
+
+  updateLocalStorage(currentItem);
 };
 
-const processToppings = (currentItem, toppingName = null, action = null) => {
-  if (action == "remove") {
+const updateToppings = ({ updateOption, updateValue, currentItem }) => {
+  if (updateOption == "remove") {
     currentItem.toppingInfo.toppings.forEach((topping) => {
       if (
-        capitalizeFirst(topping.toppingName) === toppingName.trim() &&
+        capitalizeFirst(topping.toppingName) === updateValue.trim() &&
         topping.quantity > 0
       ) {
         topping.quantity--;
@@ -377,75 +301,149 @@ const processToppings = (currentItem, toppingName = null, action = null) => {
     });
   }
 
-  if (action === "add") {
+  if (updateOption === "add") {
     currentItem.toppingInfo.toppings.forEach((topping) => {
-      if (capitalizeFirst(topping.toppingName) === toppingName.trim()) {
+      if (capitalizeFirst(topping.toppingName) === updateValue.trim()) {
         topping.quantity++;
       }
     });
   }
 
   Toppings.renderToppings(currentItem.toppingInfo.toppings);
+
+  updateLocalStorage(currentItem);
+};
+
+const updatePrice = (currentItem) => {
+  currentItem.currentPrice = calculateFinalPrice(currentItem);
+
+  OrderBasicForm.renderPrice(currentItem.currentPrice);
+
+  updateLocalStorage(currentItem);
+
+  function calculateFinalPrice(currentItem) {
+    // factors that are related to price calculation
+    const currentQuantity = currentItem.quantity;
+    const sizeInfo = currentItem.sizeInfo;
+    const currentSubstitutes = currentItem.substitutes;
+    const currentExtras = currentItem.extras;
+    const currentToppingInfo = currentItem.toppingInfo;
+
+    let currentPrice = currentItem.unitPrice;
+
+    // if different sizes are present for this item,
+    // then set the current price to whatever the current size-price is
+    if (sizeInfo) {
+      const currentSize = sizeInfo.chozenSize;
+      const currentSizePrice = sizeInfo.sizePricePairs[currentSize];
+      currentPrice = currentSizePrice;
+    }
+
+    // if the current item has substitutes, add substitutes prices to its price
+    if (currentSubstitutes) {
+      currentSubstitutes.forEach((substitute) => {
+        if (substitute.isChecked) {
+          currentPrice = +currentPrice + +substitute.price;
+        }
+      });
+    }
+
+    // if the current item has extras, add extras prices to its price
+    if (currentExtras) {
+      currentExtras.forEach((extra) => {
+        if (extra.isChecked) {
+          currentPrice = +currentPrice + +extra.price;
+        }
+      });
+    }
+
+    // if this current item has toppings information, add topping price to current price
+    if (currentToppingInfo) {
+      const currentToppingPrice = Number(currentToppingInfo.toppingPrice);
+      let totalToppingQty = 0;
+
+      currentToppingInfo.toppings.forEach((topping) => {
+        if (topping.quantity > 0) {
+          totalToppingQty += Number(topping.quantity);
+        }
+      });
+
+      currentPrice =
+        Number(currentPrice) + currentToppingPrice * totalToppingQty;
+    }
+
+    return currentPrice * currentQuantity;
+  }
 };
 
 // using the functions above
 const displayComponents = (currentItem) => {
-  // Basic food item information: foodImage, foodName, description
+  // Constant food item information: foodImage, foodName, description
+  OrderBasicForm.renderImage(currentItem.foodName);
 
-  processImage(currentItem.foodName);
+  OrderBasicForm.renderName(currentItem.foodName);
 
-  processName(currentItem.foodName);
-
-  processDescription(currentItem.description);
+  OrderBasicForm.renderDescription(currentItem.description);
 
   // Variable food item information: quantity, size, price,
   // subItem(extra, substitute), constitute(dressing, pasta), toppings
-
-  processQuantity(currentItem.quantity);
+  OrderBasicForm.renderQuantity(currentItem.quantity);
 
   if (currentItem.sizeInfo) {
-    processSize(currentItem);
+    const currentSize = currentItem.sizeInfo.chozenSize;
+    const mediumPrice = currentItem.sizeInfo.sizePricePairs["meidum"];
+    SizeOptions.renderSize(currentSize, mediumPrice);
   }
 
-  processPrice(currentItem);
-
-  // process dressings
+  // render dressings
   if (currentItem.dressingInfo) {
-    processConstitutes("dressing", currentItem);
+    Constitutes.renderConstitutes(
+      "dressing",
+      currentItem.dressingInfo.chozenDressing,
+      currentItem.dressingInfo.dressingOptions
+    );
   }
 
   // process pastas
   if (currentItem.pastaInfo) {
-    processConstitutes("pasta", currentItem);
+    Constitutes.renderConstitutes(
+      "pasta",
+      currentItem.pastaInfo.chozenPasta,
+      currentItem.pastaInfo.pastaOptions
+    );
   }
 
   // process substitutes
   if (currentItem.substitutes) {
-    processSubItems("substitute", currentItem);
+    SubItems.renderSubItems("substitute", currentItem.substitutes);
   }
 
   // process extra
   if (currentItem.extras) {
-    processSubItems("extra", currentItem);
+    SubItems.renderSubItems("extra", currentItem.extras);
   }
 
   // process toppings
   if (currentItem.toppingInfo) {
-    processToppings(currentItem);
+    Toppings.renderToppings(currentItem.toppingInfo.toppings);
   }
+
+  // display price, this is the most complicated part in the displaying layer
+  OrderBasicForm.renderPrice(currentItem.currentPrice);
 };
 
 const openBox = (currentItem) => {
   // Lay out the canvas
-  OrderBox.OpenOrderBox();
+  OrderPageBNG.OpenOrderPageBNG();
   OrderBasicForm.displayBasicForm();
 
   // Draw the currentItem on the canvas
+
   displayComponents(currentItem);
 };
 
 const closeBox = () => {
-  OrderBox.closeOrderBox();
+  OrderPageBNG.closeOrderPageBNG();
   OrderBasicForm.closeBasicForm();
   SizeOptions.closeOptions();
 
@@ -483,19 +481,15 @@ const pastaSelectionElement = document.querySelector(".pasta__options");
 const toppingOptionElement = document.querySelector(".order__topping__options");
 
 // Utility functions to get the current item
-const getItemFromLS = (foodName) => {
-  const key = foodName.split(" ").join("");
-  const menuItems = JSON.parse(localStorage.getItem("menuItems"));
-  const currentItem = menuobj;
-  return currentItem;
-};
 
 const getCurrentItemFromOrderBox = (e) => {
   const foodName = e.target
     .closest(".order__form")
     .querySelector(".order__name").textContent;
 
-  return getItemFromLS(foodName);
+  const LSKey = foodName.split(" ").join("");
+  const currentItem = JSON.parse(localStorage.getItem(LSKey));
+  return currentItem;
 };
 
 // open orderbox
@@ -504,7 +498,6 @@ menuArea.addEventListener("click", (e) => {
     return;
 
   const currentItem = getCurrentItemFromMenuPage(e);
-  console.log(currentItem);
 
   openBox(currentItem);
 
@@ -515,7 +508,9 @@ menuArea.addEventListener("click", (e) => {
       ? e.target.textContent
       : e.target.querySelector(".food-name").textContent;
 
-    return getItemFromLS(foodName);
+    const LSKey = foodName.split(" ").join("");
+    const currentItem = JSON.parse(localStorage.getItem(LSKey));
+    return currentItem;
   }
 });
 
@@ -523,7 +518,7 @@ menuArea.addEventListener("click", (e) => {
 formContainer.addEventListener("click", (e) => {
   if (
     !e.target.matches(".formbox__container") &&
-    !e.target.matches(".formbox__close_icon")
+    !e.target.matches(".formbox__close_button")
   )
     return;
 
@@ -534,22 +529,16 @@ formContainer.addEventListener("click", (e) => {
 orderAddButton.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
 
-  processQuantity(currentItem.quantity, {
-    updateOption: "add",
-    LSkey: currentItem.key,
-  });
-  processPrice(currentItem);
+  updateQuantity({ updateOption: "add", currentItem });
+  updatePrice(currentItem);
 });
 
 // remove quantity
 orderRemoveButton.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
 
-  processQuantity(currentItem.quantity, {
-    updateOption: "remove",
-    LSkey: currentItem.key,
-  });
-  processPrice(currentItem);
+  updateQuantity({ updateOption: "remove", currentItem });
+  updatePrice(currentItem);
 });
 
 // choose size
@@ -559,8 +548,8 @@ sizeOptionsContainer.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
   const userSelectedSize = e.target.id;
 
-  processSize(currentItem, userSelectedSize);
-  processPrice(currentItem);
+  updateSize({ updateValue: userSelectedSize, currentItem });
+  updatePrice(currentItem);
 });
 
 // choose substitute
@@ -570,8 +559,12 @@ substituteOptionsContainer.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
   const chozenSubstitute = e.target;
 
-  processSubItems("substitute", currentItem, chozenSubstitute);
-  processPrice(currentItem);
+  updateSubItem({
+    updateOption: "substitute",
+    updateValue: chozenSubstitute,
+    currentItem,
+  });
+  updatePrice(currentItem);
 });
 
 // choose extra
@@ -581,36 +574,49 @@ extraOptionsContainer.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
   const chozenExtra = e.target;
 
-  processSubItems("extra", currentItem, chozenExtra);
-  processPrice(currentItem);
+  updateSubItem({
+    updateOption: "extra",
+    updateValue: chozenExtra,
+    currentItem,
+  });
+  updatePrice(currentItem);
 });
 
 // pick dressing
 dressingSelectionElement.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
+
   if (e.target.value === currentItem.dressingInfo.chozenDressing) return;
 
   const chozenDressing = e.target.value;
-  processConstitutes("dressing", currentItem, chozenDressing);
+
+  updateConstitute({
+    updateOption: "dressing",
+    updateValue: chozenDressing,
+    currentItem,
+  });
 });
 
 // pick pasta
 pastaSelectionElement.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
+
   if (e.target.value === currentItem.pastaInfo.chozenPasta) return;
 
   const chozenPasta = e.target.value;
-  processConstitutes("pasta", currentItem, chozenPasta);
+
+  updateConstitute({
+    updateOption: "pasta",
+    updateValue: chozenPasta,
+    currentItem,
+  });
 });
 
 // choose topping
 toppingOptionElement.addEventListener("click", (e) => {
   // if (!e.target.matches(".md.hydrated")) return;
-  console.log(e.target.action);
 
   if (!e.target.matches(".topping__qty__btn")) return;
-
-  console.log("button clicked");
 
   const currentItem = getCurrentItemFromOrderBox(e);
 
@@ -623,8 +629,14 @@ toppingOptionElement.addEventListener("click", (e) => {
     ? "remove"
     : "add";
 
-  processToppings(currentItem, clikedToppingName, action);
-  processPrice(currentItem);
+  const updateRequest = {
+    updateOption: action,
+    updateValue: clikedToppingName,
+    currentItem,
+  };
+
+  updateToppings(updateRequest);
+  updatePrice(currentItem);
 });
 
 // *********************************************************

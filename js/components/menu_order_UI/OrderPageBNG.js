@@ -1,4 +1,4 @@
-export default class OrderBox {
+export default class OrderPageBNG {
   static activate() {
     document.body.insertAdjacentHTML(
       "beforeend",
@@ -12,12 +12,12 @@ export default class OrderBox {
     );
   }
 
-  static OpenOrderBox() {
+  static OpenOrderPageBNG() {
     document.querySelector("html").style.overflowY = "hidden";
     document.querySelector(".formbox__container").style.display = null;
   }
 
-  static closeOrderBox() {
+  static closeOrderPageBNG() {
     document.querySelector("html").style.overflowY = null;
     document.querySelector(".formbox__container").style.display = "none";
   }
