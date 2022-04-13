@@ -13,13 +13,18 @@ export default class Toppings {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static renderToppings(toppings) {
+  static renderToppings(toppingInfo) {
+    if (!toppingInfo) return;
+
+    // const { toppings } = toppingInfo;
+
     const container = document.querySelector(".order__toppings__container");
     container.style.display = null;
 
     const options = document.querySelector(`.order__topping__options`);
+    while (options.firstChild) options.removeChild(options.firstChild);
 
-    toppings.forEach((topping) => {
+    toppingInfo.toppings.forEach((topping) => {
       const itemToBeAttached = this.getItem(
         topping.toppingName,
         topping.quantity

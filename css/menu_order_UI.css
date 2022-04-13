@@ -254,6 +254,9 @@
   color: #555;
 }
 
+/* ******************** */
+/* ADD TO CART  */
+/* ******************** */
 .Add__to__cart {
   font-size: 2rem;
   padding: 0.7rem 2.5rem;
@@ -262,7 +265,7 @@
   color: white;
   border-width: 0;
   width: 25rem;
-  margin: 2rem auto;
+  margin: 0 auto 2rem;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
@@ -283,4 +286,37 @@
 
 .Add__to__cart_inactive:hover {
   background-color: #ae7d5a;
+}
+
+/* **************** */
+/* ORDER ADDED MESSAGE */
+/* **************** */
+.order__added__msg {
+  background-color: rgba(255, 255, 255, 0.6);
+
+  border: 0.3rem solid #555;
+  border-radius: 1.3rem;
+
+  width: 20rem;
+  height: 10rem;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 1s;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.order__added__msg p {
+  font-size: 3rem;
+}
+
+.order__added__msg.order__added__msg_show {
+  opacity: 1;
 }

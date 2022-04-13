@@ -4,6 +4,7 @@ import SizeOptions from "./options/SizeOptions.js";
 import Constitutes from "./options/Constitutes.js";
 import SubItems from "./options/SubItems.js";
 import Toppings from "./options/Toppings.js";
+import ATC from "./ATC.js";
 
 // ************************************************************
 // INITIALIZATION - components activation and local db creation
@@ -16,6 +17,8 @@ import Toppings from "./options/Toppings.js";
 // activate form and form components
 OrderPageBNG.activate();
 OrderBasicForm.activate();
+ATC.activate();
+
 SizeOptions.activate();
 
 Constitutes.activate("dressing");
@@ -39,6 +42,7 @@ const storeMenuItemsInLS = (menuItemElements) => {
 
     // if not, then make an object out of current item and store it in LS.
     const obj = {};
+    obj["ATCStatusConditions"] = {}; // These are the criteria for determining ATC's status
 
     // methods to add properties to each item
     const addLSKey = () => {
@@ -55,6 +59,7 @@ const storeMenuItemsInLS = (menuItemElements) => {
     };
     const addQuantity = () => {
       obj.quantity = 0;
+      obj.ATCStatusConditions["qtyIsSet"] = false;
     };
     const addSize = () => {
       const priceElement = item.querySelector(".food-price");
@@ -72,7 +77,7 @@ const storeMenuItemsInLS = (menuItemElements) => {
 
       // set sizeInfo property
       obj.sizeInfo = {};
-      // add chozenSize and set small as default
+      // add chozenSize and set null as default
       obj.sizeInfo.chozenSize = null;
 
       // add sizePricePairs
@@ -81,6 +86,8 @@ const storeMenuItemsInLS = (menuItemElements) => {
         medium: mediumPrice,
         large: largePrice,
       };
+
+      obj.ATCStatusConditions["sizeIsSet"] = false;
     };
     const addUnitPrice = () => {
       const priceElement = item.querySelector(".food-price");
@@ -112,15 +119,21 @@ const storeMenuItemsInLS = (menuItemElements) => {
       const constituteOptions = `${constituteType}Options`;
 
       obj[propertyName] = {};
-      obj[propertyName][chozenConsitute] = null;
       obj[propertyName][constituteOptions] = [];
+
+      // This is the first element in the options array,
+      // it stands for the default choice of constitute
+      obj[propertyName][constituteOptions].push("-- --");
 
       constituteElements.forEach((element) => {
         obj[propertyName][constituteOptions].push(element.textContent);
       });
 
+      // Choose the first element in the options array as the default chozen substitute
       obj[propertyName][chozenConsitute] =
         obj[propertyName][constituteOptions][0];
+
+      obj.ATCStatusConditions[`${constituteType}IsSet`] = false;
     };
 
     // Subitems can be substitutes, extras
@@ -183,6 +196,8 @@ const storeMenuItemsInLS = (menuItemElements) => {
         };
         obj.toppingInfo.toppings.push(toppingObj);
       });
+
+      obj.ATCStatusConditions["toppingIsSet"] = false;
     };
 
     // const addaddToCartBtn = () => {
@@ -233,46 +248,77 @@ const updateLocalStorage = (item) => {
   localStorage.setItem(`${item.LSkey}`, JSON.stringify(item));
 };
 
-// Functions for processing data and rendering form components
+// Functions for updating data and rendering form components
 
-// Variable food item information: quantity, size, price,
+// Varying food-item information: quantity, size, price,
 // subItem(extra, substitute), constitute(dressing, pasta), toppings
 
 const updateQuantity = ({ updateOption, currentItem }) => {
+  // UPDATE
+  // update quantity
   if (updateOption === "add") currentItem.quantity++;
-
   if (updateOption === "remove" && currentItem.quantity > 0)
     currentItem.quantity--;
 
+  // update quantity status
+  currentItem.ATCStatusConditions.qtyIsSet =
+    currentItem.quantity === 0 ? false : true;
+
+  // USE UPDATED VALUES
+  // render the most recent qty
   OrderBasicForm.renderQuantity(currentItem.quantity);
 
+  // decide ATC status based on the most recent ATCStatusConditions
+  ATC.decideATCStatus(currentItem.ATCStatusConditions);
+
+  // UPDATE IN LS
   updateLocalStorage(currentItem);
 };
 
 const updateSize = ({ updateValue, currentItem }) => {
+  // UPDATE
+  // update size
   currentItem.sizeInfo.chozenSize = updateValue;
   const currentSize = currentItem.sizeInfo.chozenSize;
   const mediumPrice = currentItem.sizeInfo.sizePricePairs["meidum"];
 
-  SizeOptions.renderSize(currentSize, mediumPrice);
+  // update size status
+  currentItem.ATCStatusConditions.sizeIsSet =
+    currentItem.sizeInfo.chozenSize === null ? false : true;
 
+  // USE UPDATED VALUES
+  // render the most recent size choice
+  SizeOptions.renderSize(currentItem.sizeInfo);
+
+  // decide ATC status based on the most recent ATCStatusConditions
+  ATC.decideATCStatus(currentItem.ATCStatusConditions);
+
+  // UPDATE IN LS
   updateLocalStorage(currentItem);
 };
 
 // dressing, pasta
 const updateConstitute = ({ updateOption, updateValue, currentItem }) => {
+  // UPDATE
+  // update constitute
   const propertyName = `${updateOption}Info`;
   const chozenConsitute = `chozen${capitalizeFirst(updateOption)}`;
   const constituteOptions = `${updateOption}Options`;
 
   currentItem[propertyName][chozenConsitute] = updateValue;
 
-  Constitutes.renderConstitutes(
-    updateOption,
-    currentItem[propertyName][chozenConsitute],
-    currentItem[propertyName][constituteOptions]
-  );
+  // update constitute status
+  const statusName = `${updateOption}IsSet`;
+  currentItem.ATCStatusConditions[statusName] =
+    currentItem[propertyName][chozenConsitute] === "-- --" ? false : true;
 
+  // USE UPDATED VALUES
+  Constitutes.renderConstitutes(updateOption, currentItem[propertyName]);
+
+  // decide ATC status based on the most recent ATCStatusConditions
+  ATC.decideATCStatus(currentItem.ATCStatusConditions);
+
+  // UPDATE IN LS
   updateLocalStorage(currentItem);
 };
 
@@ -290,27 +336,40 @@ const updateSubItem = ({ updateOption, updateValue, currentItem }) => {
 };
 
 const updateToppings = ({ updateOption, updateValue, currentItem }) => {
-  if (updateOption == "remove") {
-    currentItem.toppingInfo.toppings.forEach((topping) => {
-      if (
-        capitalizeFirst(topping.toppingName) === updateValue.trim() &&
-        topping.quantity > 0
-      ) {
-        topping.quantity--;
-      }
-    });
-  }
+  // UPDATE
+  // update topping
+  currentItem.toppingInfo.toppings.forEach((topping) => {
+    if (
+      updateOption === "remove" &&
+      capitalizeFirst(topping.toppingName) === updateValue.trim() &&
+      topping.quantity > 0
+    ) {
+      topping.quantity--;
+    }
+    if (
+      updateOption === "add" &&
+      capitalizeFirst(topping.toppingName) === updateValue.trim()
+    ) {
+      topping.quantity++;
+    }
+  });
 
-  if (updateOption === "add") {
-    currentItem.toppingInfo.toppings.forEach((topping) => {
-      if (capitalizeFirst(topping.toppingName) === updateValue.trim()) {
-        topping.quantity++;
-      }
-    });
-  }
+  // update topping status
+  // Loop through all the toppings, if we find a topping whose
+  // qty is not equal to zero, toppingIsSet is true otherwise false.
+  currentItem.ATCStatusConditions.toppingIsSet = !(
+    currentItem.toppingInfo.toppings.find(
+      (topping) => topping.quantity !== 0
+    ) === undefined
+  );
 
-  Toppings.renderToppings(currentItem.toppingInfo.toppings);
+  // USE UPDATED VALUES
+  Toppings.renderToppings(currentItem.toppingInfo);
 
+  // decide ATC status based on the most recent ATCStatusConditions
+  ATC.decideATCStatus(currentItem.ATCStatusConditions);
+
+  // UPDATE IN LS
   updateLocalStorage(currentItem);
 };
 
@@ -376,8 +435,13 @@ const updatePrice = (currentItem) => {
   }
 };
 
-// using the functions above
+// This function is used to display the box when order button is clicked
 const displayComponents = (currentItem) => {
+  // Determine if ATC should be on or off
+  ATC.decideATCStatus(currentItem.ATCStatusConditions);
+
+  // Call rendering layer
+
   // Constant food item information: foodImage, foodName, description
   OrderBasicForm.renderImage(currentItem.foodName);
 
@@ -389,44 +453,23 @@ const displayComponents = (currentItem) => {
   // subItem(extra, substitute), constitute(dressing, pasta), toppings
   OrderBasicForm.renderQuantity(currentItem.quantity);
 
-  if (currentItem.sizeInfo) {
-    const currentSize = currentItem.sizeInfo.chozenSize;
-    const mediumPrice = currentItem.sizeInfo.sizePricePairs["meidum"];
-    SizeOptions.renderSize(currentSize, mediumPrice);
-  }
+  // render size
+  SizeOptions.renderSize(currentItem.sizeInfo);
+
+  // render substitutes
+  SubItems.renderSubItems("substitute", currentItem.substitutes);
+
+  // render extra
+  SubItems.renderSubItems("extra", currentItem.extras);
 
   // render dressings
-  if (currentItem.dressingInfo) {
-    Constitutes.renderConstitutes(
-      "dressing",
-      currentItem.dressingInfo.chozenDressing,
-      currentItem.dressingInfo.dressingOptions
-    );
-  }
+  Constitutes.renderConstitutes("dressing", currentItem.dressingInfo);
 
-  // process pastas
-  if (currentItem.pastaInfo) {
-    Constitutes.renderConstitutes(
-      "pasta",
-      currentItem.pastaInfo.chozenPasta,
-      currentItem.pastaInfo.pastaOptions
-    );
-  }
+  // render pastas
+  Constitutes.renderConstitutes("pasta", currentItem.pastaInfo);
 
-  // process substitutes
-  if (currentItem.substitutes) {
-    SubItems.renderSubItems("substitute", currentItem.substitutes);
-  }
-
-  // process extra
-  if (currentItem.extras) {
-    SubItems.renderSubItems("extra", currentItem.extras);
-  }
-
-  // process toppings
-  if (currentItem.toppingInfo) {
-    Toppings.renderToppings(currentItem.toppingInfo.toppings);
-  }
+  // render toppings
+  Toppings.renderToppings(currentItem.toppingInfo);
 
   // display price, this is the most complicated part in the displaying layer
   OrderBasicForm.renderPrice(currentItem.currentPrice);
@@ -442,10 +485,8 @@ const openBox = (currentItem) => {
   displayComponents(currentItem);
 };
 
-const closeBox = () => {
-  OrderPageBNG.closeOrderPageBNG();
-  OrderBasicForm.closeBasicForm();
-
+const closeBox = (newItemAdded = false) => {
+  // first, close all components
   SizeOptions.closeSizeOptions();
   Constitutes.closeConstituteOptions("dressing");
   Constitutes.closeConstituteOptions("pasta");
@@ -454,6 +495,39 @@ const closeBox = () => {
   SubItems.closeSubItemOptions("extra");
 
   Toppings.closeToppingOptions();
+
+  // then, close the form
+  OrderBasicForm.closeBasicForm();
+
+  // check if a new item has been added; if yes, then run
+  // the following process to display the added msg.
+  if (newItemAdded) {
+    setTimeout(() => {
+      document
+        .querySelector(".order__added__msg")
+        .classList.toggle("order__added__msg_show");
+    }, 500);
+
+    setTimeout(() => {
+      document
+        .querySelector(".order__added__msg")
+        .classList.toggle("order__added__msg_show");
+    }, 2000);
+
+    // display number of items
+    displayCartBtnNumber();
+  }
+
+  // lastly, close the background
+  OrderPageBNG.closeOrderPageBNG();
+
+  function displayCartBtnNumber() {
+    const numberOfItems = localStorage.getItem("cartItems")
+      ? JSON.parse(localStorage.getItem("cartItems")).length
+      : 0;
+    const numberOfItemsSpan = document.querySelector(".number__of__items");
+    numberOfItemsSpan.textContent = numberOfItems;
+  }
 };
 
 // *********************************************************
@@ -467,8 +541,8 @@ const menuArea = document.querySelector(".menu");
 const formContainer = document.querySelector(".formbox__container");
 
 // buttons to hanlde the order
-const orderAddButton = document.querySelector("#order__qty__btn_right");
-const orderRemoveButton = document.querySelector("#order__qty__btn_left");
+const orderQtyAddButton = document.querySelector("#order__qty__btn_right");
+const orderQTYRemoveButton = document.querySelector("#order__qty__btn_left");
 const sizeOptionsContainer = document.querySelector(".size_options__container");
 const substituteOptionsContainer = document.querySelector(
   ".order__substitutes__container"
@@ -526,7 +600,7 @@ formContainer.addEventListener("click", (e) => {
 });
 
 // add quantity
-orderAddButton.addEventListener("click", (e) => {
+orderQtyAddButton.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
 
   updateQuantity({ updateOption: "add", currentItem });
@@ -534,7 +608,7 @@ orderAddButton.addEventListener("click", (e) => {
 });
 
 // remove quantity
-orderRemoveButton.addEventListener("click", (e) => {
+orderQTYRemoveButton.addEventListener("click", (e) => {
   const currentItem = getCurrentItemFromOrderBox(e);
 
   updateQuantity({ updateOption: "remove", currentItem });
@@ -629,13 +703,11 @@ toppingOptionElement.addEventListener("click", (e) => {
     ? "remove"
     : "add";
 
-  const updateRequest = {
+  updateToppings({
     updateOption: action,
     updateValue: clikedToppingName,
     currentItem,
-  };
-
-  updateToppings(updateRequest);
+  });
   updatePrice(currentItem);
 });
 
@@ -669,13 +741,7 @@ addToCart.addEventListener("click", (e) => {
   // store carItem in an array and store the array in local storage
   storeCartItemInLS(cartItem);
 
-  // since current item has been reset, display it to show that
-  // it has been reset and also to turn off the onhold status
-  displayComponents(currentItem);
-  closeBox();
-
-  // display number of items
-  displayCartBtnNumber();
+  closeBox(true); // true here means a new item has been added to the cart
 });
 
 function packDataIntoOneItem(item) {
@@ -691,7 +757,7 @@ function packDataIntoOneItem(item) {
 
   if (item.sizeInfo) {
     cartItem.chozenSize = item.sizeInfo.chozenSize;
-    item.sizeInfo.chozenSize = "small";
+    item.sizeInfo.chozenSize = null;
   }
   if (item.substitutes) {
     cartItem["substitutes"] = [];
@@ -734,13 +800,17 @@ function packDataIntoOneItem(item) {
     });
   }
 
-  return cartItem;
-}
+  // Reset ATC status back to inactive
+  resetATCStatusConditions(item.ATCStatusConditions);
 
-function displayCartBtnNumber() {
-  const numberOfItems = localStorage.getItem("cartItems")
-    ? JSON.parse(localStorage.getItem("cartItems")).length
-    : 0;
-  const numberOfItemsSpan = document.querySelector(".number__of__items");
-  numberOfItemsSpan.textContent = numberOfItems;
+  // Now since item's every property has been reset, update it in LS
+  updateLocalStorage(item);
+
+  return cartItem;
+
+  function resetATCStatusConditions(ATCStatusConditions) {
+    Object.keys(ATCStatusConditions).forEach(
+      (prop) => (ATCStatusConditions[prop] = false)
+    );
+  }
 }

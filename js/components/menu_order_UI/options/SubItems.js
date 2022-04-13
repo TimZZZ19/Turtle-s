@@ -20,12 +20,15 @@ export default class SubItems {
   }
 
   static renderSubItems(subItemType, subItems) {
+    if (!subItems) return;
+
     const container = document.querySelector(
       `.order__${subItemType}s__container`
     );
     container.style.display = null;
 
     const options = document.querySelector(`.order__${subItemType}__options`);
+    while (options.firstChild) options.removeChild(options.firstChild);
 
     subItems.forEach((item) => {
       const itemToBeRendered = this.getItem(

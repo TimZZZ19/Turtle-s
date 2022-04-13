@@ -8,9 +8,14 @@ export default class CartBox {
                           <ion-icon name="close-outline"></ion-icon>
                         </div>
 
+
                         <p class="empty__cart__msg">Your cart is empty</p>
                         
                       </aside>
+
+
+
+
                     </div>
                     `;
 

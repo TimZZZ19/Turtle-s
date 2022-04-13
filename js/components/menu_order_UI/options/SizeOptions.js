@@ -39,28 +39,43 @@ export default class SizeOptions {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static renderSize(currentSize, mediumPrice) {
+  static renderSize(sizeInfo) {
+    if (!sizeInfo) return;
+    const { chozenSize, sizePricePairs } = sizeInfo;
+
     document.querySelector(".order__size__options").style.display = null;
     const mediumOption = document.querySelector("#medium");
 
-    if (!mediumPrice) {
+    // some items might not have have the medium option,
+    // if the current item doesn't, then don't display it
+    if (!sizePricePairs["medium"]) {
       mediumOption.parentNode.style.display = "none";
     }
 
-    if (currentSize === "small") {
+    if (chozenSize === "small") {
       document.querySelector("#small").checked = true;
     }
 
-    if (mediumPrice && currentSize === "medium") {
+    if (sizePricePairs["medium"] && chozenSize === "medium") {
       mediumOption.checked = true;
     }
 
-    if (currentSize === "large") {
+    if (chozenSize === "large") {
       document.querySelector("#large").checked = true;
     }
   }
 
   static closeSizeOptions() {
     document.querySelector(".order__size__options").style.display = "none";
+
+    const mediumOption = document.querySelector("#medium");
+
+    document.querySelector("#small").checked = false;
+
+    // if current item has medium size,
+    // then the related element's dipslay property must be null
+    if (mediumOption.parentNode.style.display === null)
+      mediumOption.checked = false;
+    document.querySelector("#large").checked = false;
   }
 }

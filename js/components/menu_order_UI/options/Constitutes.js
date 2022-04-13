@@ -14,15 +14,17 @@ export default class Constitutes {
     formControl.insertAdjacentHTML("beforebegin", element);
   }
 
-  static renderConstitutes(
-    constituteType,
-    chozenConstitute,
-    constituteOptions
-  ) {
+  static renderConstitutes(constituteType, constituteInfo) {
+    if (!constituteInfo) return;
+    const chozenConstitute =
+      constituteInfo[`chozen${capitalizeFirst(constituteType)}`];
+    const constituteOptions = constituteInfo[`${constituteType}Options`];
+
     const container = document.querySelector(`.${constituteType}s__container`);
     container.style.display = null;
 
     const options = document.querySelector(`.${constituteType}__options`);
+    while (options.firstChild) options.removeChild(options.firstChild);
 
     // get dressing item and attach it to options one by one
     constituteOptions.forEach((constitute) => {
@@ -30,7 +32,16 @@ export default class Constitutes {
       options.insertAdjacentHTML("beforeend", itemToBeRendered);
     });
 
-    options.value = chozenConstitute ? chozenConstitute : constituteOptions[0];
+    // options.value = chozenConstitute ? chozenConstitute : constituteOptions[0];
+    options.value = chozenConstitute;
+
+    function capitalizeFirst(str) {
+      // checks for null, undefined and empty string
+      if (!str) return;
+      return str.match("^[a-z]")
+        ? str.charAt(0).toUpperCase() + str.substring(1)
+        : str;
+    }
   }
 
   static getConsituteItem(constituteToBeRendered) {

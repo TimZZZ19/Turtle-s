@@ -7,7 +7,12 @@ export default class OrderPageBNG {
           <div class="formbox" >
             
           </div>
+
+             
         </div>
+        <div class="order__added__msg">
+          <p>Added</p>
+        </div> 
       `
     );
   }
