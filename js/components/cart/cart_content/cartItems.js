@@ -8,7 +8,7 @@ export default class CartItems {
     cartContentArea.insertAdjacentHTML("beforeend", cartItemsHTML);
   }
 
-  static displayCartItems(items) {
+  static renderCartItems(items) {
     const list = document.querySelector(".cart__items");
 
     while (list.firstChild) list.removeChild(list.firstChild);

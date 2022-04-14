@@ -42,14 +42,7 @@ export default class CartBill {
     cartContentArea.insertAdjacentHTML("afterBegin", cartBillHTML);
   }
 
-  static displayBillItems(
-    subtotal,
-    tip,
-    taxAmount,
-    serviceFee,
-    deliveryInformation,
-    total
-  ) {
+  static renderBillItems({ subtotal, tip, tax, serviceFee, delivery, total }) {
     // Subtotal
     this.displaySubtotal(subtotal);
 
@@ -57,10 +50,10 @@ export default class CartBill {
     this.displayTip(tip);
 
     // Tax and fees
-    this.displayTaxFees(taxAmount, serviceFee);
+    this.displayTaxFees(tax.amount, serviceFee);
 
     // Delivery
-    this.displayDeliveryFee(deliveryInformation);
+    this.displayDeliveryFee(delivery);
 
     // Total
     this.displayTotal(total);
@@ -68,7 +61,7 @@ export default class CartBill {
 
   static displaySubtotal(subtotal) {
     const subtotalSpan = document.querySelector(".cart__bill__subtotal");
-    subtotalSpan.textContent = `$ ${subtotal}`;
+    subtotalSpan.textContent = `$ ${subtotal.toFixed(2)}`;
   }
 
   static displayTip(tip) {
@@ -83,46 +76,36 @@ export default class CartBill {
 
     const popupTax = document.querySelector(".cart__tf__popup-tax");
     const popupFee = document.querySelector(".cart__tf__popup-fee");
-    popupTax.textContent = `Tax:  $${taxAmount}`;
-    popupFee.textContent = `Service fee:  $${serviceFee}`;
+    popupTax.textContent = `Tax:  $${taxAmount.toFixed(2)}`;
+    popupFee.textContent = `Service fee:  $${serviceFee.toFixed(2)}`;
 
-    this.openPopup();
+    openPopup();
+
+    function openPopup() {
+      const cartTfBtn = document.querySelector(".cart__tf__btn");
+      // Cart tax and fees popup
+      cartTfBtn.addEventListener("mouseover", (e) => {
+        document.querySelector(".cart__tf__popup").style.display = null;
+      });
+
+      cartTfBtn.addEventListener("mouseout", (e) => {
+        document.querySelector(".cart__tf__popup").style.display = "none";
+      });
+    }
   }
 
-  static openPopup() {
-    const cartTfBtn = document.querySelector(".cart__tf__btn");
-    // Cart tax and fees popup
-    cartTfBtn.addEventListener("mouseover", (e) => {
-      document.querySelector(".cart__tf__popup").style.display = null;
-    });
-
-    cartTfBtn.addEventListener("mouseout", (e) => {
-      document.querySelector(".cart__tf__popup").style.display = "none";
-    });
-  }
-
-  static displayDeliveryFee({ deliveryMethod, deliveryFee }) {
-    if (!deliveryMethod) return;
-
-    deliveryFee = `$ ${deliveryFee.toFixed(2)}`;
+  static displayDeliveryFee({ method, fee }) {
+    if (!method) return;
 
     const deliveryMethodSpan = document.querySelector(".cart__deliveryMethod");
     const deliveryFeeSpan = document.querySelector(".cart__deliveryFee");
 
     deliveryMethodSpan.textContent = `Delivery fee`;
-    deliveryFeeSpan.textContent = `${deliveryFee}`;
-
-    function capitalizeFirst(str) {
-      // checks for null, undefined and empty string
-      if (!str) return;
-      return str.match("^[a-z]")
-        ? str.charAt(0).toUpperCase() + str.substring(1)
-        : str;
-    }
+    deliveryFeeSpan.textContent = `$ ${fee.toFixed(2)}`;
   }
 
   static displayTotal(total) {
     const orderTotalAmountSpan = document.querySelector(".cart__total__amount");
-    orderTotalAmountSpan.textContent = `$ ${total}`;
+    orderTotalAmountSpan.textContent = `$ ${total.toFixed(2)}`;
   }
 }

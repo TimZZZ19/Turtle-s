@@ -4,7 +4,7 @@
 
 // import components
 import CartBtn from "./CartBtn.js";
-import CartBox from "./CartBox.js";
+import CartPage from "./CartPage.js";
 import CartMain from "./CartMain.js";
 
 import CartDeliveryMethods from "./cart_content/CartDeliveryMethods.js";
@@ -14,7 +14,7 @@ import CartBill from "./cart_content/CartBill.js";
 // activate components
 // main components of cart
 CartBtn.activate();
-CartBox.activate();
+CartPage.activate();
 CartMain.activate();
 
 // sub components of cart
@@ -26,146 +26,91 @@ CartBill.activate();
 // UTILITY FUNCTIONS - processing user inputs
 // ************************************************************
 
-const processDelivery = (order, deliveryUpdateRequest = null) => {
-  if (deliveryUpdateRequest) {
-    order.deliveryInformation.deliveryMethod =
-      deliveryUpdateRequest.updateOption;
+// Some helper functions for updating the cart content
+const getOrderFromLS = () => JSON.parse(localStorage.getItem("order"));
+
+const updateOrderInLS = (order) =>
+  localStorage.setItem("order", JSON.stringify(order));
+
+const calculateSubtotal = (items) => {
+  let subtotal = 0;
+  items.forEach((item) => (subtotal += item.currentPrice));
+  return subtotal;
+};
+
+const calculateTax = (order) => order.tax.rate * order.subtotal;
+
+const calculateOrderTotal = (order) =>
+  order.tip +
+  order.subtotal +
+  order.serviceFee +
+  order.tax.amount +
+  order.delivery.fee;
+
+const updateDeliveryMethod = (order, deliveryMethod) => {
+  order.delivery.method = deliveryMethod;
+  CartDeliveryMethods.renderDeliveryMethods(order.delivery.method);
+  updateOrderInLS(order);
+};
+
+const updateCartItems = (order, itemsUpdateRequest) => {
+  if (itemsUpdateRequest.updateOption === "remove") {
+    order.items = order.items.filter(
+      (item) => item !== itemsUpdateRequest.itemToBeRemoved
+    );
   }
 
-  CartDeliveryMethods.displayDeliveryMethods(
-    order.deliveryInformation.deliveryMethod
-  );
-};
-
-const processCartItems = (order, itemsUpdateRequest = null) => {
-  if (itemsUpdateRequest) {
-    if (itemsUpdateRequest.updateOption === "remove") {
-      order.items = order.items.filter(
-        (item) => item !== itemsUpdateRequest.itemToBeRemoved
-      );
-    }
-  }
-  CartItems.displayCartItems(order.items);
-};
-
-const processBill = (order, billUpdateRequest = null) => {
-  if (billUpdateRequest) {
-    if (billUpdateRequest.updateOption === "deliveryFee") {
-      order.deliveryInformation.deliveryFee =
-        +billUpdateRequest.updateValue.toFixed(2);
-    }
-    if (billUpdateRequest.updateOption === "tip") {
-      order.tip = +(+billUpdateRequest.updateValue).toFixed(2);
-    }
-    if (billUpdateRequest.updateOption === "remove") {
-      calculateSubtotal(order);
-      calculateTax(order);
-    }
-    calculateOrderTotal(order);
+  if (itemsUpdateRequest.updateOption === "empty") {
+    order.items = [];
   }
 
-  CartBill.displayBillItems(
-    order.subtotal,
-    order.tip,
-    order.taxAmount,
-    order.serviceFee,
-    order.deliveryInformation,
-    order.orderTotal
-  );
+  if (itemsUpdateRequest.updateOption === "edit") {
+    // edit the item
+  }
+  CartItems.renderCartItems(order.items);
+
+  updateOrderInLS(order);
 };
 
-const handleOrder = (order) => {
-  processDelivery(order);
-  processCartItems(order);
-  processBill(order);
+const updateBill = (order, billUpdateRequest) => {
+  // First, do some updates
+  if (billUpdateRequest.updateOption === "deliveryFee") {
+    order.delivery.fee = billUpdateRequest.updateValue;
+  }
+  if (billUpdateRequest.updateOption === "tip") {
+    order.tip = +billUpdateRequest.updateValue;
+  }
+  if (billUpdateRequest.updateOption === "remove") {
+    order.subtotal = calculateSubtotal(order.items);
+    order.tax.amount = calculateTax(order);
+
+    if (order.items.length === 0) {
+      order.tip = 0;
+      order.delivery.method = null;
+      order.delivery.fee = 0;
+    }
+  }
+  order.total = calculateOrderTotal(order);
+
+  // Then, render the newly-updated order
+  CartBill.renderBillItems(order);
+
+  // Lastly, update order in LS
+  updateOrderInLS(order);
 };
 
-const openBox = () => {
-  CartBox.openBox();
+const displayCartContent = (order) => {
+  CartDeliveryMethods.renderDeliveryMethods(order.delivery.method);
+
+  CartItems.renderCartItems(order.items);
+
+  CartBill.renderBillItems(order);
 };
 
 const closeBox = () => {
-  CartBox.closeBox();
   CartMain.closeCartMain();
+  CartPage.closeBox();
 };
-
-// ************************************************************
-// DATA - ORDER CREATION AND UPDATE
-// ************************************************************
-
-// COLLECTING DATA - pulling data from local storage
-
-const buildOrder = (order) => {
-  const addItems = () => {
-    order.items = JSON.parse(localStorage.getItem("cartItems"));
-  };
-  const addUniqueId = () => {
-    let val;
-    const set = new Set();
-    order.items.forEach((item) => {
-      do {
-        val = Math.floor(1000 + Math.random() * 9000);
-      } while (set.has(val));
-      set.add(val);
-
-      item["id"] = val;
-    });
-  };
-
-  // Properties only need to be added once
-
-  // take items from LS and add them to order as a property
-  addItems();
-
-  // add unique id to each item
-  addUniqueId();
-
-  // Properties need to be constantly updated per user's inputs
-  // add subtotal
-  calculateSubtotal(order);
-
-  // add tax amount
-  calculateTax(order);
-
-  // add total amount
-  calculateOrderTotal(order);
-};
-
-function calculateSubtotal(order) {
-  let subtotal = 0;
-  order.items.forEach((item) => (subtotal += +item.currentPrice));
-  subtotal = subtotal.toFixed(2);
-  order["subtotal"] = +subtotal;
-}
-
-function calculateTax(order) {
-  order["taxAmount"] = +(order.subtotal * order.taxRate).toFixed(2);
-}
-
-function calculateOrderTotal(order) {
-  order["orderTotal"] = +(
-    order.subtotal +
-    order.taxAmount +
-    order.serviceFee +
-    order.tip +
-    order.deliveryInformation.deliveryFee
-  ).toFixed(2);
-}
-
-// Initialize order
-const order = {
-  deliveryInformation: {
-    deliveryMethod: null, // either "delivery" or "pickup"
-    deliveryFee: 0, // either 0 or 2
-  },
-  items: [],
-  tip: 0,
-  taxRate: 0.1025,
-  serviceFee: 0.99,
-};
-
-// also get a copy of menuItems for edit
-const menuItems = JSON.parse(localStorage.getItem("menuItems"));
 
 // ************************************************************
 // EVENT LISTENERS - taking user inputs
@@ -178,24 +123,39 @@ const pickupInputRadio = document.querySelector("#delivery__choice_pickup");
 const cartBtnElement = document.querySelector(".cart__li");
 const tipInputBox = document.querySelector("#tip__value");
 const cartItemsArea = document.querySelector(".cart__items");
+const emptyBtn = document.querySelector(".cart__empty__btn");
 
 // Open cart box and collect data from local storage
 cartBtnElement.addEventListener("click", (e) => {
   e.preventDefault(); // since this button is an <a> tag
-  openBox(); // when the button is clicked, we always need to open cart box and page
 
-  if (!localStorage.getItem("cartItems")) return; // if LS is empty then just return
+  // When the button is clicked,
+  // we always need to open the cart box with the "Empty" message.
+  CartPage.openBox();
 
-  // if not empty, pull data from LS and create order
-  buildOrder(order);
-  CartMain.displayCartMain(); // lay out the 'canvas'
-  handleOrder(order); // then handle the order data. Hanlde means to process and display the data
+  // If LS doesn't have the order object, then just return
+  if (!localStorage.getItem("order")) return;
+
+  // If order exists, then get it from LS.
+  const order = JSON.parse(localStorage.getItem("order"));
+
+  // if the number of items is equal to 0, then also return
+  if (order.items.length === 0) return;
+
+  // If LS has the order object, and the length of items is not 0,
+  // then we wanna render it on the cart.
+  // first, lay out the 'canvas'
+  CartMain.displayCartMain();
+
+  // then,  display the data on the cart
+  displayCartContent(order);
 });
 
 // Close cart box
 cartCloseBtn.addEventListener("click", (e) => {
   closeBox();
 });
+
 cartPageElement.addEventListener("click", (e) => {
   if (!e.target.matches(".cart__page")) return;
   closeBox();
@@ -203,16 +163,21 @@ cartPageElement.addEventListener("click", (e) => {
 
 // Choose delivery method
 deliveryInputRadio.addEventListener("click", (e) => {
-  processDelivery(order, { updateOption: "delivery" });
-  processBill(order, { updateOption: "deliveryFee", updateValue: 2 });
+  const order = getOrderFromLS();
+  updateDeliveryMethod(order, "delivery");
+  updateBill(order, { updateOption: "deliveryFee", updateValue: 2 });
 });
+
 pickupInputRadio.addEventListener("click", (e) => {
-  processDelivery(order, { updateOption: "pickup" });
-  processBill(order, { updateOption: "deliveryFee", updateValue: 0 });
+  const order = getOrderFromLS();
+  updateDeliveryMethod(order, "pickup");
+  updateBill(order, { updateOption: "deliveryFee", updateValue: 0 });
 });
 
 tipInputBox.addEventListener("change", (e) => {
-  processBill(order, {
+  const order = getOrderFromLS();
+
+  updateBill(order, {
     updateOption: "tip",
     updateValue: e.target.value,
   });
@@ -222,19 +187,31 @@ tipInputBox.addEventListener("change", (e) => {
 cartItemsArea.addEventListener("click", (e) => {
   if (!e.target.matches(".item__control__btn")) return;
 
+  const order = getOrderFromLS();
   const clickedId = e.target.closest(".cart__item").id;
   const clickedItem = order.items.find((item) => item.id == clickedId);
 
+  // Remove item
   if (e.target.matches(".item__remove")) {
-    processCartItems(order, {
+    updateCartItems(order, {
       updateOption: "remove",
       itemToBeRemoved: clickedItem,
     });
-    processBill(order, { updateOption: "remove" });
+
+    // Since one item has been removed, update the cart number.
+    displayCartBtnNumber();
+
+    updateBill(order, { updateOption: "remove" });
+
+    // If the number of item is now equal to 0, then close
+    // the main and show the empty msg
+    if (order.items.length === 0) {
+      CartMain.closeCartMain();
+    }
   }
 
+  // Edit item
   if (e.target.matches(".item__edit")) {
-    console.log(clickedItem);
     // close cart box and cart page
     closeBox();
 
@@ -246,9 +223,18 @@ cartItemsArea.addEventListener("click", (e) => {
     // render the new item
     // edit item
     // when clicked update, return the new item
-    // replace the old item with this new item using processCartItems
+    // replace the old item with this new item using updateCartItems
     // update bill with the updated items
   }
+});
+
+// Empty the cart
+emptyBtn.addEventListener("click", (e) => {
+  const order = getOrderFromLS();
+  updateCartItems(order, { updateOption: "empty" });
+  displayCartBtnNumber();
+  updateBill(order, { updateOption: "remove" });
+  CartMain.closeCartMain();
 });
 
 // ************************************************************
@@ -256,12 +242,12 @@ cartItemsArea.addEventListener("click", (e) => {
 // ************************************************************
 
 // Display the most recent number of cart items
-const displayCartBtnNumber = () => {
-  const numberOfItems = localStorage.getItem("cartItems")
-    ? JSON.parse(localStorage.getItem("cartItems")).length
+function displayCartBtnNumber() {
+  const numberOfItems = localStorage.getItem("order")
+    ? JSON.parse(localStorage.getItem("order")).items.length
     : 0;
   const numberOfItemsSpan = document.querySelector(".number__of__items");
   numberOfItemsSpan.textContent = numberOfItems;
-};
+}
 
 displayCartBtnNumber();

@@ -1,4 +1,4 @@
-export default class CartBox {
+export default class CartPage {
   static activate() {
     const cartBoxHTML = `
                     <div class="cart__page" >

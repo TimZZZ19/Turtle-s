@@ -28,7 +28,7 @@ export default class CartDeliveryMethods {
     cartContentArea.insertAdjacentHTML("beforeend", deliveryMethodsHTML);
   }
 
-  static displayDeliveryMethods(deliveryMethod) {
+  static renderDeliveryMethods(deliveryMethod) {
     if (deliveryMethod === "delivery") {
       document.querySelector("#delivery__choice_delivery").checked = true;
     } else if (deliveryMethod === "pickup") {

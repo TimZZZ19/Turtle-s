@@ -522,8 +522,8 @@ const closeBox = (newItemAdded = false) => {
   OrderPageBNG.closeOrderPageBNG();
 
   function displayCartBtnNumber() {
-    const numberOfItems = localStorage.getItem("cartItems")
-      ? JSON.parse(localStorage.getItem("cartItems")).length
+    const numberOfItems = localStorage.getItem("order")
+      ? JSON.parse(localStorage.getItem("order")).items.length
       : 0;
     const numberOfItemsSpan = document.querySelector(".number__of__items");
     numberOfItemsSpan.textContent = numberOfItems;
@@ -716,18 +716,6 @@ toppingOptionElement.addEventListener("click", (e) => {
 // *********************************************************
 
 const addToCart = document.querySelector(".Add__to__cart");
-const storeCartItemInLS = (cartItem) => {
-  // first, get the cartItems array.
-  const cartItems = localStorage.getItem("cartItems")
-    ? JSON.parse(localStorage.getItem("cartItems"))
-    : [];
-
-  // push this item to the array
-  cartItems.push(cartItem);
-
-  // store array in local storage
-  localStorage.setItem("cartItems", JSON.stringify(cartItems));
-};
 
 // add to cart
 addToCart.addEventListener("click", (e) => {
@@ -738,79 +726,154 @@ addToCart.addEventListener("click", (e) => {
   // and reset currentItem's every property back to default value
   const cartItem = packDataIntoOneItem(currentItem);
 
-  // store carItem in an array and store the array in local storage
+  // store carItem in the order object in local storage
   storeCartItemInLS(cartItem);
 
   closeBox(true); // true here means a new item has been added to the cart
+
+  function packDataIntoOneItem(item) {
+    const cartItem = {};
+
+    cartItem.id = null;
+
+    cartItem.foodName = item.foodName;
+
+    cartItem.quantity = item.quantity;
+    item.quantity = 0;
+
+    cartItem.currentPrice = item.currentPrice;
+    item.currentPrice = 0;
+
+    if (item.sizeInfo) {
+      cartItem.chozenSize = item.sizeInfo.chozenSize;
+      item.sizeInfo.chozenSize = null;
+    }
+
+    if (item.dressingInfo) {
+      cartItem["chozenDressing"] = item.dressingInfo.chozenDressing;
+      item.dressingInfo.chozenDressing = item.dressingInfo.dressingOptions[0];
+    }
+
+    if (item.pastaInfo) {
+      cartItem["chozenPasta"] = item.pastaInfo.chozenPasta;
+      item.pastaInfo.chozenPasta = item.pastaInfo.pastaOptions[0];
+    }
+
+    if (item.substitutes) {
+      cartItem["substitutes"] = [];
+
+      item.substitutes.forEach((substitute) => {
+        if (substitute.isChecked) {
+          cartItem["substitutes"].push(substitute.name);
+          substitute.isChecked = false;
+        }
+      });
+    }
+
+    if (item.extras) {
+      cartItem["extras"] = [];
+
+      item.extras.forEach((extra) => {
+        if (extra.isChecked) {
+          cartItem["extras"].push(extra.name);
+          extra.isChecked = false;
+        }
+      });
+    }
+
+    if (item.toppingInfo) {
+      cartItem["toppings"] = [];
+      item.toppingInfo.toppings.forEach((topping) => {
+        if (topping.quantity !== 0) {
+          cartItem["toppings"].push({
+            name: topping.toppingName,
+            quantity: topping.quantity,
+          });
+          topping.quantity = 0;
+        }
+      });
+    }
+
+    // Reset ATC status back to inactive because now every property has been
+    // reset to the default state
+    resetATCStatusConditions(item.ATCStatusConditions);
+
+    // Now since item's every property has been reset, update it in LS
+    updateLocalStorage(item);
+
+    // Return the new item
+    return cartItem;
+
+    function resetATCStatusConditions(ATCStatusConditions) {
+      Object.keys(ATCStatusConditions).forEach(
+        (prop) => (ATCStatusConditions[prop] = false)
+      );
+    }
+  }
+
+  function storeCartItemInLS(cartItem) {
+    // First, get the order object if it exists, otherwise create it.
+    const order = localStorage.getItem("order")
+      ? JSON.parse(localStorage.getItem("order"))
+      : {
+          delivery: { method: null, fee: 0 },
+          items: [],
+          subtotal: 0,
+          tip: 0,
+          tax: { rate: 0.1025, amount: 0 },
+          serviceFee: 0.99,
+          total: 0,
+        };
+
+    // Generate unique id for each item
+    cartItem.id = createUniqueId(order.items);
+
+    // Then, push this item to the array
+    order.items.push(cartItem);
+
+    // Calculate the order's subtotal
+    order.subtotal = calculateSubtotal(order.items);
+
+    // Calculate tax amount
+    order.tax.amount = calculateTaxAmount(order.tax.rate, order.subtotal);
+
+    // Calculate order total
+    order.total = calculateOrderTotal(order);
+
+    // Store order in local storage
+    localStorage.setItem("order", JSON.stringify(order));
+
+    // Utility functions
+    function createUniqueId(items) {
+      let fourDigitId;
+
+      do {
+        // 1. generate a 4-digit id
+        fourDigitId = Math.floor(1000 + Math.random() * 9000);
+
+        // 2. if items' length is greater than 0
+        // and it already exists, regenerate another id
+      } while (
+        items.length > 0 &&
+        items.find((item) => item.id === fourDigitId) !== undefined
+      );
+
+      // 3. if this id doesn't already exist, add it
+      return fourDigitId;
+    }
+
+    function calculateSubtotal(items) {
+      let subtotal = 0;
+      items.forEach((item) => (subtotal += +item.currentPrice));
+      return Number(subtotal.toFixed(2));
+    }
+
+    function calculateTaxAmount(taxRate, subtotal) {
+      return +(taxRate * subtotal).toFixed(2);
+    }
+
+    function calculateOrderTotal({ subtotal, serviceFee, tip, tax, delivery }) {
+      return subtotal + serviceFee + tip + tax.amount + delivery.fee;
+    }
+  }
 });
-
-function packDataIntoOneItem(item) {
-  const cartItem = {};
-
-  cartItem.foodName = item.foodName;
-
-  cartItem.quantity = item.quantity;
-  item.quantity = 0;
-
-  cartItem.currentPrice = item.currentPrice;
-  item.currentPrice = 0;
-
-  if (item.sizeInfo) {
-    cartItem.chozenSize = item.sizeInfo.chozenSize;
-    item.sizeInfo.chozenSize = null;
-  }
-  if (item.substitutes) {
-    cartItem["substitutes"] = [];
-
-    item.substitutes.forEach((substitute) => {
-      if (substitute.isChecked) {
-        cartItem["substitutes"].push(substitute.name);
-        substitute.isChecked = false;
-      }
-    });
-  }
-  if (item.extras) {
-    cartItem["extras"] = [];
-
-    item.extras.forEach((extra) => {
-      if (extra.isChecked) {
-        cartItem["extras"].push(extra.name);
-        extra.isChecked = false;
-      }
-    });
-  }
-  if (item.dressingInfo) {
-    cartItem["chozenDressing"] = item.dressingInfo.chozenDressing;
-    item.dressingInfo.chozenDressing = item.dressingInfo.dressingOptions[0];
-  }
-  if (item.pastaInfo) {
-    cartItem["chozenPasta"] = item.pastaInfo.chozenPasta;
-    item.pastaInfo.chozenPasta = item.pastaInfo.pastaOptions[0];
-  }
-  if (item.toppingInfo) {
-    cartItem["toppings"] = [];
-    item.toppingInfo.toppings.forEach((topping) => {
-      if (topping.quantity !== 0) {
-        cartItem["toppings"].push({
-          name: topping.toppingName,
-          quantity: topping.quantity,
-        });
-        topping.quantity = 0;
-      }
-    });
-  }
-
-  // Reset ATC status back to inactive
-  resetATCStatusConditions(item.ATCStatusConditions);
-
-  // Now since item's every property has been reset, update it in LS
-  updateLocalStorage(item);
-
-  return cartItem;
-
-  function resetATCStatusConditions(ATCStatusConditions) {
-    Object.keys(ATCStatusConditions).forEach(
-      (prop) => (ATCStatusConditions[prop] = false)
-    );
-  }
-}

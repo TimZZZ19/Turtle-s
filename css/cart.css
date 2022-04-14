@@ -85,6 +85,7 @@
   right: 0rem;
 
   z-index: 12;
+  cursor: pointer;
 }
 
 .cart__close__btn ion-icon {
@@ -348,9 +349,9 @@ ion-icon {
 
 #tip__value {
   display: inline;
-  max-width: 6rem;
+  max-width: 5rem;
   align-self: center;
-  text-align: center;
+  text-align: right;
   font-size: 1.8rem;
 }
 
@@ -371,23 +372,35 @@ ion-icon {
   justify-content: space-around;
 }
 
-.cart__control button {
-  font-size: 1.8rem;
+.cart__control__button {
   color: grey;
+  font-size: 1.8rem;
   transition: all 0.3s;
+  border-radius: 3.6rem;
+  padding: 0.8rem 1.6rem;
+  border-width: 0;
+  box-shadow: 0rem 0.3rem 0.8rem #ccc;
+  cursor: pointer;
 }
 
-.cart__control button:hover {
+.cart__control__button:hover {
+  transform: translateY(-0.5rem);
+}
+
+.cart__empty__btn {
+  background-color: white;
+}
+
+.cart__empty__btn:hover {
+  background-color: white;
   color: black;
 }
 
-.cart__control__button {
-  background-color: white;
-  border-radius: 3.6rem;
-  padding: 0.6rem 1.6rem;
-  border-width: 0;
-  box-shadow: 0rem 0.3rem 0.8rem #ccc;
-  transform: translateY(0.5rem);
-  transition: all 0.3s;
-  cursor: pointer;
+.cart__checkout__btn {
+  background-color: #8b4513;
+  color: white;
+}
+
+.cart__checkout__btn:hover {
+  background-color: #61300d;
 }

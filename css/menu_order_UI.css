@@ -292,13 +292,13 @@
 /* ORDER ADDED MESSAGE */
 /* **************** */
 .order__added__msg {
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.8);
 
-  border: 0.3rem solid #555;
+  border: 0.1rem solid #555;
   border-radius: 1.3rem;
 
-  width: 20rem;
-  height: 10rem;
+  width: 12rem;
+  height: 6rem;
 
   position: fixed;
   top: 50%;
@@ -314,7 +314,7 @@
 }
 
 .order__added__msg p {
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 .order__added__msg.order__added__msg_show {
