@@ -69,7 +69,7 @@ const storeMenuItemsInLS = (menuItemElements) => {
 
       const smallPrice = priceContent.split(",")[0].slice(-5);
       const mediumPrice = priceContent.includes("M")
-        ? priceContent.split(",")[1].slice(-5)
+        ? Number(priceContent.split(",")[1].slice(-5))
         : null;
       const largePrice = priceContent.includes("M")
         ? priceContent.split(",")[2].slice(-5)
@@ -82,9 +82,9 @@ const storeMenuItemsInLS = (menuItemElements) => {
 
       // add sizePricePairs
       obj.sizeInfo.sizePricePairs = {
-        small: smallPrice,
+        small: Number(smallPrice),
         medium: mediumPrice,
-        large: largePrice,
+        large: Number(largePrice),
       };
 
       obj.ATCStatusConditions["sizeIsSet"] = false;
@@ -437,6 +437,8 @@ const updatePrice = (currentItem) => {
 
 // This function is used to display the box when order button is clicked
 const displayComponents = (currentItem) => {
+  console.log(currentItem);
+
   // Determine if ATC should be on or off
   ATC.decideATCStatus(currentItem.ATCStatusConditions);
 
@@ -475,14 +477,20 @@ const displayComponents = (currentItem) => {
   OrderBasicForm.renderPrice(currentItem.currentPrice);
 };
 
-const openBox = (currentItem) => {
+const openOrderBox = (currentItem) => {
   // Lay out the canvas
   OrderPageBNG.OpenOrderPageBNG();
   OrderBasicForm.displayBasicForm();
 
   // Draw the currentItem on the canvas
-
   displayComponents(currentItem);
+
+  // If currentItem is a cart item, then it must have id.
+  // Store this id in the form as its id, so that the event listeners
+  // can keep track of currenItem.
+  if (currentItem.id) {
+    document.querySelector(".order__form").id = currentItem.id;
+  }
 };
 
 const closeBox = (newItemAdded = false) => {
@@ -555,37 +563,29 @@ const pastaSelectionElement = document.querySelector(".pasta__options");
 const toppingOptionElement = document.querySelector(".order__topping__options");
 
 // Utility functions to get the current item
+const getCurrentFoodName = (e) => {
+  return e.target.matches(".food-name")
+    ? e.target.textContent
+    : e.target.querySelector(".food-name").textContent;
+};
 
-const getCurrentItemFromOrderBox = (e) => {
-  const foodName = e.target
-    .closest(".order__form")
-    .querySelector(".order__name").textContent;
-
+const getCurrentItemAmongItems = (foodName) => {
   const LSKey = foodName.split(" ").join("");
   const currentItem = JSON.parse(localStorage.getItem(LSKey));
   return currentItem;
 };
+
+const getCurrentItemFromOrder = (orderId) => {};
 
 // open orderbox
 menuArea.addEventListener("click", (e) => {
   if (!e.target.matches(".order-button") && !e.target.matches(".food-name"))
     return;
 
-  const currentItem = getCurrentItemFromMenuPage(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
 
-  openBox(currentItem);
-
-  function getCurrentItemFromMenuPage(e) {
-    // We get foodName either from the food-name span
-    // or the order button that contains it.
-    const foodName = e.target.matches(".food-name")
-      ? e.target.textContent
-      : e.target.querySelector(".food-name").textContent;
-
-    const LSKey = foodName.split(" ").join("");
-    const currentItem = JSON.parse(localStorage.getItem(LSKey));
-    return currentItem;
-  }
+  openOrderBox(currentItem);
 });
 
 // close orderbox
@@ -601,7 +601,8 @@ formContainer.addEventListener("click", (e) => {
 
 // add quantity
 orderQtyAddButton.addEventListener("click", (e) => {
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
 
   updateQuantity({ updateOption: "add", currentItem });
   updatePrice(currentItem);
@@ -609,7 +610,8 @@ orderQtyAddButton.addEventListener("click", (e) => {
 
 // remove quantity
 orderQTYRemoveButton.addEventListener("click", (e) => {
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
 
   updateQuantity({ updateOption: "remove", currentItem });
   updatePrice(currentItem);
@@ -618,8 +620,8 @@ orderQTYRemoveButton.addEventListener("click", (e) => {
 // choose size
 sizeOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(".size__option__input")) return;
-
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
   const userSelectedSize = e.target.id;
 
   updateSize({ updateValue: userSelectedSize, currentItem });
@@ -629,8 +631,9 @@ sizeOptionsContainer.addEventListener("click", (e) => {
 // choose substitute
 substituteOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(`.substitute__input__checkbox`)) return;
+  const foodName = getCurrentFoodName(e);
 
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
   const chozenSubstitute = e.target;
 
   updateSubItem({
@@ -645,7 +648,8 @@ substituteOptionsContainer.addEventListener("click", (e) => {
 extraOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(`.extra__input__checkbox`)) return;
 
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
   const chozenExtra = e.target;
 
   updateSubItem({
@@ -658,7 +662,8 @@ extraOptionsContainer.addEventListener("click", (e) => {
 
 // pick dressing
 dressingSelectionElement.addEventListener("click", (e) => {
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
 
   if (e.target.value === currentItem.dressingInfo.chozenDressing) return;
 
@@ -673,7 +678,8 @@ dressingSelectionElement.addEventListener("click", (e) => {
 
 // pick pasta
 pastaSelectionElement.addEventListener("click", (e) => {
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
 
   if (e.target.value === currentItem.pastaInfo.chozenPasta) return;
 
@@ -692,7 +698,8 @@ toppingOptionElement.addEventListener("click", (e) => {
 
   if (!e.target.matches(".topping__qty__btn")) return;
 
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
 
   const clikedToppingName = e.target
     .closest(".topping__item")
@@ -720,98 +727,27 @@ const addToCart = document.querySelector(".Add__to__cart");
 // add to cart
 addToCart.addEventListener("click", (e) => {
   if (e.target.classList.contains("Add__to__cart_inactive")) return;
-  const currentItem = getCurrentItemFromOrderBox(e);
+  const foodName = getCurrentFoodName(e);
+  const currentItem = getCurrentItemAmongItems(foodName);
 
-  // pack current user data into one item
-  // and reset currentItem's every property back to default value
-  const cartItem = packDataIntoOneItem(currentItem);
-
-  // store carItem in the order object in local storage
+  // Make a deep copy of current item and store it in LS
+  const cartItem = JSON.parse(JSON.stringify(currentItem));
   storeCartItemInLS(cartItem);
+
+  // Reset current item
+  resetCurrentItem(currentItem);
+
+  // Now since current item has been reset, update it in LS
+  updateLocalStorage(currentItem);
 
   closeBox(true); // true here means a new item has been added to the cart
 
-  function packDataIntoOneItem(item) {
-    const cartItem = {};
-
-    cartItem.id = null;
-
-    cartItem.foodName = item.foodName;
-
-    cartItem.quantity = item.quantity;
-    item.quantity = 0;
-
-    cartItem.currentPrice = item.currentPrice;
-    item.currentPrice = 0;
-
-    if (item.sizeInfo) {
-      cartItem.chozenSize = item.sizeInfo.chozenSize;
-      item.sizeInfo.chozenSize = null;
-    }
-
-    if (item.dressingInfo) {
-      cartItem["chozenDressing"] = item.dressingInfo.chozenDressing;
-      item.dressingInfo.chozenDressing = item.dressingInfo.dressingOptions[0];
-    }
-
-    if (item.pastaInfo) {
-      cartItem["chozenPasta"] = item.pastaInfo.chozenPasta;
-      item.pastaInfo.chozenPasta = item.pastaInfo.pastaOptions[0];
-    }
-
-    if (item.substitutes) {
-      cartItem["substitutes"] = [];
-
-      item.substitutes.forEach((substitute) => {
-        if (substitute.isChecked) {
-          cartItem["substitutes"].push(substitute.name);
-          substitute.isChecked = false;
-        }
-      });
-    }
-
-    if (item.extras) {
-      cartItem["extras"] = [];
-
-      item.extras.forEach((extra) => {
-        if (extra.isChecked) {
-          cartItem["extras"].push(extra.name);
-          extra.isChecked = false;
-        }
-      });
-    }
-
-    if (item.toppingInfo) {
-      cartItem["toppings"] = [];
-      item.toppingInfo.toppings.forEach((topping) => {
-        if (topping.quantity !== 0) {
-          cartItem["toppings"].push({
-            name: topping.toppingName,
-            quantity: topping.quantity,
-          });
-          topping.quantity = 0;
-        }
-      });
-    }
-
-    // Reset ATC status back to inactive because now every property has been
-    // reset to the default state
-    resetATCStatusConditions(item.ATCStatusConditions);
-
-    // Now since item's every property has been reset, update it in LS
-    updateLocalStorage(item);
-
-    // Return the new item
-    return cartItem;
-
-    function resetATCStatusConditions(ATCStatusConditions) {
-      Object.keys(ATCStatusConditions).forEach(
-        (prop) => (ATCStatusConditions[prop] = false)
-      );
-    }
-  }
+  // *******************
+  // Utility functions
+  // *******************
 
   function storeCartItemInLS(cartItem) {
+    // Store cartItem in order as an element of items and store order in LS.
     // First, get the order object if it exists, otherwise create it.
     const order = localStorage.getItem("order")
       ? JSON.parse(localStorage.getItem("order"))
@@ -831,7 +767,7 @@ addToCart.addEventListener("click", (e) => {
     // Then, push this item to the array
     order.items.push(cartItem);
 
-    // Calculate the order's subtotal
+    // Calculate order's subtotal
     order.subtotal = calculateSubtotal(order.items);
 
     // Calculate tax amount
@@ -864,16 +800,61 @@ addToCart.addEventListener("click", (e) => {
 
     function calculateSubtotal(items) {
       let subtotal = 0;
-      items.forEach((item) => (subtotal += +item.currentPrice));
-      return Number(subtotal.toFixed(2));
+      items.forEach((item) => (subtotal += item.currentPrice));
+      return subtotal;
     }
 
     function calculateTaxAmount(taxRate, subtotal) {
-      return +(taxRate * subtotal).toFixed(2);
+      return taxRate * subtotal;
     }
 
     function calculateOrderTotal({ subtotal, serviceFee, tip, tax, delivery }) {
       return subtotal + serviceFee + tip + tax.amount + delivery.fee;
     }
   }
+
+  function resetCurrentItem(item) {
+    // Reset currentItem's every property
+    item.quantity = 0;
+
+    item.currentPrice = 0;
+
+    if (item.sizeInfo) {
+      item.sizeInfo.chozenSize = null;
+    }
+
+    if (item.dressingInfo) {
+      item.dressingInfo.chozenDressing = item.dressingInfo.dressingOptions[0];
+    }
+
+    if (item.pastaInfo) {
+      item.pastaInfo.chozenPasta = item.pastaInfo.pastaOptions[0];
+    }
+
+    if (item.substitutes) {
+      item.substitutes.forEach((substitute) => {
+        substitute.isChecked = false;
+      });
+    }
+
+    if (item.extras) {
+      item.extras.forEach((extra) => {
+        extra.isChecked = false;
+      });
+    }
+
+    if (item.toppingInfo) {
+      item.toppingInfo.toppings.forEach((topping) => {
+        topping.quantity = 0;
+      });
+    }
+
+    // Reset ATC status back to inactive because now every property
+    // has been reset to the default state
+    Object.keys(item.ATCStatusConditions).forEach(
+      (prop) => (item.ATCStatusConditions[prop] = false)
+    );
+  }
 });
+
+export { openOrderBox };

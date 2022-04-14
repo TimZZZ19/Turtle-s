@@ -11,6 +11,9 @@ import CartDeliveryMethods from "./cart_content/CartDeliveryMethods.js";
 import CartItems from "./cart_content/CartItems.js";
 import CartBill from "./cart_content/CartBill.js";
 
+// import functions from OrderController.js for EDIT
+import { openOrderBox } from "../menu_order_UI/OrderController.js";
+
 // activate components
 // main components of cart
 CartBtn.activate();
@@ -139,7 +142,7 @@ cartBtnElement.addEventListener("click", (e) => {
   // If order exists, then get it from LS.
   const order = JSON.parse(localStorage.getItem("order"));
 
-  // if the number of items is equal to 0, then also return
+  // if the number of items is equal to 0, also return
   if (order.items.length === 0) return;
 
   // If LS has the order object, and the length of items is not 0,
@@ -147,7 +150,7 @@ cartBtnElement.addEventListener("click", (e) => {
   // first, lay out the 'canvas'
   CartMain.displayCartMain();
 
-  // then,  display the data on the cart
+  // then, display the data on the cart
   displayCartContent(order);
 });
 
@@ -191,7 +194,9 @@ cartItemsArea.addEventListener("click", (e) => {
   const clickedId = e.target.closest(".cart__item").id;
   const clickedItem = order.items.find((item) => item.id == clickedId);
 
-  // Remove item
+  // *************
+  // REMOVE ITEM
+  // *************
   if (e.target.matches(".item__remove")) {
     updateCartItems(order, {
       updateOption: "remove",
@@ -210,21 +215,14 @@ cartItemsArea.addEventListener("click", (e) => {
     }
   }
 
-  // Edit item
+  // *************
+  // EDIT ITEM
+  // *************
   if (e.target.matches(".item__edit")) {
     // close cart box and cart page
     closeBox();
-
-    // update menuItems with clickedItem's current setting
-    // open order box and rener menuItems[clickedItem]
-
-    // render clickedItem's default info
-    // create a new item using clickedItem's current setting
-    // render the new item
-    // edit item
-    // when clicked update, return the new item
-    // replace the old item with this new item using updateCartItems
-    // update bill with the updated items
+    // open order page and box
+    openOrderBox(clickedItem);
   }
 });
 
@@ -251,3 +249,16 @@ function displayCartBtnNumber() {
 }
 
 displayCartBtnNumber();
+
+// import { tryThis } from "../menu_order_UI/OrderController.js";
+
+// tryThis();
+
+// import tryThis from "../menu_order_UI/OrderController.js";
+
+// // If currentItem is a cart item, then it must have id.
+// // Store this id in the form as its id, so that the event listeners
+// // can keep track of currenItem.
+// if (currentItem.id) {
+//   document.querySelector(".order__form").id = currentItem.id;
+// }

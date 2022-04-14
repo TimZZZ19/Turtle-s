@@ -13,48 +13,80 @@ export default class CartItems {
 
     while (list.firstChild) list.removeChild(list.firstChild);
 
-    // add basic infromation
+    // ********************************************************
+    // First, create the cart element and add basic infromation
+    // ********************************************************
     items.forEach((item) => {
       const { id, foodName, quantity, currentPrice } = item;
       const element = this.createElement(id, foodName, quantity, currentPrice);
       list.insertAdjacentHTML("beforeend", element);
     });
 
-    // add extra information
+    // ***************************
+    // Then, add other information
+    // ***************************
     items.forEach((item) => {
-      const { substitutes, extras, chozenDressing, chozenPasta, toppings } =
-        item;
+      const {
+        sizeInfo,
+        substitutes,
+        extras,
+        dressingInfo,
+        pastaInfo,
+        toppingInfo,
+      } = item;
 
-      // Add substitutes or extras
-      if (substitutes) addSubItem("substitute", substitutes);
-      if (extras) addSubItem("extra", extras);
-
-      // Add dressing or pasta
-      if (chozenDressing) addConstitute("Dressing", chozenDressing);
-      if (chozenPasta) addConstitute("Pasta", chozenPasta);
-
-      // Add topping information
-      if (toppings) {
-        toppings.forEach((topping) => {
-          const toppingHTML = `<li class="item__topping"> 
-                                <span>${capitalizeFirst(topping.name)}</span> 
-                                <span>${topping.quantity}x</span> 
-                              </li>`;
-          document
-            .getElementById(`${item.id}`)
-            .querySelector(".item__composition")
-            .insertAdjacentHTML("beforeend", toppingHTML);
-        });
+      // If current item has sizeInfo, render it
+      if (sizeInfo) {
+        addSize(sizeInfo.chozenSize);
       }
 
+      // If substitutes exist, filter those out that are chozen and add them
+      if (substitutes) {
+        const checkedSubstitutes = substitutes.filter(
+          (substitute) => substitute.isChecked
+        );
+        addSubItem("substitute", checkedSubstitutes);
+      }
+
+      // If extras exist, filter those out that are chozen and add them
+      if (extras) {
+        const checkedExtras = extras.filter((extra) => extra.isChecked);
+        addSubItem("extra", checkedExtras);
+      }
+
+      // Add dressingInfo or pastaInfo exists, just add them
+      if (dressingInfo) {
+        addConstitute("Dressing", dressingInfo.chozenDressing);
+      }
+      if (pastaInfo) {
+        addConstitute("Pasta", pastaInfo.chozenPasta);
+      }
+
+      // Add current cart item has topping information, add those toppings
+      // whose quantity is not equal to zero
+      if (toppingInfo) {
+        addToppings(toppingInfo.toppings);
+      }
+
+      // *******************
       // Utility functions
+      // *******************
+
+      function addSize(chozenSize) {
+        const sizeHTML = `<li class="item__size"> Size : ${chozenSize} </li>`;
+        document
+          .getElementById(`${item.id}`)
+          .querySelector(".item__composition")
+          .insertAdjacentHTML("beforeend", sizeHTML);
+      }
+
       function addSubItem(subItemType, subItems) {
         let verb;
         if (subItemType === "substitute") verb = "With";
         if (subItemType === "extra") verb = "Add";
 
         subItems.forEach((subItem) => {
-          const subItemHTML = `<li class="item__subItem"> ${verb} ${subItem} </li>`;
+          const subItemHTML = `<li class="item__subItem"> ${verb} ${subItem.name} </li>`;
           document
             .getElementById(`${item.id}`)
             .querySelector(".item__composition")
@@ -68,6 +100,22 @@ export default class CartItems {
           .getElementById(`${item.id}`)
           .querySelector(".item__composition")
           .insertAdjacentHTML("beforeend", constituteHTML);
+      }
+
+      function addToppings(toppings) {
+        toppings.forEach((topping) => {
+          if (!topping.quantity) return;
+          const toppingHTML = `<li class="item__topping"> 
+                                <span>${capitalizeFirst(
+                                  topping.toppingName
+                                )}</span> 
+                                <span>${topping.quantity}x</span> 
+                              </li>`;
+          document
+            .getElementById(`${item.id}`)
+            .querySelector(".item__composition")
+            .insertAdjacentHTML("beforeend", toppingHTML);
+        });
       }
 
       function capitalizeFirst(str) {
