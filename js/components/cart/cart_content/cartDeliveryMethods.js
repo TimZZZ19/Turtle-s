@@ -29,12 +29,19 @@ export default class CartDeliveryMethods {
   }
 
   static renderDeliveryMethods(deliveryMethod) {
+    const deliveryInputElment = document.querySelector(
+      "#delivery__choice_delivery"
+    );
+    const pickupInputElement = document.querySelector(
+      "#delivery__choice_pickup"
+    );
     if (deliveryMethod === "delivery") {
-      document.querySelector("#delivery__choice_delivery").checked = true;
+      deliveryInputElment.checked = true;
     } else if (deliveryMethod === "pickup") {
-      document.querySelector("#delivery__choice_pickup").checked = true;
+      pickupInputElement.checked = true;
     } else {
-      document.querySelector(".delivery__input").checked = false;
+      deliveryInputElment.checked = false;
+      pickupInputElement.checked = false;
     }
   }
 }

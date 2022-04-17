@@ -25,6 +25,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 10;
 
   overflow-y: auto;
 }
@@ -46,6 +47,57 @@
 }
 
 .formbox__close_icon:hover {
+  color: black;
+}
+
+/* Discard changes */
+.discard__changes__box {
+  background-color: white;
+
+  border: 0.1rem solid #555;
+  border-radius: 1.3rem;
+
+  width: 25rem;
+  height: 15rem;
+
+  position: fixed;
+  top: 40%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.discard__changes__text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70%;
+  font-size: 2.5rem;
+}
+
+.discard__control {
+  border-top: 0.1rem solid #555;
+  height: 30%;
+  font-size: 1.6rem;
+  display: flex;
+
+  justify-content: space-around;
+}
+
+.discard__control span {
+  display: flex;
+  align-items: center;
+  color: rgb(2, 155, 2);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.discard__control span:hover {
   color: black;
 }
 

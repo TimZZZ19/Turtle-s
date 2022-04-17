@@ -6,6 +6,15 @@ import SubItems from "./options/SubItems.js";
 import Toppings from "./options/Toppings.js";
 import ATC from "./ATC.js";
 
+// Import cart-related components, so we can go back to cart when
+// finishing editing
+import CartPage from "../cart/CartPage.js";
+import CartMain from "../cart/cartMain.js";
+import CartDeliveryMethods from "../cart/cart_content/cartDeliveryMethods.js";
+import CartItems from "../cart/cart_content/cartItems.js";
+import CartBill from "../cart/cart_content/cartBill.js";
+import OrderDiscardChanges from "./OrderDiscardChanges.js";
+
 // ************************************************************
 // INITIALIZATION - components activation and local db creation
 // ************************************************************
@@ -29,6 +38,7 @@ SubItems.activate("substitute");
 SubItems.activate("extra");
 
 Toppings.activate();
+OrderDiscardChanges.activate();
 
 // *****************
 // Local Database Creation
@@ -244,7 +254,42 @@ function capitalizeFirst(str) {
     : str;
 }
 
-const updateLocalStorage = (item) => {
+const calculateSubtotal = (items) => {
+  let subtotal = 0;
+  items.forEach((item) => (subtotal += item.currentPrice));
+  return subtotal;
+};
+
+const calculateTaxAmount = (taxRate, subtotal) => {
+  return taxRate * subtotal;
+};
+
+const calculateOrderTotal = ({ subtotal, serviceFee, tip, tax, delivery }) => {
+  return subtotal + serviceFee + tip + tax.amount + delivery.fee;
+};
+
+const updateCartItemInLocalStorage = (currentItem) => {
+  // Get order from LS
+  const order = JSON.parse(localStorage.getItem("order"));
+
+  // Replace item with currentItem
+  for (let i = 0; i < order.items.length; i++) {
+    if (order.items[i].id === currentItem.id) {
+      order.items[i] = currentItem;
+      break;
+    }
+  }
+
+  // Update other properties of order
+  order.subtotal = calculateSubtotal(order.items);
+  order.tax.amount = calculateTaxAmount(order.tax.rate, order.subtotal);
+  order.total = calculateOrderTotal(order);
+
+  // Update order in LS
+  localStorage.setItem("order", JSON.stringify(order));
+};
+
+const updateItemsInLocalStorage = (item) => {
   localStorage.setItem(`${item.LSkey}`, JSON.stringify(item));
 };
 
@@ -256,9 +301,12 @@ const updateLocalStorage = (item) => {
 const updateQuantity = ({ updateOption, currentItem }) => {
   // UPDATE
   // update quantity
-  if (updateOption === "add") currentItem.quantity++;
-  if (updateOption === "remove" && currentItem.quantity > 0)
+  if (updateOption === "add") {
+    currentItem.quantity++;
+  }
+  if (updateOption === "remove" && currentItem.quantity > 0) {
     currentItem.quantity--;
+  }
 
   // update quantity status
   currentItem.ATCStatusConditions.qtyIsSet =
@@ -272,7 +320,13 @@ const updateQuantity = ({ updateOption, currentItem }) => {
   ATC.decideATCStatus(currentItem.ATCStatusConditions);
 
   // UPDATE IN LS
-  updateLocalStorage(currentItem);
+  if (currentItem.id) {
+    // for cart items
+    updateCartItemInLocalStorage(currentItem);
+  } else {
+    // for local menu items
+    updateItemsInLocalStorage(currentItem);
+  }
 };
 
 const updateSize = ({ updateValue, currentItem }) => {
@@ -294,7 +348,14 @@ const updateSize = ({ updateValue, currentItem }) => {
   ATC.decideATCStatus(currentItem.ATCStatusConditions);
 
   // UPDATE IN LS
-  updateLocalStorage(currentItem);
+  // UPDATE IN LS
+  if (currentItem.id) {
+    // for cart items
+    updateCartItemInLocalStorage(currentItem);
+  } else {
+    // for local menu items
+    updateItemsInLocalStorage(currentItem);
+  }
 };
 
 // dressing, pasta
@@ -319,7 +380,14 @@ const updateConstitute = ({ updateOption, updateValue, currentItem }) => {
   ATC.decideATCStatus(currentItem.ATCStatusConditions);
 
   // UPDATE IN LS
-  updateLocalStorage(currentItem);
+  // UPDATE IN LS
+  if (currentItem.id) {
+    // for cart items
+    updateCartItemInLocalStorage(currentItem);
+  } else {
+    // for local menu items
+    updateItemsInLocalStorage(currentItem);
+  }
 };
 
 // SubItems can be substitutes, extras
@@ -332,7 +400,14 @@ const updateSubItem = ({ updateOption, updateValue, currentItem }) => {
 
   SubItems.renderSubItems(updateOption, currentItem[`${updateOption}s`]);
 
-  updateLocalStorage(currentItem);
+  // UPDATE IN LS
+  if (currentItem.id) {
+    // for cart items
+    updateCartItemInLocalStorage(currentItem);
+  } else {
+    // for local menu items
+    updateItemsInLocalStorage(currentItem);
+  }
 };
 
 const updateToppings = ({ updateOption, updateValue, currentItem }) => {
@@ -370,7 +445,14 @@ const updateToppings = ({ updateOption, updateValue, currentItem }) => {
   ATC.decideATCStatus(currentItem.ATCStatusConditions);
 
   // UPDATE IN LS
-  updateLocalStorage(currentItem);
+  // UPDATE IN LS
+  if (currentItem.id) {
+    // for cart items
+    updateCartItemInLocalStorage(currentItem);
+  } else {
+    // for local menu items
+    updateItemsInLocalStorage(currentItem);
+  }
 };
 
 const updatePrice = (currentItem) => {
@@ -378,7 +460,14 @@ const updatePrice = (currentItem) => {
 
   OrderBasicForm.renderPrice(currentItem.currentPrice);
 
-  updateLocalStorage(currentItem);
+  // UPDATE IN LS
+  if (currentItem.id) {
+    // for cart items
+    updateCartItemInLocalStorage(currentItem);
+  } else {
+    // for local menu items
+    updateItemsInLocalStorage(currentItem);
+  }
 
   function calculateFinalPrice(currentItem) {
     // factors that are related to price calculation
@@ -437,11 +526,6 @@ const updatePrice = (currentItem) => {
 
 // This function is used to display the box when order button is clicked
 const displayComponents = (currentItem) => {
-  console.log(currentItem);
-
-  // Determine if ATC should be on or off
-  ATC.decideATCStatus(currentItem.ATCStatusConditions);
-
   // Call rendering layer
 
   // Constant food item information: foodImage, foodName, description
@@ -450,6 +534,9 @@ const displayComponents = (currentItem) => {
   OrderBasicForm.renderName(currentItem.foodName);
 
   OrderBasicForm.renderDescription(currentItem.description);
+
+  // Determine if ATC should be on or off
+  ATC.decideATCStatus(currentItem.ATCStatusConditions);
 
   // Variable food item information: quantity, size, price,
   // subItem(extra, substitute), constitute(dressing, pasta), toppings
@@ -487,13 +574,17 @@ const openOrderBox = (currentItem) => {
 
   // If currentItem is a cart item, then it must have id.
   // Store this id in the form as its id, so that the event listeners
-  // can keep track of currenItem.
+  // can keep track of currenItem. Also, determine the name of ATC.
+  const ATCBtn = document.querySelector(".Add__to__cart");
   if (currentItem.id) {
     document.querySelector(".order__form").id = currentItem.id;
+    ATCBtn.textContent = "UPDATE CART";
+  } else {
+    ATCBtn.textContent = "ADD TO CART";
   }
 };
 
-const closeBox = (newItemAdded = false) => {
+const closeBox = (message = null) => {
   // first, close all components
   SizeOptions.closeSizeOptions();
   Constitutes.closeConstituteOptions("dressing");
@@ -505,21 +596,23 @@ const closeBox = (newItemAdded = false) => {
   Toppings.closeToppingOptions();
 
   // then, close the form
+  // but before we do, remove the form id if it exists
+  document.querySelector(".order__form").removeAttribute("id");
   OrderBasicForm.closeBasicForm();
 
-  // check if a new item has been added; if yes, then run
-  // the following process to display the added msg.
-  if (newItemAdded) {
+  // If there's a message that needs to be displayed, display it.
+  if (message) {
+    document.querySelector(
+      ".order__added__msg_text"
+    ).textContent = `${message}`;
+
+    const orderAddedMsgElement = document.querySelector(".order__added__msg");
     setTimeout(() => {
-      document
-        .querySelector(".order__added__msg")
-        .classList.toggle("order__added__msg_show");
+      orderAddedMsgElement.classList.toggle("order__added__msg_show");
     }, 500);
 
     setTimeout(() => {
-      document
-        .querySelector(".order__added__msg")
-        .classList.toggle("order__added__msg_show");
+      orderAddedMsgElement.classList.toggle("order__added__msg_show");
     }, 2000);
 
     // display number of items
@@ -536,6 +629,17 @@ const closeBox = (newItemAdded = false) => {
     const numberOfItemsSpan = document.querySelector(".number__of__items");
     numberOfItemsSpan.textContent = numberOfItems;
   }
+};
+
+const goBackToCart = () => {
+  CartPage.openBox();
+  CartMain.displayCartMain();
+  // Get data from LS
+  const order = JSON.parse(localStorage.getItem("order"));
+  // Render the data
+  CartDeliveryMethods.renderDeliveryMethods(order.delivery.method);
+  CartItems.renderCartItems(order.items);
+  CartBill.renderBillItems(order);
 };
 
 // *********************************************************
@@ -562,12 +666,14 @@ const dressingSelectionElement = document.querySelector(".dressing__options");
 const pastaSelectionElement = document.querySelector(".pasta__options");
 const toppingOptionElement = document.querySelector(".order__topping__options");
 
+// buttons to discard changes or keep editing
+const keepingEditing = document.querySelector(".keep__editing");
+const discardChanges = document.querySelector(".discard__changes");
+
 // Utility functions to get the current item
-const getCurrentFoodName = (e) => {
-  return e.target.matches(".food-name")
-    ? e.target.textContent
-    : e.target.querySelector(".food-name").textContent;
-};
+
+const getCurrentFoodNameFromOrderBox = (orderForm) =>
+  orderForm.querySelector(".order__name").textContent;
 
 const getCurrentItemAmongItems = (foodName) => {
   const LSKey = foodName.split(" ").join("");
@@ -575,17 +681,39 @@ const getCurrentItemAmongItems = (foodName) => {
   return currentItem;
 };
 
-const getCurrentItemFromOrder = (orderId) => {};
+const getCurrentItemFromOrder = (orderId) => {
+  return JSON.parse(localStorage.getItem("order")).items.find(
+    (item) => item.id == orderId
+  );
+};
+
+const getCurrentItem = (e) => {
+  const orderForm = e.target.closest(".order__form");
+  let currentItem;
+  if (orderForm.id) {
+    currentItem = getCurrentItemFromOrder(orderForm.id);
+  } else {
+    const foodName = getCurrentFoodNameFromOrderBox(orderForm);
+    currentItem = getCurrentItemAmongItems(foodName);
+  }
+  return currentItem;
+};
 
 // open orderbox
 menuArea.addEventListener("click", (e) => {
   if (!e.target.matches(".order-button") && !e.target.matches(".food-name"))
     return;
 
-  const foodName = getCurrentFoodName(e);
+  const foodName = getCurrentFoodNameFromMenuPage(e);
   const currentItem = getCurrentItemAmongItems(foodName);
 
   openOrderBox(currentItem);
+
+  function getCurrentFoodNameFromMenuPage(e) {
+    return e.target.matches(".food-name")
+      ? e.target.textContent
+      : e.target.querySelector(".food-name").textContent;
+  }
 });
 
 // close orderbox
@@ -596,13 +724,54 @@ formContainer.addEventListener("click", (e) => {
   )
     return;
 
-  closeBox();
+  // if user is not editing, just close order box and return
+
+  if (!localStorage.getItem("copyOfEditedItem")) {
+    closeBox();
+    return;
+  }
+
+  // if she is, then first we wanna see if the item has been changed
+  // if it hasn't, remove copy from LS and close order box
+  // if it has, then open the discard dialogue.
+  const copyOfEditedItem = JSON.parse(localStorage.getItem("copyOfEditedItem"));
+  const currenItem = getCurrentItemFromOrder(copyOfEditedItem.id);
+  const unchanged = deepEqual(copyOfEditedItem, currenItem);
+
+  if (unchanged) {
+    localStorage.removeItem("copyOfEditedItem");
+    closeBox();
+  } else {
+    OrderDiscardChanges.openDiscardBox();
+  }
+
+  function deepEqual(object1, object2) {
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+    for (const key of keys1) {
+      const val1 = object1[key];
+      const val2 = object2[key];
+      const areObjects = isObject(val1) && isObject(val2);
+      if (
+        (areObjects && !deepEqual(val1, val2)) ||
+        (!areObjects && val1 !== val2)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+  function isObject(object) {
+    return object != null && typeof object === "object";
+  }
 });
 
 // add quantity
 orderQtyAddButton.addEventListener("click", (e) => {
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
 
   updateQuantity({ updateOption: "add", currentItem });
   updatePrice(currentItem);
@@ -610,8 +779,7 @@ orderQtyAddButton.addEventListener("click", (e) => {
 
 // remove quantity
 orderQTYRemoveButton.addEventListener("click", (e) => {
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
 
   updateQuantity({ updateOption: "remove", currentItem });
   updatePrice(currentItem);
@@ -620,8 +788,7 @@ orderQTYRemoveButton.addEventListener("click", (e) => {
 // choose size
 sizeOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(".size__option__input")) return;
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
   const userSelectedSize = e.target.id;
 
   updateSize({ updateValue: userSelectedSize, currentItem });
@@ -631,9 +798,9 @@ sizeOptionsContainer.addEventListener("click", (e) => {
 // choose substitute
 substituteOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(`.substitute__input__checkbox`)) return;
-  const foodName = getCurrentFoodName(e);
 
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
+
   const chozenSubstitute = e.target;
 
   updateSubItem({
@@ -648,8 +815,7 @@ substituteOptionsContainer.addEventListener("click", (e) => {
 extraOptionsContainer.addEventListener("click", (e) => {
   if (!e.target.matches(`.extra__input__checkbox`)) return;
 
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
   const chozenExtra = e.target;
 
   updateSubItem({
@@ -662,8 +828,7 @@ extraOptionsContainer.addEventListener("click", (e) => {
 
 // pick dressing
 dressingSelectionElement.addEventListener("click", (e) => {
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
 
   if (e.target.value === currentItem.dressingInfo.chozenDressing) return;
 
@@ -678,8 +843,7 @@ dressingSelectionElement.addEventListener("click", (e) => {
 
 // pick pasta
 pastaSelectionElement.addEventListener("click", (e) => {
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
 
   if (e.target.value === currentItem.pastaInfo.chozenPasta) return;
 
@@ -698,8 +862,7 @@ toppingOptionElement.addEventListener("click", (e) => {
 
   if (!e.target.matches(".topping__qty__btn")) return;
 
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
 
   const clikedToppingName = e.target
     .closest(".topping__item")
@@ -718,6 +881,33 @@ toppingOptionElement.addEventListener("click", (e) => {
   updatePrice(currentItem);
 });
 
+// Discard changes or not
+keepingEditing.addEventListener("click", (e) => {
+  OrderDiscardChanges.closeDiscardBox();
+});
+discardChanges.addEventListener("click", (e) => {
+  // If we wanna discard the changes we just made, then
+  // we always wanna close the discard box and go back to
+  // the order box first.
+  OrderDiscardChanges.closeDiscardBox();
+
+  // Then we close order box
+  closeBox();
+
+  // The above operation is to ensure the order box will be reset
+  // for the next opening.
+
+  // Since we wanna discard the changes, then we wanna first replace the
+  // current changed item with the copy
+  const copyOfEditedItem = JSON.parse(localStorage.getItem("copyOfEditedItem"));
+  updateCartItemInLocalStorage(copyOfEditedItem);
+  // Then we delete the copy.
+  localStorage.removeItem("copyOfEditedItem");
+
+  // Lastly, go back to cart
+  goBackToCart();
+});
+
 // *********************************************************
 // ADD TO CART
 // *********************************************************
@@ -727,24 +917,30 @@ const addToCart = document.querySelector(".Add__to__cart");
 // add to cart
 addToCart.addEventListener("click", (e) => {
   if (e.target.classList.contains("Add__to__cart_inactive")) return;
-  const foodName = getCurrentFoodName(e);
-  const currentItem = getCurrentItemAmongItems(foodName);
+  const currentItem = getCurrentItem(e);
 
-  // Make a deep copy of current item and store it in LS
-  const cartItem = JSON.parse(JSON.stringify(currentItem));
-  storeCartItemInLS(cartItem);
+  // If the current item is a cart item, then we only need to go back
+  // to the cart page and render the latest information in order.
+  if (currentItem.id) {
+    // First, discard copyOfEditedItem since we don't need it anymore in LS
+    localStorage.removeItem("copyOfEditedItem");
+    closeBox();
+    // Go back to the cart page
+    goBackToCart();
+  } else {
+    // If the current item is new item to be added to the order object,
+    // then make a deep copy of current item and store it in LS
+    const cartItem = JSON.parse(JSON.stringify(currentItem));
+    storeCartItemInLS(cartItem);
 
-  // Reset current item
-  resetCurrentItem(currentItem);
+    // Reset current item
+    resetCurrentItem(currentItem);
 
-  // Now since current item has been reset, update it in LS
-  updateLocalStorage(currentItem);
+    // Now since current item has been reset, update it in LS
+    updateItemsInLocalStorage(currentItem);
 
-  closeBox(true); // true here means a new item has been added to the cart
-
-  // *******************
-  // Utility functions
-  // *******************
+    closeBox("Added"); // close the order box with the added msg
+  }
 
   function storeCartItemInLS(cartItem) {
     // Store cartItem in order as an element of items and store order in LS.
@@ -797,22 +993,7 @@ addToCart.addEventListener("click", (e) => {
       // 3. if this id doesn't already exist, add it
       return fourDigitId;
     }
-
-    function calculateSubtotal(items) {
-      let subtotal = 0;
-      items.forEach((item) => (subtotal += item.currentPrice));
-      return subtotal;
-    }
-
-    function calculateTaxAmount(taxRate, subtotal) {
-      return taxRate * subtotal;
-    }
-
-    function calculateOrderTotal({ subtotal, serviceFee, tip, tax, delivery }) {
-      return subtotal + serviceFee + tip + tax.amount + delivery.fee;
-    }
   }
-
   function resetCurrentItem(item) {
     // Reset currentItem's every property
     item.quantity = 0;

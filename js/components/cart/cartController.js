@@ -115,6 +115,18 @@ const closeBox = () => {
   CartPage.closeBox();
 };
 
+// Empty cart
+const emptyCart = () => {
+  const order = getOrderFromLS();
+  updateDeliveryMethod(order, null);
+
+  updateCartItems(order, { updateOption: "empty" });
+  displayCartBtnNumber();
+
+  updateBill(order, { updateOption: "remove" });
+  CartMain.closeCartMain();
+};
+
 // ************************************************************
 // EVENT LISTENERS - taking user inputs
 // ************************************************************
@@ -136,14 +148,11 @@ cartBtnElement.addEventListener("click", (e) => {
   // we always need to open the cart box with the "Empty" message.
   CartPage.openBox();
 
-  // If LS doesn't have the order object, then just return
-  if (!localStorage.getItem("order")) return;
-
-  // If order exists, then get it from LS.
   const order = JSON.parse(localStorage.getItem("order"));
 
-  // if the number of items is equal to 0, also return
-  if (order.items.length === 0) return;
+  // If LS doesn't have the order object, then just return;
+  // or if the number of items is equal to 0, also return
+  if (!order || !order.items.length) return;
 
   // If LS has the order object, and the length of items is not 0,
   // then we wanna render it on the cart.
@@ -198,6 +207,13 @@ cartItemsArea.addEventListener("click", (e) => {
   // REMOVE ITEM
   // *************
   if (e.target.matches(".item__remove")) {
+    // If the number of item is now equal to 1, then this
+    // removal is equivalent to emptying the cart
+    if (order.items.length === 1) {
+      emptyCart();
+      return;
+    }
+
     updateCartItems(order, {
       updateOption: "remove",
       itemToBeRemoved: clickedItem,
@@ -207,12 +223,6 @@ cartItemsArea.addEventListener("click", (e) => {
     displayCartBtnNumber();
 
     updateBill(order, { updateOption: "remove" });
-
-    // If the number of item is now equal to 0, then close
-    // the main and show the empty msg
-    if (order.items.length === 0) {
-      CartMain.closeCartMain();
-    }
   }
 
   // *************
@@ -221,19 +231,20 @@ cartItemsArea.addEventListener("click", (e) => {
   if (e.target.matches(".item__edit")) {
     // close cart box and cart page
     closeBox();
+
+    // store a deep copy of the clicked item in LS
+    // so later if the user decides to discard changes, this copy
+    // will used to replace the changed one.
+    const copyOfClickedItem = JSON.parse(JSON.stringify(clickedItem));
+    localStorage.setItem("copyOfEditedItem", JSON.stringify(copyOfClickedItem));
     // open order page and box
     openOrderBox(clickedItem);
   }
 });
 
 // Empty the cart
-emptyBtn.addEventListener("click", (e) => {
-  const order = getOrderFromLS();
-  updateCartItems(order, { updateOption: "empty" });
-  displayCartBtnNumber();
-  updateBill(order, { updateOption: "remove" });
-  CartMain.closeCartMain();
-});
+
+emptyBtn.addEventListener("click", (e) => emptyCart());
 
 // ************************************************************
 //
@@ -249,16 +260,3 @@ function displayCartBtnNumber() {
 }
 
 displayCartBtnNumber();
-
-// import { tryThis } from "../menu_order_UI/OrderController.js";
-
-// tryThis();
-
-// import tryThis from "../menu_order_UI/OrderController.js";
-
-// // If currentItem is a cart item, then it must have id.
-// // Store this id in the form as its id, so that the event listeners
-// // can keep track of currenItem.
-// if (currentItem.id) {
-//   document.querySelector(".order__form").id = currentItem.id;
-// }

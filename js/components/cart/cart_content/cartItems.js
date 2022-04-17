@@ -87,6 +87,7 @@ export default class CartItems {
 
         subItems.forEach((subItem) => {
           const subItemHTML = `<li class="item__subItem"> ${verb} ${subItem.name} </li>`;
+
           document
             .getElementById(`${item.id}`)
             .querySelector(".item__composition")

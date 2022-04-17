@@ -95,8 +95,13 @@ export default class CartBill {
   }
 
   static displayDeliveryFee({ method, fee }) {
-    if (!method) return;
+    const deliveryElement = document.querySelector(".cart__bill__delivery");
+    if (!method) {
+      deliveryElement.style.display = "none";
+      return;
+    }
 
+    deliveryElement.style.display = null;
     const deliveryMethodSpan = document.querySelector(".cart__deliveryMethod");
     const deliveryFeeSpan = document.querySelector(".cart__deliveryFee");
 
