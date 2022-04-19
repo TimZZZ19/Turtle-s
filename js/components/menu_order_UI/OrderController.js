@@ -9,11 +9,12 @@ import ATC from "./ATC.js";
 // Import cart-related components, so we can go back to cart when
 // finishing editing
 import CartPage from "../cart/CartPage.js";
-import CartMain from "../cart/cartMain.js";
+import CartMain from "../cart/CartMain.js";
 import CartDeliveryMethods from "../cart/cart_content/cartDeliveryMethods.js";
 import CartItems from "../cart/cart_content/cartItems.js";
 import CartBill from "../cart/cart_content/cartBill.js";
 import OrderDiscardChanges from "./OrderDiscardChanges.js";
+import OrderWarningMsg from "./OrderWarningMSG.js";
 
 // ************************************************************
 // INITIALIZATION - components activation and local db creation
@@ -27,6 +28,7 @@ import OrderDiscardChanges from "./OrderDiscardChanges.js";
 OrderPageBNG.activate();
 OrderBasicForm.activate();
 ATC.activate();
+OrderWarningMsg.activate();
 
 SizeOptions.activate();
 
@@ -916,8 +918,42 @@ const addToCart = document.querySelector(".Add__to__cart");
 
 // add to cart
 addToCart.addEventListener("click", (e) => {
-  if (e.target.classList.contains("Add__to__cart_inactive")) return;
   const currentItem = getCurrentItem(e);
+
+  if (e.target.classList.contains("Add__to__cart_inactive")) {
+    const unSetProp = Object.keys(currentItem.ATCStatusConditions).find(
+      (prop) => currentItem.ATCStatusConditions[prop] === false
+    );
+
+    let message;
+    switch (unSetProp) {
+      case "qtyIsSet":
+        message = "Quantity can't be zero";
+        break;
+      case "sizeIsSet":
+        message = "Please choose a size";
+        break;
+      case "dressingIsSet":
+        message = "Please pick your dressing";
+        break;
+      case "pastaIsSet":
+        message = "Please choose your pasta";
+        break;
+      case "toppingIsSet":
+        message = "Please choose your topping";
+        break;
+    }
+
+    setTimeout(() => {
+      OrderWarningMsg.displayWarningMSG(message);
+    }, 100);
+
+    setTimeout(() => {
+      OrderWarningMsg.closeWarningMSG();
+    }, 2000);
+
+    return;
+  }
 
   // If the current item is a cart item, then we only need to go back
   // to the cart page and render the latest information in order.

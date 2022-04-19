@@ -9,13 +9,11 @@ export default class CartPage {
                         </div>
 
 
-                        <p class="empty__cart__msg">Your cart is empty</p>
+                        <p class="empty__cart__msg">
+                          Your cart is empty
+                        </p>
                         
                       </aside>
-
-
-
-
                     </div>
                     `;
 

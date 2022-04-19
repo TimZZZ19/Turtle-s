@@ -12,7 +12,11 @@ export default class CartBtn {
 
                               <div class="cart__control">
                                 <button class="cart__control__button cart__empty__btn">EMPTY CART</button>
-                                <button class="cart__control__button cart__checkout__btn">CHECK OUT</button>
+                                <button class="cart__control__button 
+                                               cart__checkout__btn 
+                                               ">
+                                               CHECK OUT
+                                </button>
                               </div>
 
                             </div>
@@ -31,5 +35,18 @@ export default class CartBtn {
 
   static closeCartMain() {
     document.querySelector(".cart__main").style.display = "none";
+  }
+
+  static activateCheckOut() {
+    const cartCheckOutBtn = document.querySelector(".cart__checkout__btn");
+    if (cartCheckOutBtn.classList.contains("cart__checkout__btn_inactive"))
+      cartCheckOutBtn.classList.remove("cart__checkout__btn_inactive");
+  }
+
+  static deactivateCheckOut() {
+    const cartCheckOutBtn = document.querySelector(".cart__checkout__btn");
+    if (!cartCheckOutBtn.classList.contains("cart__checkout__btn_inactive")) {
+      cartCheckOutBtn.classList.add("cart__checkout__btn_inactive");
+    }
   }
 }

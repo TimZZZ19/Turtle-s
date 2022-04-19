@@ -6,6 +6,7 @@
 import CartBtn from "./CartBtn.js";
 import CartPage from "./CartPage.js";
 import CartMain from "./CartMain.js";
+import CartEmptyConfirmation from "./CartEmptyConfirmation.js";
 
 import CartDeliveryMethods from "./cart_content/CartDeliveryMethods.js";
 import CartItems from "./cart_content/CartItems.js";
@@ -13,12 +14,15 @@ import CartBill from "./cart_content/CartBill.js";
 
 // import functions from OrderController.js for EDIT
 import { openOrderBox } from "../menu_order_UI/OrderController.js";
+import CartWarningMsg from "./CartWarningMsg.js";
 
 // activate components
 // main components of cart
 CartBtn.activate();
 CartPage.activate();
 CartMain.activate();
+CartEmptyConfirmation.activate();
+CartWarningMsg.activate();
 
 // sub components of cart
 CartDeliveryMethods.activate();
@@ -53,6 +57,8 @@ const calculateOrderTotal = (order) =>
 const updateDeliveryMethod = (order, deliveryMethod) => {
   order.delivery.method = deliveryMethod;
   CartDeliveryMethods.renderDeliveryMethods(order.delivery.method);
+  if (order.delivery.method) CartMain.activateCheckOut();
+
   updateOrderInLS(order);
 };
 
@@ -108,6 +114,8 @@ const displayCartContent = (order) => {
   CartItems.renderCartItems(order.items);
 
   CartBill.renderBillItems(order);
+
+  if (!order.delivery.method) CartMain.deactivateCheckOut();
 };
 
 const closeBox = () => {
@@ -127,6 +135,8 @@ const emptyCart = () => {
   CartMain.closeCartMain();
 };
 
+//
+
 // ************************************************************
 // EVENT LISTENERS - taking user inputs
 // ************************************************************
@@ -139,6 +149,8 @@ const cartBtnElement = document.querySelector(".cart__li");
 const tipInputBox = document.querySelector("#tip__value");
 const cartItemsArea = document.querySelector(".cart__items");
 const emptyBtn = document.querySelector(".cart__empty__btn");
+const emptyControl = document.querySelector(".empty__dialogue__control");
+const cartCheckOutBtn = document.querySelector(".cart__checkout__btn");
 
 // Open cart box and collect data from local storage
 cartBtnElement.addEventListener("click", (e) => {
@@ -243,8 +255,39 @@ cartItemsArea.addEventListener("click", (e) => {
 });
 
 // Empty the cart
+emptyBtn.addEventListener("click", (e) => {
+  CartEmptyConfirmation.openEmptyDialogue();
+});
 
-emptyBtn.addEventListener("click", (e) => emptyCart());
+// Empty confirmation
+emptyControl.addEventListener("click", (e) => {
+  if (
+    !e.target.matches(".empty__dialogue__control_yes") &&
+    !e.target.matches(".empty__dialogue__control_no")
+  )
+    return;
+
+  CartEmptyConfirmation.closeEmptyDialogue();
+
+  if (e.target.matches(".empty__dialogue__control_yes")) emptyCart();
+});
+
+// Check out
+cartCheckOutBtn.addEventListener("click", (e) => {
+  if (e.target.classList.contains("cart__checkout__btn_inactive")) {
+    setTimeout(() => {
+      CartWarningMsg.displayWarningMSG("please enter a delivery choice");
+    }, 100);
+
+    setTimeout(() => {
+      CartWarningMsg.closeWarningMSG();
+    }, 2000);
+
+    return;
+  }
+
+  console.log("Go to payment");
+});
 
 // ************************************************************
 //

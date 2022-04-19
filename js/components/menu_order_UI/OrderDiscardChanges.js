@@ -1,26 +1,33 @@
 export default class OrderDiscardChanges {
   static activate() {
-    const formboxContainer = document.querySelector(".formbox__container");
-    const discardChangesDiv = ` <div class="discard__changes__box" style="display:none">
-                                  <div class="discard__changes__text">      
-                                    <p>Discard changes?</p>
+    const discardChangesDiv = ` <div class="discard__changes__bng" style="display:none">
+                                  <div class="discard__changes__box" >
+                                    <div class="discard__changes__text">      
+                                      <p>Discard changes?</p>
+                                    </div>
+                                    <div class="discard__control">
+                                      <span class="keep__editing">KEEP EDITING</span>
+                                      <span class="discard__changes">DISCARD</span>
+                                    </div>
                                   </div>
-                                  <div class="discard__control">
-                                    <span class="keep__editing">KEEP EDITING</span>
-                                    <span class="discard__changes">DISCARD</span>
-                                  </div>
-                                 </div>
+                                </div>
                                 `;
-    formboxContainer.insertAdjacentHTML("beforeend", discardChangesDiv);
+    document.body.insertAdjacentHTML("beforeend", discardChangesDiv);
   }
 
   static openDiscardBox() {
-    document.querySelector(".formbox").style.display = "none";
-    document.querySelector(".discard__changes__box").style.display = null;
+    const orderForm = document.querySelector(".order__form");
+    if (orderForm.classList.contains("order__form_blur")) return;
+
+    orderForm.classList.toggle("order__form_blur");
+    document.querySelector(".discard__changes__bng").style.display = null;
   }
 
   static closeDiscardBox() {
-    document.querySelector(".formbox").style.display = null;
-    document.querySelector(".discard__changes__box").style.display = "none";
+    const orderForm = document.querySelector(".order__form");
+    if (!orderForm.classList.contains("order__form_blur")) return;
+
+    orderForm.classList.toggle("order__form_blur");
+    document.querySelector(".discard__changes__bng").style.display = "none";
   }
 }

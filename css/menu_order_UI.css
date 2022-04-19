@@ -51,6 +51,17 @@
 }
 
 /* Discard changes */
+.discard__changes__bng {
+  width: 100%;
+  height: 100%;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  z-index: 100;
+}
+
 .discard__changes__box {
   background-color: white;
 
@@ -99,6 +110,14 @@
 
 .discard__control span:hover {
   color: black;
+}
+
+.order__form {
+  transition: all 0.3s;
+}
+
+.order__form.order__form_blur {
+  filter: blur(2px);
 }
 
 /*Form area */
@@ -371,4 +390,40 @@
 
 .order__added__msg.order__added__msg_show {
   opacity: 1;
+}
+/* **************** */
+/* ORDER WARNING MESSAGE */
+/* **************** */
+.order__warning {
+  background-color: #fafafa;
+
+  border: 0.1rem solid #555;
+  border-radius: 1.3rem;
+
+  width: 30rem;
+  height: 6rem;
+
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: all 1s;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.order__warning p {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: green;
+}
+
+.order__warning.order__warning_show {
+  opacity: 1;
+  transform: translate(-50%, 50%);
 }
