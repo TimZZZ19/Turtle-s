@@ -496,6 +496,7 @@ ion-icon {
 
   opacity: 0;
   transform: translate(-50%, -50%);
+  z-index: -100;
   transition: all 1s;
 
   display: flex;
@@ -512,4 +513,5 @@ ion-icon {
 .cart__warning.cart__warning_show {
   opacity: 1;
   transform: translate(-50%, -150%);
+  z-index: 100;
 }
