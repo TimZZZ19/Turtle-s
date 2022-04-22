@@ -16,6 +16,9 @@ import CartBill from "./cart_content/CartBill.js";
 import { openOrderBox } from "../menu_order_UI/OrderController.js";
 import CartWarningMsg from "./CartWarningMsg.js";
 
+// import function from the payment controller for checking out
+import { openPaymentPage } from "../payment/main_components/PaymentController.js";
+
 // activate components
 // main components of cart
 CartBtn.activate();
@@ -117,6 +120,8 @@ const displayCartContent = (order) => {
 
   if (!order.delivery.method) CartMain.deactivateCheckOut();
 };
+
+console.log("cartController");
 
 const closeBox = () => {
   CartMain.closeCartMain();
@@ -286,7 +291,12 @@ cartCheckOutBtn.addEventListener("click", (e) => {
     return;
   }
 
-  console.log("Go to payment");
+  // When the checkout button has been activated
+  // close the cart page
+  closeBox();
+
+  // open the payment page
+  openPaymentPage();
 });
 
 // ************************************************************
@@ -303,3 +313,5 @@ function displayCartBtnNumber() {
 }
 
 displayCartBtnNumber();
+
+export { displayCartContent };

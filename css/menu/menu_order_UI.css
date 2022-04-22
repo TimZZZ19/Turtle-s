@@ -37,17 +37,14 @@
   border-radius: 0 1.3rem 0 0;
   background-color: #ccc;
   opacity: 0.6;
-}
 
-.formbox__close_icon {
-  font-size: 3.6rem;
   color: #555;
   transition: color 0.1s;
   cursor: pointer;
 }
 
-.formbox__close_icon:hover {
-  color: black;
+.formbox__close_icon {
+  font-size: 3.6rem;
 }
 
 /* Discard changes */
@@ -403,8 +400,7 @@
   width: 30rem;
   height: 6rem;
 
-  position: fixed;
-  z-index: 1000;
+  position: absolute;
   top: 50%;
   left: 50%;
 

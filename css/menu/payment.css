@@ -1,0 +1,225 @@
+/* **************** */
+/* MUTUAL ELEMENTS */
+/* **************** */
+
+.payment__form {
+  margin-top: 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0rem;
+}
+
+.payment__form label {
+  font-size: 2.2rem;
+}
+
+.payment__section {
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-bottom: 0.1px solid #ccc;
+}
+
+.section__title {
+  font-size: 2.8rem;
+  font-weight: 700;
+}
+
+.section__inputs__area {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.section__inline__inputs {
+  width: 100%;
+
+  display: flex;
+  gap: 1rem;
+}
+
+.section__input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* **************** */
+/* SPECIFIC ELEMENTS */
+/* **************** */
+
+/* Check out  */
+.checkout__section {
+  border-top: 1px solid gray;
+}
+
+.checkout__title {
+  font-size: 3.3rem;
+}
+
+/* Contact Information - Notification */
+.notification__options {
+  display: flex;
+  gap: 3.6rem;
+}
+
+.notification__option {
+  display: flex;
+  gap: 1rem;
+}
+
+.notification__text {
+  font-size: 1.6rem;
+  line-height: 1.3;
+  width: 33rem;
+}
+
+/* Payment Information*/
+#expiration__date {
+  width: 21rem;
+}
+#card__cvc {
+  width: 10rem;
+}
+#card__zip {
+  width: 10rem;
+}
+
+/* Payment Control*/
+.payment__control {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-around;
+}
+
+.payment__control button {
+  font-size: 1.8rem;
+  transition: all 0.3s;
+  border-radius: 3.6rem;
+  padding: 0.8rem 1.6rem;
+  border-width: 0;
+  box-shadow: 0rem 0.3rem 0.8rem #ccc;
+  cursor: pointer;
+}
+
+.payment__control button:hover {
+  transform: translateY(-0.5rem);
+}
+
+.payment__control__go__back {
+  color: grey;
+}
+
+.payment__control__go__back:hover {
+  background-color: white;
+  color: black;
+}
+
+.payment__control__confirm__payment {
+  background-color: #8b4513;
+  color: white;
+}
+
+.payment__control__confirm__payment:hover {
+  background-color: #61300d;
+}
+
+/* Payment Summary*/
+.summary__text {
+  font-size: 1.8rem;
+  line-height: 1.6;
+}
+
+/* Payment Submission Notification */
+.payment__submitted__notification {
+  background-color: rgba(255, 255, 255, 0.8);
+
+  border: 0.1rem solid #555;
+  border-radius: 1.3rem;
+
+  width: 28rem;
+  height: 14rem;
+
+  text-align: center;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 1s;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment__submitted__notification p {
+  font-size: 2.8rem;
+  line-height: 1.2;
+}
+
+.payment__submitted__notification.notification__show {
+  opacity: 1;
+}
+
+/* Payment Cancelation */
+
+.payment__cancelation__bng {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+
+  display: flex;
+  justify-content: center;
+}
+
+.payment__cancelation__box {
+  background-color: white;
+  border: 0.1rem solid #555;
+  border-radius: 1.3rem;
+
+  width: 25rem;
+  height: 15rem;
+
+  position: absolute;
+  top: 30%;
+}
+
+.payment__cancelation__text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70%;
+  font-size: 2.5rem;
+
+  color: black;
+}
+
+.payment__cancelation__control {
+  border-top: 0.1rem solid #555;
+  height: 30%;
+  font-size: 1.6rem;
+  display: flex;
+
+  justify-content: space-around;
+}
+
+.payment__cancelation__control span {
+  display: flex;
+  align-items: center;
+  color: rgb(2, 155, 2);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.payment__cancelation__control span:hover {
+  color: black;
+}

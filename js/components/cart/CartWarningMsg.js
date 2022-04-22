@@ -1,13 +1,13 @@
 export default class CartWarningMsg {
   static activate() {
-    const cartControl = document.querySelector(".cart__control");
+    const cartControl = document.querySelector(".cart__bill_and_control");
 
     const warningMsgHTML = `
                           <div class="cart__warning" >
                           </div>
                         `;
 
-    cartControl.insertAdjacentHTML("beforebegin", warningMsgHTML);
+    cartControl.insertAdjacentHTML("beforeend", warningMsgHTML);
   }
 
   static displayWarningMSG(message) {

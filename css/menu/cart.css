@@ -375,7 +375,6 @@ ion-icon {
 }
 
 .cart__control__button {
-  color: grey;
   font-size: 1.8rem;
   transition: all 0.3s;
   border-radius: 3.6rem;
@@ -390,7 +389,7 @@ ion-icon {
 }
 
 .cart__empty__btn {
-  background-color: white;
+  color: grey;
 }
 
 .cart__empty__btn:hover {
@@ -489,13 +488,13 @@ ion-icon {
   width: 33rem;
   height: 6rem;
 
-  position: fixed;
+  position: absolute;
   z-index: 1000;
-  top: 50%;
+  top: 0;
   left: 50%;
 
   opacity: 0;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   z-index: -100;
   transition: all 1s;
 
@@ -512,6 +511,6 @@ ion-icon {
 
 .cart__warning.cart__warning_show {
   opacity: 1;
-  transform: translate(-50%, -150%);
+  transform: translate(-50%, -100%);
   z-index: 100;
 }
