@@ -63,6 +63,12 @@ const revealGroup = function (entries, observer) {
   const [entry] = entries;
   entry.target.classList.remove("menu-group-hidden");
   observer.unobserve(entry.target);
+
+  // entries.forEach((entry) => {
+  //   if (!entry.isIntersecting) return;
+  //   entry.target.classList.remove("menu-group-hidden");
+  //   observer.unobserve(entry.target);
+  // });
 };
 const revealRroupObserver = new IntersectionObserver(revealGroup, {
   root: null,
