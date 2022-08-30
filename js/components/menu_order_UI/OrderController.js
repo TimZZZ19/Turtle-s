@@ -1,3 +1,4 @@
+// Import Components
 import OrderPageBNG from "./OrderPageBNG.js";
 import OrderBasicForm from "./OrderBasicForm.js";
 import SizeOptions from "./options/SizeOptions.js";
@@ -17,12 +18,13 @@ import OrderDiscardChanges from "./OrderDiscardChanges.js";
 import OrderWarningMsg from "./OrderWarningMSG.js";
 
 // ************************************************************
+// COMMENT COMMENT COMMENT
 // INITIALIZATION - components activation and local db creation
 // ************************************************************
 
-// *****************
-// Components Activation
-// ****************
+// *************************************
+// COMMENT Components Activation - START
+// *************************************
 
 // activate form and form components
 OrderPageBNG.activate();
@@ -41,12 +43,12 @@ SubItems.activate("extra");
 
 Toppings.activate();
 OrderDiscardChanges.activate();
+// COMMENT Components Activation - END
 
-// *****************
-// Local Database Creation
-// ****************
-
+// ***********************
+// COMMENT Local Database Creation - START
 // Store every menu item as an object in local storage.
+// ***********************
 const storeMenuItemsInLS = (menuItemElements) => {
   menuItemElements.forEach((item) => {
     // If LS has already stored this item, then skip to the next loop;
@@ -239,14 +241,18 @@ const storeMenuItemsInLS = (menuItemElements) => {
     localStorage.setItem(item.key, JSON.stringify(obj));
   });
 };
-
 const menuItemElements = document.querySelectorAll(".menu-item");
 storeMenuItemsInLS(menuItemElements);
+// COMMENT Local Database Creation - END
 
-// ***********************************************************
+// ******************************************************************
+// COMMENT COMMENT COMMENT
 // UTILITY FUNCTIONS
-// ***********************************************************
+// This is the data processing layer, only responsible for processing
+// and storing the data taken from the event listeners layer.
+// ******************************************************************
 
+// COMMENT Helper functions for following processing functions - START
 //capitalize the first letter
 function capitalizeFirst(str) {
   // checks for null, undefined and empty string
@@ -294,12 +300,14 @@ const updateCartItemInLocalStorage = (currentItem) => {
 const updateItemsInLocalStorage = (item) => {
   localStorage.setItem(`${item.LSkey}`, JSON.stringify(item));
 };
+// COMMENT Helper functions for following processing functions - END
+
+// COMMENT Utility functions for data processing - START
 
 // Functions for updating data and rendering form components
 
 // Varying food-item information: quantity, size, price,
 // subItem(extra, substitute), constitute(dressing, pasta), toppings
-
 const updateQuantity = ({ updateOption, currentItem }) => {
   // UPDATE
   // update quantity
@@ -335,8 +343,8 @@ const updateSize = ({ updateValue, currentItem }) => {
   // UPDATE
   // update size
   currentItem.sizeInfo.chozenSize = updateValue;
-  const currentSize = currentItem.sizeInfo.chozenSize;
-  const mediumPrice = currentItem.sizeInfo.sizePricePairs["meidum"];
+  // const currentSize = currentItem.sizeInfo.chozenSize;
+  // const mediumPrice = currentItem.sizeInfo.sizePricePairs["meidum"];
 
   // update size status
   currentItem.ATCStatusConditions.sizeIsSet =
@@ -366,7 +374,7 @@ const updateConstitute = ({ updateOption, updateValue, currentItem }) => {
   // update constitute
   const propertyName = `${updateOption}Info`;
   const chozenConsitute = `chozen${capitalizeFirst(updateOption)}`;
-  const constituteOptions = `${updateOption}Options`;
+  // const constituteOptions = `${updateOption}Options`;
 
   currentItem[propertyName][chozenConsitute] = updateValue;
 
@@ -643,13 +651,16 @@ const goBackToCart = () => {
   CartItems.renderCartItems(order.items);
   CartBill.renderBillItems(order);
 };
+// COMMENT Utility functions for data processing - END
 
 // *********************************************************
+// COMMENT COMMENT COMMENT
 // EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
 // *********************************************************
 // The level of event listeners is only responsible for taking user's
 // input data and sending that to the processing layer for processing
 
+// COMMENT Variable Declarations - START
 // for closing and opening box
 const menuArea = document.querySelector(".menu");
 const formContainer = document.querySelector(".formbox__container");
@@ -671,9 +682,10 @@ const toppingOptionElement = document.querySelector(".order__topping__options");
 // buttons to discard changes or keep editing
 const keepingEditing = document.querySelector(".keep__editing");
 const discardChanges = document.querySelector(".discard__changes");
+// COMMENT Variable Declarations - END
 
+// COMMENT Utitlity Function Expression - START
 // Utility functions to get the current item
-
 const getCurrentFoodNameFromOrderBox = (orderForm) =>
   orderForm.querySelector(".order__name").textContent;
 
@@ -700,7 +712,9 @@ const getCurrentItem = (e) => {
   }
   return currentItem;
 };
+// COMMENT Utitlity Function Expression - END
 
+// COMMENT Event Listeners - START
 // open orderbox
 menuArea.addEventListener("click", (e) => {
   if (!e.target.matches(".order-button") && !e.target.matches(".food-name"))
@@ -887,6 +901,7 @@ toppingOptionElement.addEventListener("click", (e) => {
 keepingEditing.addEventListener("click", (e) => {
   OrderDiscardChanges.closeDiscardBox();
 });
+
 discardChanges.addEventListener("click", (e) => {
   // If we wanna discard the changes we just made, then
   // we always wanna close the discard box and go back to
@@ -909,6 +924,7 @@ discardChanges.addEventListener("click", (e) => {
   // Lastly, go back to cart
   goBackToCart();
 });
+// COMMENT Event Listeners - END
 
 // *********************************************************
 // ADD TO CART

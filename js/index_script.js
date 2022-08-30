@@ -1,5 +1,5 @@
 const btnScrollTo = document.querySelector(".scroll-btn");
-
+const reviewSection = document.querySelector("#review-section");
 btnScrollTo.addEventListener("click", (e) => {
   const reviewRect = reviewSection.getBoundingClientRect();
   window.scrollTo({

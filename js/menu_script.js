@@ -98,7 +98,7 @@ const menuItems = document.querySelectorAll(".menu-item");
 assignUniqueIDs(menuItems);
 
 // *********************************************************
-// SCROLL FROM THE TOP ONREFRESHING
+// SCROLL BACK THE TOP ONREFRESHING
 // *********************************************************
 
 window.onbeforeunload = function () {

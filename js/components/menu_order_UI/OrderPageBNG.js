@@ -5,12 +5,11 @@ export default class OrderPageBNG {
       `
         <div class="formbox__container" id="formbox__container" style="display: none"> 
           <div class="formbox" >
-            
           </div>             
         </div>
 
         <div class="order__added__msg">
-          <p class="order__added__msg_text"> </p>
+          <p class="order__added__msg_text"></p>
         </div> 
       `
     );

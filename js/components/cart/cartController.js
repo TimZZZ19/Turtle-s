@@ -1,8 +1,4 @@
-// ************************************************************
-// INITIALIZING
-// ************************************************************
-
-// import components
+// Import Components
 import CartBtn from "./CartBtn.js";
 import CartPage from "./CartPage.js";
 import CartMain from "./CartMain.js";
@@ -18,7 +14,14 @@ import CartWarningMsg from "./CartWarningMsg.js";
 
 // import function from the payment controller for checking out
 import { openPaymentPage } from "../payment/main_components/PaymentController.js";
+// ************************************************************
+// COMMENT COMMENT COMMENT
+// INITIALIZATION - components activation and local db creation
+// ************************************************************
 
+// *************************************
+// COMMENT Components Activation - START
+// *************************************
 // activate components
 // main components of cart
 CartBtn.activate();
@@ -31,14 +34,16 @@ CartWarningMsg.activate();
 CartDeliveryMethods.activate();
 CartItems.activate();
 CartBill.activate();
+// COMMENT Components Activation - END
 
 // ************************************************************
-// UTILITY FUNCTIONS - processing user inputs
+// COMMENT COMMENT COMMENT
+// UTILITY FUNCTIONS
+// This is the data processing layer, only responsible for processing
+// and storing the data taken from the event listeners layer.
 // ************************************************************
 
-// Some helper functions for updating the cart content
-const getOrderFromLS = () => JSON.parse(localStorage.getItem("order"));
-
+// COMMENT Helper functions for following processing functions - START
 const updateOrderInLS = (order) =>
   localStorage.setItem("order", JSON.stringify(order));
 
@@ -56,7 +61,9 @@ const calculateOrderTotal = (order) =>
   order.serviceFee +
   order.tax.amount +
   order.delivery.fee;
+// COMMENT Helper functions for following processing functions - END
 
+// COMMENT Utility functions for data processing - START
 const updateDeliveryMethod = (order, deliveryMethod) => {
   order.delivery.method = deliveryMethod;
   CartDeliveryMethods.renderDeliveryMethods(order.delivery.method);
@@ -121,31 +128,21 @@ const displayCartContent = (order) => {
   if (!order.delivery.method) CartMain.deactivateCheckOut();
 };
 
-console.log("cartController");
-
 const closeBox = () => {
   CartMain.closeCartMain();
   CartPage.closeBox();
 };
+// COMMENT Utility functions for data processing - END
 
-// Empty cart
-const emptyCart = () => {
-  const order = getOrderFromLS();
-  updateDeliveryMethod(order, null);
+// *********************************************************
+// COMMENT COMMENT COMMENT
+// EVENT LISTENERS      EVENT LISTENERS     EVENT LISTENERS
+// *********************************************************
+// The level of event listeners is only responsible for taking user's
+// input data and sending that to the processing layer for processing
 
-  updateCartItems(order, { updateOption: "empty" });
-  displayCartBtnNumber();
-
-  updateBill(order, { updateOption: "remove" });
-  CartMain.closeCartMain();
-};
-
-//
-
-// ************************************************************
-// EVENT LISTENERS - taking user inputs
-// ************************************************************
-
+// COMMENT Variable Declarations - START
+// for closing and opening box
 const cartPageElement = document.querySelector(".cart__page");
 const cartCloseBtn = document.querySelector(".cart__close__btn");
 const deliveryInputRadio = document.querySelector("#delivery__choice_delivery");
@@ -156,7 +153,24 @@ const cartItemsArea = document.querySelector(".cart__items");
 const emptyBtn = document.querySelector(".cart__empty__btn");
 const emptyControl = document.querySelector(".empty__dialogue__control");
 const cartCheckOutBtn = document.querySelector(".cart__checkout__btn");
+// COMMENT Variable Declarations - END
 
+// COMMENT Utitlity Function Expression - START
+// Utility functions to get the current item
+const getOrderFromLS = () => JSON.parse(localStorage.getItem("order"));
+const emptyCart = () => {
+  const order = getOrderFromLS();
+  updateDeliveryMethod(order, null);
+
+  updateCartItems(order, { updateOption: "empty" });
+  displayCartBtnNumber();
+
+  updateBill(order, { updateOption: "remove" });
+  CartMain.closeCartMain();
+};
+// COMMENT Utitlity Function Expression - END
+
+// COMMENT Event Listeners - START
 // Open cart box and collect data from local storage
 cartBtnElement.addEventListener("click", (e) => {
   e.preventDefault(); // since this button is an <a> tag
@@ -298,6 +312,8 @@ cartCheckOutBtn.addEventListener("click", (e) => {
   // open the payment page
   openPaymentPage();
 });
+
+// COMMENT Event Listeners - END
 
 // ************************************************************
 //
