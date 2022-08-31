@@ -3,7 +3,7 @@
 // ********************
 // Import CartPagea, CartMain and cartController for going back to cart later
 import CartPage from "../../cart/CartPage.js";
-import CartMain from "../../cart/cartMain.js";
+import CartMain from "../../cart/CartMain.js";
 
 import ContactInformation from "../payment_content/ContactInformation.js";
 import DeliveryAddress from "../payment_content/DeliveryAddress.js";
@@ -16,9 +16,10 @@ import PaymentForm from "./PaymentForm.js";
 import PaymentSubmitted from "./PaymentSubmitted.js";
 import PaymentCancelation from "./PaymentCancelation.js";
 
-// ********************
-// COMPONENTS ACTIVATIONS
-// ********************
+// ************************************************************
+// COMMENT COMMENT COMMENT
+// INITIALIZATION - components activation
+// ************************************************************
 PaymentBNG.activate();
 PaymentForm.activate();
 OrderSummary.activate();

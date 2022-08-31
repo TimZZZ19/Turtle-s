@@ -16,7 +16,7 @@ import CartWarningMsg from "./CartWarningMsg.js";
 import { openPaymentPage } from "../payment/main_components/PaymentController.js";
 // ************************************************************
 // COMMENT COMMENT COMMENT
-// INITIALIZATION - components activation and local db creation
+// INITIALIZATION - components activation
 // ************************************************************
 
 // *************************************
